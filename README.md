@@ -5,3 +5,4 @@ Plataforma web diseñada para apoyar a las emprendedoras de InnovaFem, centraliz
 🧩 Definir objetivos, alcance y funcionalidades
 🏗️ Estructurar el proyecto (frontend / backend / arquitectura)
 🌐 Adaptarlo a un tono más técnico o más social
+no me quiero bañar
