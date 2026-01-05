@@ -6,3 +6,4 @@ Plataforma web diseñada para apoyar a las emprendedoras de InnovaFem, centraliz
 🏗️ Estructurar el proyecto (frontend / backend / arquitectura)
 🌐 Adaptarlo a un tono más técnico o más social
 
+Es una enana muy enana
