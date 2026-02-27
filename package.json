@@ -1,20 +1,19 @@
 {
-  "name": "eva",
+  "name": "eva-project",
   "private": true,
+  "version": "1.1.0",
   "scripts": {
+    "install:all": "npm install",
+    "db:generate": "cd backend && npx prisma generate",
     "dev:front": "cd frontend && npm run dev",
     "dev:back": "cd backend && npm run dev",
     "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\""
   },
   "workspaces": [
     "frontend",
-    "backend",
-    "./"
+    "backend"
   ],
   "devDependencies": {
     "concurrently": "^9.2.1"
-  },
-  "dependencies": {
-    "workspaces": "^0.1.0"
   }
 }

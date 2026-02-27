@@ -1,9 +1,14 @@
 {
-  "name": "eva",
-  "version": "1.0.0",
+  "name": "backend",
+  "version": "1.1.0",
   "type": "module",
+  "private": true,
+  "main": "src/server.js",
   "scripts": {
-    "dev": "node src/server.js"
+    "dev": "node src/server.js",
+    "db:migrate": "npx prisma migrate dev",
+    "db:studio": "npx prisma studio",
+    "db:generate": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
