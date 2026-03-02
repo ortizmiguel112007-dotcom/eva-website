@@ -7,8 +7,24 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  nombre       String
+  email        String    @unique
+  telefono     String
+  password     String
+  verificado   Boolean   @default(false)
+  activo       Boolean   @default(true)    // ← NUEVO: true = Activo, false = Inactivo
+  rol          String    @default("usuario")
+  token        String?
+  codigoExpira DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+model VerificacionPendiente {
+  email      String   @id
+  nombre     String
+  telefono   String
+  password   String
+  codigo     String
+  expiracion DateTime
 }

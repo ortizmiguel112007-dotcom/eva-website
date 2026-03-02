@@ -1,0 +1,274 @@
+:root {
+    --bg-dark:       #020618;
+    --bg-mid:        #0F172B;
+    --accent:        #29b1ff;
+    --accent-hover:  #0F172B;
+    --accent-glow:   rgba(36, 79, 128, 0.14);
+    --text:          #F2F2F2;
+    --text-muted:    rgba(242, 242, 242, 0.726);
+    --border:        rgba(242, 242, 242, 0.2);
+    --shadow:        rgba(0, 0, 0, 0.3);
+    --gray-mid:      rgb(150, 150, 150);
+    --gray-light:    rgb(197, 197, 197);
+    --white:         rgb(255, 255, 255);
+}
+
+/* ─── Sección principal ─────────────────────────────────── */
+.container-register {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;           /* el gato se asoma sin generar scroll */
+}
+
+/* ─── Fondo con imagen ──────────────────────────────────── */
+.container-img {
+    position: relative;         /* necesario para el gato absoluto */
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+    background-image: url(../imgs/Background1.jpg);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;        /* centra verticalmente el formulario */
+    justify-content: center;    /* centra horizontalmente */
+}
+
+/* ─── Tarjeta del formulario ────────────────────────────── */
+.container-formulario {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.75rem;
+    background-color: var(--white);
+    width: 100%;
+    max-width: 35rem;           /* max-width en lugar de width fija */
+    box-shadow: 0 8px 32px var(--shadow);
+    overflow: hidden;           /* evita que los hijos rompan el borde */
+}
+
+/* ─── Título ────────────────────────────────────────────── */
+.container-formulario h2 {
+    color: var(--gray-mid);
+    position: relative;
+    padding: 1rem 1.25rem;
+    width: 100%;
+    margin: 0;
+}
+
+.container-formulario h2::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    bottom: 0;
+    background-color: var(--border);
+}
+
+/* ─── Formulario ────────────────────────────────────────── */
+.container-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* ─── Zona de inputs ────────────────────────────────────── */
+.container-paddin {
+    margin-top: 0.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* ─── Fila de input individual ──────────────────────────── */
+.container-input {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.container-input label {
+    font-size: 0.875rem;
+    color: var(--gray-mid);
+    white-space: nowrap;
+    min-width: 5.5rem;          /* alineación consistente */
+}
+
+.container-input svg,
+.container-input > *:first-child {
+    flex-shrink: 0;
+    color: var(--gray-mid);
+    font-size: 1rem;
+}
+
+/* ─── Inputs ────────────────────────────────────────────── */
+.container-form input {
+    flex: 1;                    /* ocupa el espacio restante */
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 0.35rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+    min-width: 0;               /* evita overflow en flex */
+}
+
+.container-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ─── Mensajes ──────────────────────────────────────────── */
+.mensaje {
+    margin: 0 1.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.35rem;
+    font-size: 0.85rem;
+    color: #c0392b;
+    background-color: rgba(192, 57, 43, 0.08);
+    border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.mensaje-info {
+    font-size: 0.875rem;
+    color: var(--gray-mid);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.mensaje-info strong {
+    color: var(--bg-mid);
+}
+
+/* ─── Barra de botones ──────────────────────────────────── */
+.container-button {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    width: 100%;
+    background-color: var(--gray-light);
+    padding: 0.85rem 1.25rem;
+    margin-top: auto;
+}
+
+.container-button button {
+    padding: 0.5rem 1.1rem;
+    border-radius: 0.35rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.1s ease;
+}
+
+.container-button button[type="submit"] {
+    background-color: var(--accent);
+    color: var(--text);
+    border: none;
+}
+
+.container-button button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.container-button button[type="submit"]:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.container-button button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--bg-mid);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Imagen decorativa (gato) ──────────────────────────── */
+/* Se fija al viewport y asoma desde abajo a la derecha */
+.container-cat img {
+    position: fixed;
+    bottom: -4rem;
+    right: 4rem;
+    width: 14rem;
+    height: auto;
+    pointer-events: none;
+    z-index: 10;
+    filter: drop-shadow(-4px 0 12px rgba(0,0,0,0.25));
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .container-img {
+        padding: 1.5rem 1rem;
+        align-items: flex-start;
+        padding-top: 3rem;
+    }
+
+    .container-formulario {
+        max-width: 100%;
+    }
+
+    .container-input label {
+        min-width: 4.5rem;
+    }
+
+    /* En tablet el gato es más pequeño pero sigue visible */
+    .container-cat img {
+        width: 10rem;
+        right: 1.5rem;
+        bottom: -2.5rem;
+    }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+    .container-img {
+        padding: 1rem 0.75rem;
+        padding-top: 2rem;
+    }
+
+    .container-paddin {
+        padding: 1rem;
+    }
+
+    .container-input {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .container-input label {
+        min-width: auto;
+        width: 100%;
+        margin-left: 1.6rem;
+    }
+
+    .container-form input {
+        width: 100%;
+    }
+
+    .container-button {
+        padding: 0.75rem 1rem;
+    }
+
+    .container-button button {
+        flex: 1;
+        text-align: center;
+    }
+
+    /* En móvil muy pequeño el gato se oculta para no tapar el formulario */
+    .container-cat img {
+        display: none;
+    }
+}
