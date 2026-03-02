@@ -1,5 +1,9 @@
 1. Objetivo de la Arquitectura
 
+npx prisma migrate dev --name agregar-password
+npx prisma generate
+kdxpgixbuifmpsrg
+
 La arquitectura del backend está diseñada bajo un enfoque modular por funcionalidades (feature-based) combinado con separación por capas.
 
 Este diseño permite:

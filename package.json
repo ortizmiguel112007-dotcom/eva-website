@@ -4,9 +4,11 @@
   "version": "1.1.0",
   "scripts": {
     "install:all": "npm install",
-    "db:generate": "cd backend && npx prisma generate",
-    "dev:front": "cd frontend && npm run dev",
-    "dev:back": "cd backend && npm run dev",
+    "postinstall": "npm run db:generate -w backend",
+    "db:generate": "npm run db:generate -w backend",
+    "db:migrate": "npm run db:migrate -w backend",
+    "dev:front": "npm run dev -w frontend",
+    "dev:back": "npm run dev -w backend",
     "dev": "concurrently \"npm run dev:back\" \"npm run dev:front\""
   },
   "workspaces": [
@@ -14,6 +16,7 @@
     "backend"
   ],
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
   }
 }
