@@ -13,11 +13,13 @@ model User {
   telefono     String
   password     String
   verificado   Boolean   @default(false)
-  activo       Boolean   @default(true)    // ← NUEVO: true = Activo, false = Inactivo
+  activo       Boolean   @default(true)
   rol          String    @default("usuario")
   token        String?
   codigoExpira DateTime?
   createdAt    DateTime  @default(now())
+
+  emprendedora Emprendedora?
 }
 
 model VerificacionPendiente {
@@ -27,4 +29,59 @@ model VerificacionPendiente {
   password   String
   codigo     String
   expiracion DateTime
+}
+
+model Emprendedora {
+  id_emprendedora Int       @id @default(autoincrement())
+  id_usuario      Int       @unique
+  datos_bancarios String?
+  estado          Boolean   @default(true)
+
+  usuario         User      @relation(fields: [id_usuario], references: [id])
+  secciones       Seccion[]
+
+  @@map("emprendedoras")
+}
+
+model Seccion {
+  id_seccion      Int      @id @default(autoincrement())
+  id_emprendedora Int
+  nombre_seccion  String
+  fecha_creacion  DateTime @default(now())
+
+  emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
+  productos    Producto[]
+
+  @@map("secciones")
+}
+
+model Producto {
+  id_producto               Int      @id @default(autoincrement())
+  id_seccion                Int
+  nombre_producto           String
+  descripcion               String?
+  precio                    Decimal  @db.Decimal(10, 3)
+  categoria                 String?
+  estado_producto           String   @default("activo")
+  imagen                    String?
+  tamano_imagen             Int?
+  stock_minimo              Int      @default(0)
+  ultima_modificacion_stock DateTime @default(now()) @updatedAt
+
+  seccion    Seccion     @relation(fields: [id_seccion], references: [id_seccion])
+  inventario Inventario?
+
+  @@map("producto")
+}
+
+model Inventario {
+  id_inventario Int @id @default(autoincrement())
+  id_producto   Int @unique
+  cantidad      Int
+  stock_minimo  Int
+  stock_maximo  Int
+
+  producto Producto @relation(fields: [id_producto], references: [id_producto])
+
+  @@map("inventario")
 }

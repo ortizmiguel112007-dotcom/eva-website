@@ -23,6 +23,10 @@ const AppRouter = () => {
             {/* Rutas privadas */}
             <Route element={<PrivateRoute rolRequerido="usuario"/>}>
                 {/* Aquí van las rutas que requieren autenticación y permisos. */}
+            </Route>
+
+            <Route element={<PrivateRoute rolRequerido="emprendedora"/>}>
+                {/* Aquí van las rutas que requieren autenticación y permisos. */}
                 {ProductosRoutes}
             </Route>
 
