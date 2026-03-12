@@ -1,26 +1,20 @@
 :root {
-  
   --color-navbar: #0f1f3a;
   --color-sidebar: #0b1830;
-
 
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
   --color-secondary: #60a5fa;
 
- 
   --color-text-light: #ffffff;
   --color-text-gray: #cbd5e1;
   --color-text-dark: #374151;
 
-
   --color-bg-main: #f8f9fc;
   --color-bg-hover: #1f2f4d;
 
-
   --color-border: #e5e7eb;
 }
-
 
 .topbar {
   display: flex;
@@ -43,7 +37,7 @@
 
 /* Input de búsqueda */
 
-.search-input {
+.search-input2 {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--color-border);
@@ -54,13 +48,12 @@
   transition: all 0.25s ease;
 }
 
-.search-input:focus {
+.search-input2:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
 }
-
-
+ 
 
 .btn-primary {
   background: var(--color-primary);

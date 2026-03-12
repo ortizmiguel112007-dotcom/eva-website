@@ -12,6 +12,7 @@ import { Routes, Route } from "react-router-dom";
 import { authRoutes, CrudAyuda } from "@/features/auth/router";
 import { ProductosRoutes } from "@/features/products/router";
 import PrivateRoute from "./PrivateRoute";
+import { AdminRoutes } from "@/features/admin/router";
 
 // Componente que define las rutas de la aplicación.
 const AppRouter = () => {
@@ -32,6 +33,7 @@ const AppRouter = () => {
 
             <Route element={<PrivateRoute rolRequerido="admin"/>}>
                 {/* Aquí van las rutas que requieren autenticación y permisos. */}
+                {AdminRoutes}
                 {CrudAyuda}
             </Route>
         </Routes>

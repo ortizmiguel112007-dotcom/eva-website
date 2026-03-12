@@ -5,15 +5,12 @@ export default function CategoryFilter({
   setSelectedCategory,
   visibilityFilter,
   setVisibilityFilter,
+  categories = ["Todos"],
 }) {
-  const types = ["Todos", "Producto", "Servicio"];
-
-  const categories = [
-    { label: "Electrónica", value: "electronica" },
-    { label: "Ropa", value: "ropa" },
-    { label: "Alimentos", value: "alimentos" },
-    { label: "Belleza", value: "belleza" },
-    { label: "Hogar", value: "hogar" },
+  const types = [
+    { label: "Todos",    value: "Todos" },
+    { label: "Producto", value: "producto" },
+    { label: "Servicio", value: "servicio" },
   ];
 
   return (
@@ -22,37 +19,29 @@ export default function CategoryFilter({
       <div className="filters">
         {types.map((t) => (
           <button
-            key={t}
-            className={selectedType === t ? "filter active" : "filter"}
-            onClick={() => setSelectedType(t)}
+            key={t.value}
+            className={selectedType === t.value ? "filter active" : "filter"}
+            onClick={() => setSelectedType(t.value)}
           >
-            {t}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {/* Categorías */}
+      {/* Categorías dinámicas */}
       <div className="filters secondary">
-        <button
-          className={selectedCategory === "Todos" ? "filter active" : "filter"}
-          onClick={() => setSelectedCategory("Todos")}
-        >
-          Todas
-        </button>
-
         {categories.map((c) => (
           <button
-            key={c.value}
-            className={
-              selectedCategory === c.value ? "filter active" : "filter"
-            }
-            onClick={() => setSelectedCategory(c.value)}
+            key={c}
+            className={selectedCategory === c ? "filter active" : "filter"}
+            onClick={() => setSelectedCategory(c)}
           >
-            {c.label}
+            {c}
           </button>
         ))}
       </div>
 
+      {/* Visibilidad */}
       <div className="filters visibility">
         <button
           className={visibilityFilter === "Todos" ? "filter active" : "filter"}
@@ -60,20 +49,14 @@ export default function CategoryFilter({
         >
           Todos
         </button>
-
         <button
-          className={
-            visibilityFilter === "Activos" ? "filter active" : "filter"
-          }
+          className={visibilityFilter === "Activos" ? "filter active" : "filter"}
           onClick={() => setVisibilityFilter("Activos")}
         >
           Activos
         </button>
-
         <button
-          className={
-            visibilityFilter === "Ocultos" ? "filter active" : "filter"
-          }
+          className={visibilityFilter === "Ocultos" ? "filter active" : "filter"}
           onClick={() => setVisibilityFilter("Ocultos")}
         >
           Ocultos

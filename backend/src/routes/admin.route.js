@@ -4,13 +4,29 @@ import {
   CreateUsuarioAdmin,
   UpdateUsuario,
   ToggleEstadoUsuario,
+  aprobarEmprendedora,  
+  cambiarRol,          
+  listarAuditoria 
 } from '../controllers/admin.controller.js'
+
+import { verificarToken } from '../middleware/auth.middleware.js'
 
 const router = Router()
 
-router.get('/admin/usuarios',                  GetUsuarios)
-router.post('/admin/usuarios',                 CreateUsuarioAdmin)
-router.put('/admin/usuarios/:id',              UpdateUsuario)
-router.patch('/admin/usuarios/:id/estado',     ToggleEstadoUsuario)  // habilitar / inhabilitar
+// middleware que verifica que sea admin
+const soloAdmin = (req, res, next) => {
+  if (req.user?.rol !== 'admin') {
+    return res.status(403).json({ error: 'No autorizado' })
+  }
+  next()
+}
+
+router.get('/admin/usuarios',              verificarToken, soloAdmin, GetUsuarios)
+router.post('/admin/usuarios',             verificarToken, soloAdmin, CreateUsuarioAdmin)
+router.put('/admin/usuarios/:id',          verificarToken, soloAdmin, UpdateUsuario)
+router.patch('/admin/usuarios/:id/estado', verificarToken, soloAdmin, ToggleEstadoUsuario)
+router.put('/admin/usuarios/:id/aprobar',  verificarToken, soloAdmin, aprobarEmprendedora)
+router.put('/admin/usuarios/:id/rol',      verificarToken, soloAdmin, cambiarRol)
+router.get('/admin/auditoria',             verificarToken, soloAdmin, listarAuditoria)
 
 export default router

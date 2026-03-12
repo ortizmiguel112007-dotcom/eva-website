@@ -11,7 +11,7 @@ export default function TopBar({ search, setSearch }) {
         <input
           type="text"
           placeholder="Buscar producto o servicio..."
-          className="search-input"
+          className="search-input2"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

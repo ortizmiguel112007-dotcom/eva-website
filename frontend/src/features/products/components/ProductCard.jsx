@@ -13,7 +13,11 @@ export default function ProductCard({ item, onDelete, onToggleVisibility }) {
   };
   return (
     <div className={`product-card ${!item.visible ? "hidden-card" : ""}`}>
-      <img src={item.image} alt={item.name} />
+      {item.image ? (
+        <img src={item.image} alt={item.name} />
+      ) : (
+        <div className="no-image">Sin imagen</div>
+      )}
 
       <span className={`type-badge ${item.type.toLowerCase()}`}>
         {item.type}
@@ -22,18 +26,17 @@ export default function ProductCard({ item, onDelete, onToggleVisibility }) {
       <h4>{item.name}</h4>
       <p className="category">{item.category}</p>
 
-      <div className="price">${item.price.toLocaleString()}</div>
+      <div className="price">
+        {"$" + Number(item.price).toLocaleString("es-CO")}
+      </div>
 
-      {item.type === "Producto" && item.stock <= 3 && (
+      {item.type === "producto" && item.stock <= 3 && (
         <span className="badge warning">Stock bajo</span>
       )}
 
-
-
       <div className="actions">
-
         {!item.visible && <span className="hidden-label">Oculto</span>}
-        
+
         <button
           title={item.visible ? "Ocultar" : "Mostrar"}
           onClick={() => onToggleVisibility(item.id)}

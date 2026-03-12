@@ -1,0 +1,167 @@
+
+
+/* ─── Variables ──────────────────────────────────────────── */
+:root {
+  --color-navbar:        #0f1f3a;
+  --color-sidebar:       #0b1830;
+  --color-primary:       #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-secondary:     #60a5fa;
+  --color-text-light:    #ffffff;
+  --color-text-gray:     #cbd5e1;
+  --color-text-dark:     #374151;
+  --color-bg-main:       #f8f9fc;
+  --color-bg-hover:      #1f2f4d;
+  --color-border:        #e5e7eb;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:  0 4px 16px rgba(15,31,58,.10);
+  --shadow-lg:  0 8px 32px rgba(15,31,58,.14);
+  --transition: 180ms ease;
+}
+
+/* ─── Layout ─────────────────────────────────────────────── */
+.auditoria-container {
+  padding: 28px;
+  background: var(--color-bg-main);
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ─── Bienvenida ─────────────────────────────────────────── */
+.bienvenida-card {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.bienvenida-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-navbar);
+  margin: 0 0 4px;
+}
+
+.bienvenida-card p {
+  color: #94a3b8;
+  font-size: .875rem;
+  margin: 0;
+}
+
+/* ─── Métricas ───────────────────────────────────────────── */
+.metricas {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metrica-card {
+  flex: 1;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.metrica-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.metrica-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-navbar);
+  margin: 0 0 4px;
+}
+
+.metrica-card span {
+  font-size: .8rem;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* ─── Lista auditoría ────────────────────────────────────── */
+.lista-auditoria {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.lista-auditoria h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-navbar);
+  margin: 0 0 16px;
+}
+
+/* ─── Registros ──────────────────────────────────────────── */
+.registro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+  background: var(--color-bg-main);
+  border: 1px solid transparent;
+  border-left-width: 4px;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.registro:hover {
+  background: #eff6ff;
+}
+
+.registro-info h4 {
+  margin: 0 0 3px;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--color-navbar);
+}
+
+.registro-info p {
+  margin: 0 0 2px;
+  font-size: .83rem;
+  color: var(--color-text-dark);
+}
+
+.registro-info span {
+  font-size: .75rem;
+  color: #94a3b8;
+}
+
+.registro-fecha {
+  font-size: .78rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* ─── Variantes de registro ──────────────────────────────── */
+.registro.aprobado {
+  border-left-color: #22c55e;
+}
+
+.registro.rol {
+  border-left-color: var(--color-primary);
+}
+
+.registro.desactivado {
+  border-left-color: #f97316;
+}

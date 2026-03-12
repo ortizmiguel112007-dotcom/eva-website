@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/core/context/AuthConten";
 
 import TopBar from "@/features/products/components/TopBar.jsx";
 import CategoryFilter from "@/features/products/components/CategoryFilter.jsx";
 import ProductList from "@/features/products/components/ProductList.jsx";
-import items from "@/data/products.js";
+import { itemService } from "@/features/products/services/item.service";
 
 import "@/infrastructure/css/form.css";
 import "@/infrastructure/css/categoryFilter.css";
@@ -12,13 +13,14 @@ import "@/infrastructure/css/dashboard.css";
 import "@/infrastructure/css/productCard.css";
 import "@/infrastructure/css/topbar.css";
 
-let initialItems = items;
+const ID_SECCION = 1; // TODO: reemplazar con id_seccion real del usuario autenticado
 
 export default function ProductsDashboard() {
-  // estado principal
-  const [items, setItems] = useState(
-    initialItems.map((item) => ({ ...item, visible: true })),
-  );
+  const { idSeccion } = useAuth();
+
+  const [items, setItems] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
 
   // filtros
   const [selectedType, setSelectedType] = useState("Todos");
@@ -26,39 +28,110 @@ export default function ProductsDashboard() {
   const [search, setSearch] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState("Todos");
 
-  // eliminar definitivamente
-  const handleDelete = (id) => {
-    setItems(items.filter((item) => item.id !== id));
+  // ── cargar items del backend al montar ───────────────────────────────────
+  useEffect(() => {
+    if (!idSeccion) return;
+
+    const cargar = async () => {
+      try {
+        setCargando(true);
+        const data = await itemService.obtenerPorSeccion(idSeccion);
+        // Normalizamos para que el resto del dashboard funcione igual que antes
+        const normalized = data.map((item) => ({
+          ...item,
+          id: item.id_producto,
+          name: item.nombre_producto,
+          price: item.precio,
+          image: item.imagen
+            ? item.imagen.startsWith("http")
+              ? item.imagen // URL de Cloudinary - ya completa
+              : `http://localhost:3000${item.imagen}` // archivo local
+            : null,
+          type: item.tipo || "producto",
+          category: item.categoria,
+          visible: item.estado_producto === "activo",
+        }));
+        setItems(normalized);
+      } catch (err) {
+        setError("Error al cargar los items");
+        console.error(err);
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargar();
+  }, [idSeccion]);
+
+  // ── eliminar (soft delete en backend) ────────────────────────────────────
+  const handleDelete = async (id) => {
+    try {
+      await itemService.eliminar(id);
+
+      setItems((prev) => prev.filter((item) => item.id !== Number(id)));
+    } catch (err) {
+      console.error("Error al eliminar:", err.response?.data || err.message);
+    }
   };
 
-  // ocultar / mostrar
-  const toggleVisibility = (id) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, visible: !item.visible } : item,
-      ),
-    );
+  // ── ocultar / mostrar (actualiza estado_producto en backend) ─────────────
+  const toggleVisibility = async (id) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    const nuevoEstado = item.visible ? "inactivo" : "activo";
+
+    try {
+      await itemService.actualizar(id, { estado_producto: nuevoEstado });
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, visible: !i.visible } : i)),
+      );
+    } catch (err) {
+      console.error("Error al cambiar visibilidad:", err);
+    }
   };
 
-  // categorías dinámicas
+  // ── categorías dinámicas ──────────────────────────────────────────────────
   const categories = ["Todos", ...new Set(items.map((i) => i.category))];
 
-  // filtrado
+  // ── filtrado ──────────────────────────────────────────────────────────────
   const filteredItems = items.filter((item) => {
     const matchType = selectedType === "Todos" || item.type === selectedType;
-
     const matchCategory =
       selectedCategory === "Todos" || item.category === selectedCategory;
-
     const matchVisibility =
       visibilityFilter === "Todos" ||
       (visibilityFilter === "Activos" && item.visible) ||
       (visibilityFilter === "Ocultos" && !item.visible);
-
     const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
 
     return matchType && matchCategory && matchVisibility && matchSearch;
   });
+
+  // ── render ────────────────────────────────────────────────────────────────
+  if (!idSeccion)
+    return (
+      <div className="layout">
+        <main className="main-content">
+          <p>Cargando sesión...</p>
+        </main>
+      </div>
+    );
+  if (cargando)
+    return (
+      <div className="layout">
+        <main className="main-content">
+          <p>Cargando...</p>
+        </main>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="layout">
+        <main className="main-content">
+          <p>{error}</p>
+        </main>
+      </div>
+    );
 
   return (
     <div className="layout">
@@ -72,9 +145,9 @@ export default function ProductsDashboard() {
           setSelectedCategory={setSelectedCategory}
           visibilityFilter={visibilityFilter}
           setVisibilityFilter={setVisibilityFilter}
+          categories={categories}
         />
 
-        {/* filtro activos / ocultos */}
         <div className="filters visibility"></div>
 
         <ProductList
