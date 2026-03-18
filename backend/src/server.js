@@ -6,6 +6,13 @@ import usuariosRoutes from './routes/usuario.route.js'
 import adminRoutes from './routes/admin.route.js'
 import productoRoutes from './routes/producto.route.js'
 import emprendedoraRoutes from './routes/emprendedora.route.js'
+import inventarioRouter from './routes/inventario.route.js'
+import pedidoRouter from './routes/pedido.route.js'
+import alianzaRouter from './routes/alianza.route.js'
+import destacadoRouter from './routes/destacado.route.js'
+import cuponRouter from './routes/cupon.route.js'
+import comentarioRouter from './routes/comentario.route.js'
+
 import prisma from './conexion.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -41,7 +48,16 @@ app.use(adminRoutes)
 app.use('/api/items', productoRoutes)
 app.use('/api/emprendedora', emprendedoraRoutes)
 
+app.use(inventarioRouter)
 
+app.use(pedidoRouter)
+
+app.use(alianzaRouter)
+
+app.use(destacadoRouter)
+
+app.use(cuponRouter)
+app.use(comentarioRouter)
 
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')

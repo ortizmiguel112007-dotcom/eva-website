@@ -21,6 +21,12 @@ model User {
 
   emprendedora Emprendedora?
    auditorias   Auditoria[]
+   pedidos   Pedido[]
+
+   alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
+alianzasParticipante AlianzaParticipante[]
+cupones Cupon[]
+comentarios Comentario[]
 }
 
 model VerificacionPendiente {
@@ -52,6 +58,7 @@ model Seccion {
 
   emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
   productos    Producto[]
+  pedidos   Pedido[]
 
   @@map("secciones")
 }
@@ -73,6 +80,10 @@ model Producto {
 
   seccion    Seccion     @relation(fields: [id_seccion], references: [id_seccion])
   inventario Inventario?
+  detalles  DetallePedido[]
+  comentarios Comentario[]
+
+  destacado Boolean @default(false)
 
   @@map("producto")
 }
@@ -101,4 +112,99 @@ model Auditoria {
   usuario User @relation(fields: [id_usuario_accion], references: [id])
 
   @@map("auditoria")
+}
+
+model Pedido {
+  id_pedido    Int      @id @default(autoincrement())
+  id_cliente   Int
+  id_seccion   Int
+  estado       String   @default("en_proceso")
+  total        Decimal  @db.Decimal(10, 3)
+  metodo_pago  String?
+  fecha        DateTime @default(now())
+  nota         String?
+
+  cliente      User          @relation(fields: [id_cliente], references: [id])
+  seccion      Seccion       @relation(fields: [id_seccion], references: [id_seccion])
+  detalles     DetallePedido[]
+  comentarios Comentario[]
+
+  @@map("pedidos")
+}
+
+model DetallePedido {
+  id_detalle  Int     @id @default(autoincrement())
+  id_pedido   Int
+  id_producto Int
+  cantidad    Int
+  precio_unit Decimal @db.Decimal(10, 3)
+
+  pedido      Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+  producto    Producto @relation(fields: [id_producto], references: [id_producto])
+
+  @@map("detalle_pedidos")
+}
+
+model Alianza {
+  id_alianza    Int      @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  estado        String   @default("pendiente") // pendiente, activa, finalizada
+  fecha_inicio  DateTime @default(now())
+  fecha_fin     DateTime?
+  creada_por    Int
+
+  creador       User              @relation("AlianzaCreador", fields: [creada_por], references: [id])
+  participantes AlianzaParticipante[]
+
+  @@map("alianzas")
+}
+
+model AlianzaParticipante {
+  id            Int      @id @default(autoincrement())
+  id_alianza    Int
+  id_usuario    Int
+  autorizado    Boolean  @default(false)
+  fecha_union   DateTime @default(now())
+
+  alianza       Alianza  @relation(fields: [id_alianza], references: [id_alianza])
+  usuario       User     @relation(fields: [id_usuario], references: [id])
+
+  @@unique([id_alianza, id_usuario])
+  @@map("alianza_participantes")
+}
+
+model Cupon {
+  id_cupon     Int      @id @default(autoincrement())
+  id_usuario   Int
+  codigo       String   @unique
+  tipo         String   // "porcentaje" o "valor_fijo"
+  valor        Decimal  @db.Decimal(10, 3)
+  descripcion  String?
+  activo       Boolean  @default(true)
+  fecha_inicio DateTime @default(now())
+  fecha_fin    DateTime?
+  limite_usos  Int?
+  usos         Int      @default(0)
+
+  usuario      User     @relation(fields: [id_usuario], references: [id])
+
+  @@map("cupones")
+}
+
+model Comentario {
+  id_comentario Int      @id @default(autoincrement())
+  id_producto   Int
+  id_usuario    Int
+  id_pedido     Int
+  calificacion  Int      // 1-5
+  texto         String
+  activo        Boolean  @default(true)
+  fecha         DateTime @default(now())
+
+  producto      Producto @relation(fields: [id_producto], references: [id_producto])
+  usuario       User     @relation(fields: [id_usuario], references: [id])
+  pedido        Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+
+  @@map("comentarios")
 }

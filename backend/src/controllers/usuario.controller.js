@@ -115,3 +115,53 @@ export const CreaterDate = async (req, res) => {
     return res.status(500).json({ error: 'Error al crear el usuario' })
   }
 }
+
+// GET /api/perfil — obtener perfil del usuario logueado
+export const obtenerPerfil = async (req, res) => {
+  try {
+    const usuario = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id:       true,
+        nombre:   true,
+        email:    true,
+        telefono: true,
+        rol:      true,
+      }
+    })
+    if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' })
+    res.json(usuario)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener perfil' })
+  }
+}
+
+// PUT /api/perfil — actualizar perfil del usuario logueado
+export const actualizarPerfil = async (req, res) => {
+  try {
+    const { nombre, telefono, password } = req.body
+
+    // validar password si viene
+    if (password) {
+      const errorPassword = ValidarPassword(password)
+      if (errorPassword) return res.status(errorPassword.status).json({ error: errorPassword.message })
+    }
+
+    const data = {}
+    if (nombre)   data.nombre   = nombre
+    if (telefono) data.telefono = telefono
+    if (password) data.password = password
+
+    const actualizado = await prisma.user.update({
+      where: { id: req.user.id },
+      data,
+      select: { id: true, nombre: true, email: true, telefono: true, rol: true }
+    })
+
+    res.json({ message: 'Perfil actualizado correctamente', usuario: actualizado })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al actualizar perfil' })
+  }
+}

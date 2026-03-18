@@ -92,7 +92,7 @@ function CreateItemForm({
     formData.append("categoria", form.categoria);
     formData.append("stock_minimo", form.stock_minimo);
     formData.append("cantidad", form.cantidad || 0);
-    formData.append("duracion",        form.duracion || "");
+    formData.append("duracion", form.duracion || "");
     formData.append("tipo", type === "product" ? "producto" : "servicio");
     if (form.imagen instanceof File) formData.append("imagen", form.imagen);
 
@@ -137,11 +137,39 @@ function CreateItemForm({
         { value: "tecnologia", label: "Tecnología" },
         { value: "belleza", label: "Belleza" },
         { value: "hogar", label: "Hogar" },
+        { value: "moda", label: "Moda y Accesorios" },
+        { value: "alimentacion", label: "Alimentación" },
+        { value: "salud", label: "Salud y Bienestar" },
+        { value: "deporte", label: "Deporte y Fitness" },
+        { value: "arte", label: "Arte y Manualidades" },
+        { value: "infantil", label: "Infantil y Bebés" },
+        { value: "papeleria", label: "Papelería y Oficina" },
+        { value: "mascotas", label: "Mascotas" },
+        { value: "joyeria", label: "Joyería y Bisutería" },
+        { value: "decoracion", label: "Decoración" },
+        { value: "libros", label: "Libros y Revistas" },
+        { value: "electronica", label: "Electrónica" },
+        { value: "juguetes", label: "Juguetes y Juegos" },
+        { value: "otros", label: "Otros" },
       ]
     : [
         { value: "marketing", label: "Marketing" },
         { value: "consultoria", label: "Consultoría" },
         { value: "educacion", label: "Educación" },
+        { value: "diseno", label: "Diseño Gráfico" },
+        { value: "fotografia", label: "Fotografía y Video" },
+        { value: "desarrollo_web", label: "Desarrollo Web" },
+        { value: "redes_sociales", label: "Redes Sociales" },
+        { value: "contabilidad", label: "Contabilidad y Finanzas" },
+        { value: "legal", label: "Legal y Jurídico" },
+        { value: "salud_mental", label: "Salud Mental y Coaching" },
+        { value: "nutricion", label: "Nutrición y Dieta" },
+        { value: "idiomas", label: "Idiomas y Traducción" },
+        { value: "musica", label: "Música y Audio" },
+        { value: "eventos", label: "Eventos y Bodas" },
+        { value: "limpieza", label: "Limpieza y Hogar" },
+        { value: "transporte", label: "Transporte y Logística" },
+        { value: "otros", label: "Otros" },
       ];
 
   const title = isEdit

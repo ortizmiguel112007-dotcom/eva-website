@@ -50,6 +50,8 @@ export default function ProductsDashboard() {
           type: item.tipo || "producto",
           category: item.categoria,
           visible: item.estado_producto === "activo",
+          descripcion: item.descripcion,   
+          duracion:    item.duracion,
         }));
         setItems(normalized);
       } catch (err) {
