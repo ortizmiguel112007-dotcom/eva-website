@@ -1,27 +1,27 @@
-import prisma from '../conexion.js'
-import jwt from 'jsonwebtoken'
+import prisma from "../conexion.js";
+import jwt from "jsonwebtoken";
 
 export const verificarCodigo = async (req, res) => {
-  const { email, codigo } = req.body
+  const { email, codigo } = req.body;
 
-  try{
+  try {
     const pendiente = await prisma.verificacionPendiente.findUnique({
-      where: { email }
-    })
+      where: { email },
+    });
 
-    console.log('Pendiente encontrado:', pendiente)
+    console.log("Pendiente encontrado:", pendiente);
 
-    if(!pendiente) {
-      return res.status(404).json({ error: 'Usuario no encontrado' })
+    if (!pendiente) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    if(pendiente.codigo !== codigo) {
-      return res.status(400).json({ error: 'Código incorrecto' })
+    if (pendiente.codigo !== codigo) {
+      return res.status(400).json({ error: "Código incorrecto" });
     }
 
-    if(new Date() > pendiente.expiracion) {
-      await prisma.verificacionPendiente.delete({ where: { email } })
-      return res.status(400).json({ error: 'Código expirado' })
+    if (new Date() > pendiente.expiracion) {
+      await prisma.verificacionPendiente.delete({ where: { email } });
+      return res.status(400).json({ error: "Código expirado" });
     }
 
     const nuevo = await prisma.user.create({
@@ -31,22 +31,29 @@ export const verificarCodigo = async (req, res) => {
         telefono: pendiente.telefono,
         password: pendiente.password,
         verificado: true,
-      }
-    })
-    
+        activo: pendiente.rol === "emprendedora" ? false : true, 
+        rol: pendiente.rol || "usuario",
+        foto_documento: pendiente.foto_documento || null,
+      },
+    });
+
     const token = jwt.sign(
-      { id: nuevo.id, email: nuevo.email, rol: nuevo.rol, nombre: nuevo.nombre },
+      {
+        id: nuevo.id,
+        email: nuevo.email,
+        rol: nuevo.rol,
+        nombre: nuevo.nombre,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    )
+      { expiresIn: "7d" },
+    );
 
-    await prisma.verificacionPendiente.delete({ where: { email } })
+    await prisma.verificacionPendiente.delete({ where: { email } });
 
-    return res.json({ message: 'Cuenta verificada con éxito', token })
-
-  } catch(error) {
-    console.log('ERROR COMPLETO:', error.message)
-    console.log('ERROR CODE:', error.code)
-    return res.status(500).json({ error: error.message })
+    return res.json({ message: "Cuenta verificada con éxito", token });
+  } catch (error) {
+    console.log("ERROR COMPLETO:", error.message);
+    console.log("ERROR CODE:", error.code);
+    return res.status(500).json({ error: error.message });
   }
-}
+};

@@ -23,10 +23,11 @@ model User {
    auditorias   Auditoria[]
    pedidos   Pedido[]
 
-   alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
-alianzasParticipante AlianzaParticipante[]
-cupones Cupon[]
-comentarios Comentario[]
+  alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
+  alianzasParticipante AlianzaParticipante[]
+  cupones Cupon[]
+  comentarios Comentario[]
+  foto_documento String?
 }
 
 model VerificacionPendiente {
@@ -36,6 +37,8 @@ model VerificacionPendiente {
   password   String
   codigo     String
   expiracion DateTime
+  rol        String   @default("usuario")   
+  foto_documento String?  
 }
 
 model Emprendedora {
@@ -84,6 +87,7 @@ model Producto {
   comentarios Comentario[]
 
   destacado Boolean @default(false)
+  visible   Boolean @default(true)
 
   @@map("producto")
 }

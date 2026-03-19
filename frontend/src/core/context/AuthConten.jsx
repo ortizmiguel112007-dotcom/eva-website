@@ -21,6 +21,12 @@ export const AuthProvider = ({ children }) => {
     return saved ? Number(saved) : null;
   });
 
+  // ⬅️ aquí, al mismo nivel que idSeccion
+  const [idEmprendedora, setIdEmprendedora] = useState(() => {
+    const saved = localStorage.getItem("id_emprendedora");
+    return saved ? Number(saved) : null;
+  });
+
   useEffect(() => {
     const t = localStorage.getItem("token");
     const seccion = localStorage.getItem("id_seccion");
@@ -36,13 +42,13 @@ export const AuthProvider = ({ children }) => {
       if (decoded.rol !== "emprendedora") return;
       const res = await axios.get(
         "http://localhost:3000/api/emprendedora/mi-seccion",
-        {
-          headers: { Authorization: `Bearer ${t}` },
-        },
+        { headers: { Authorization: `Bearer ${t}` } }
       );
-      const { id_seccion } = res.data;
+      const { id_seccion, id_emprendedora } = res.data;
       localStorage.setItem("id_seccion", id_seccion);
+      localStorage.setItem("id_emprendedora", id_emprendedora);
       setIdSeccion(id_seccion);
+      setIdEmprendedora(id_emprendedora);
     } catch (error) {
       console.error("No se pudo cargar la sección:", error);
     }
@@ -58,13 +64,15 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("id_seccion");
+    localStorage.removeItem("id_emprendedora");
     setUser(null);
     setToken(null);
     setIdSeccion(null);
+    setIdEmprendedora(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, idSeccion }}>
+    <AuthContext.Provider value={{ user, token, login, logout, idSeccion, idEmprendedora }}>
       {children}
     </AuthContext.Provider>
   );

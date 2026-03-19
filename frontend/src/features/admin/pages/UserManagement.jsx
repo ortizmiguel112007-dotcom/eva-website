@@ -12,8 +12,8 @@ function UserManagement() {
   const [filtro, setFiltro]               = useState("Todos");
   const [toast, setToast]                 = useState(null);
   const [modalData, setModalData]         = useState(null);
+  const [fotoModal, setFotoModal]         = useState(null);
 
-  // ── cargar usuarios del backend ──────────────────────────────────────────
   useEffect(() => {
     const cargar = async () => {
       try {
@@ -34,9 +34,7 @@ function UserManagement() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const confirmarAccion = (usuario, tipo) => {
-    setModalData({ usuario, tipo });
-  };
+  const confirmarAccion = (usuario, tipo) => setModalData({ usuario, tipo });
 
   const ejecutarAccion = async () => {
     if (!modalData) return;
@@ -46,45 +44,44 @@ function UserManagement() {
     setModalData(null);
   };
 
-  // ── activar / desactivar ─────────────────────────────────────────────────
   const toggleActivo = async (id) => {
     try {
       const res = await adminService.toggleEstado(id);
-      setListaUsuarios((prev) =>
-        prev.map((u) => u.id === id ? { ...u, activo: res.usuario.activo } : u)
+      setListaUsuarios(prev =>
+        prev.map(u => u.id === id ? { ...u, activo: res.usuario.activo } : u)
       );
       mostrarToast(res.message);
     } catch (err) {
       mostrarToast("Error al cambiar estado");
-      console.error(err);
     }
   };
 
-  // ── aprobar emprendedora ─────────────────────────────────────────────────
   const aprobar = async (id) => {
     try {
       const res = await adminService.aprobarEmprendedora(id);
-      setListaUsuarios((prev) =>
-        prev.map((u) => u.id === id ? { ...u, rol: "emprendedora", emprendedora: res.emprendedora } : u)
+      setListaUsuarios(prev =>
+        prev.map(u => u.id === id ? { ...u, rol: "emprendedora", activo: true, emprendedora: res.emprendedora } : u)
       );
       mostrarToast("Emprendedora aprobada correctamente");
     } catch (err) {
       mostrarToast(err.response?.data?.error || "Error al aprobar");
-      console.error(err);
     }
   };
 
-  // ── filtrado ─────────────────────────────────────────────────────────────
-  const usuariosFiltrados = listaUsuarios.filter((u) => {
+  // emprendedora pendiente de aprobación: rol emprendedora, activo=false, tiene foto
+  const esPendienteAprobacion = (u) =>
+    u.rol === "emprendedora" && !u.activo && u.foto_documento;
+
+  const usuariosFiltrados = listaUsuarios.filter(u => {
     const coincideBusqueda =
       u.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
       u.email.toLowerCase().includes(busqueda.toLowerCase());
 
     const coincideFiltro =
       filtro === "Todos"       ? true :
-      filtro === "Desactivado" ? !u.activo :
-      filtro === "Pendiente"   ? u.activo && !u.emprendedora && u.rol !== "admin" :
-      filtro === "Aprobado"    ? !!u.emprendedora : true;
+      filtro === "Desactivado" ? !u.activo && !esPendienteAprobacion(u) :
+      filtro === "Pendiente"   ? esPendienteAprobacion(u) :
+      filtro === "Aprobado"    ? u.activo && u.rol === "emprendedora" : true;
 
     return coincideBusqueda && coincideFiltro;
   });
@@ -97,7 +94,7 @@ function UserManagement() {
 
       {toast && <div className="toast">{toast}</div>}
 
-      <h2>Gestión de Usuarios</h2>
+    <h2>Gestión de Emprendedoras</h2>
 
       <div className="filtros-container">
         <div className="input-group">
@@ -105,19 +102,18 @@ function UserManagement() {
             type="text"
             placeholder="Buscar por nombre o email..."
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={e => setBusqueda(e.target.value)}
             className="input-buscador"
           />
         </div>
-
         <div className="select-group">
           <select
             value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
+            onChange={e => setFiltro(e.target.value)}
             className="select-filtro"
           >
             <option value="Todos">Todos</option>
-            <option value="Pendiente">Pendiente</option>
+            <option value="Pendiente">Pendiente aprobación</option>
             <option value="Aprobado">Aprobado</option>
             <option value="Desactivado">Desactivado</option>
           </select>
@@ -131,13 +127,13 @@ function UserManagement() {
             <th>Email</th>
             <th>Estado</th>
             <th>Rol</th>
+            <th>Documento</th>
             <th>Acciones</th>
           </tr>
         </thead>
-
         <tbody>
-          {usuariosFiltrados.map((u) => {
-            const esPendiente = u.activo && !u.emprendedora && u.rol !== "administrador";
+          {usuariosFiltrados.map(u => {
+            const pendiente = esPendienteAprobacion(u);
             return (
               <tr key={u.id}>
                 <td>{u.nombre}</td>
@@ -145,18 +141,34 @@ function UserManagement() {
 
                 <td>
                   <span className={
-                    !u.activo          ? "badge badge-desactivado" :
-                    esPendiente        ? "badge badge-pendiente"   :
-                                         "badge badge-aprobado"
+                    pendiente  ? "badge badge-pendiente"   :
+                    !u.activo  ? "badge badge-desactivado" :
+                                 "badge badge-aprobado"
                   }>
-                    {!u.activo ? "Desactivado" : esPendiente ? "Pendiente" : "Aprobado"}
+                    {pendiente  ? "Pendiente" :
+                     !u.activo  ? "Desactivado"  :
+                                  "Aprobado"}
                   </span>
                 </td>
 
                 <td>{u.rol}</td>
 
                 <td>
-                  {esPendiente && (
+                  {u.foto_documento ? (
+                    <button
+                      className="btn"
+                      style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                      onClick={() => setFotoModal(u)}
+                    >
+                      Ver documento
+                    </button>
+                  ) : (
+                    <span style={{ color: '#9ca3af', fontSize: '0.78rem' }}>—</span>
+                  )}
+                </td>
+
+                <td>
+                  {pendiente && (
                     <button
                       className="btn btn-success"
                       onClick={() => confirmarAccion(u, "aprobar")}
@@ -164,7 +176,6 @@ function UserManagement() {
                       Aprobar
                     </button>
                   )}
-
                   <button
                     className={u.activo ? "btn btn-danger" : "btn btn-success"}
                     onClick={() => confirmarAccion(u, "toggle")}
@@ -178,6 +189,7 @@ function UserManagement() {
         </tbody>
       </table>
 
+      {/* Modal confirmar acción */}
       {modalData && (
         <div className="modal-overlay">
           <div className="modal">
@@ -187,8 +199,20 @@ function UserManagement() {
               {modalData.tipo === "toggle"
                 ? modalData.usuario.activo ? "desactivar" : "activar"
                 : "aprobar"}{" "}
-              la cuenta de {modalData.usuario.nombre}?
+              la cuenta de <strong>{modalData.usuario.nombre}</strong>?
             </p>
+            {modalData.tipo === "aprobar" && modalData.usuario.foto_documento && (
+              <div style={{ marginTop: '0.75rem' }}>
+                <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                  Documento de identidad:
+                </p>
+                <img
+                  src={modalData.usuario.foto_documento}
+                  alt="Documento"
+                  style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}
+                />
+              </div>
+            )}
             <div className="modal-buttons">
               <button className="btn btn-danger" onClick={ejecutarAccion}>
                 Confirmar
@@ -200,6 +224,34 @@ function UserManagement() {
           </div>
         </div>
       )}
+
+      {/* Modal ver foto documento */}
+      {fotoModal && (
+        <div className="modal-overlay" onClick={() => setFotoModal(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <h3>Documento de {fotoModal.nombre}</h3>
+            <img
+              src={fotoModal.foto_documento}
+              alt="Documento"
+              style={{ width: '100%', borderRadius: '0.5rem', border: '1px solid #e5e7eb', marginTop: '0.75rem' }}
+            />
+            <div className="modal-buttons" style={{ marginTop: '1rem' }}>
+              <button className="btn" onClick={() => setFotoModal(null)}>
+                Cerrar
+              </button>
+              {esPendienteAprobacion(fotoModal) && (
+                <button
+                  className="btn btn-success"
+                  onClick={() => { confirmarAccion(fotoModal, "aprobar"); setFotoModal(null); }}
+                >
+                  Aprobar emprendedora
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

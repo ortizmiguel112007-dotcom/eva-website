@@ -107,6 +107,43 @@ export const obtenerItemPorId = async (req, res) => {
   }
 };
 
+// GET público — productos visibles de una emprendedora
+export const obtenerProductosPublicos = async (req, res) => {
+  try {
+    const id_emprendedora = Number(req.params.id_emprendedora)
+    const productos = await prisma.producto.findMany({
+      where: {
+        seccion: { id_emprendedora },
+        estado_producto: "activo",
+        visible: true,
+      },
+      orderBy: { nombre_producto: "asc" },
+    })
+    res.json(productos)
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener productos" })
+  }
+}
+
+// PATCH — toggle visible
+export const toggleVisible = async (req, res) => {
+  try {
+    const id_producto = Number(req.params.id)
+    const producto = await prisma.producto.findUnique({
+      where: { id_producto }
+    })
+    if (!producto) return res.status(404).json({ error: "Producto no encontrado" })
+
+    const actualizado = await prisma.producto.update({
+      where: { id_producto },
+      data: { visible: !producto.visible }
+    })
+    res.json({ visible: actualizado.visible })
+  } catch (error) {
+    res.status(500).json({ error: "Error al cambiar visibilidad" })
+  }
+}
+
 export const actualizarItem = async (req, res) => {
   console.log("=== ACTUALIZAR ITEM ===");
   console.log("FILE:", req.file);
@@ -171,11 +208,15 @@ export const eliminarItem = async (req, res) => {
   try {
     const id = Number(req.params.id);
 
-    await prisma.producto.delete({
-      where: {
-        id_producto: id,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      // Eliminar relaciones primero
+      await tx.inventario.deleteMany({ where: { id_producto: id } })
+      await tx.comentario.deleteMany({ where: { id_producto: id } })
+      await tx.detallePedido.deleteMany({ where: { id_producto: id } })
+
+      // Luego eliminar el producto
+      await tx.producto.delete({ where: { id_producto: id } })
+    })
 
     res.json({ message: "Producto eliminado correctamente" });
   } catch (error) {

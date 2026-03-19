@@ -31,6 +31,16 @@ export const itemService = {
   return res.data
 },
 
+async toggleVisible(id) {
+  const token = localStorage.getItem("token")
+  const res = await axios.patch(`${BASE_URL}/${id}/visible`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return res.data
+},
+
  async eliminar(id) {
   const token = localStorage.getItem("token")
 

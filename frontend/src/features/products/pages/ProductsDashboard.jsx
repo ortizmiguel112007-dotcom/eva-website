@@ -49,9 +49,9 @@ export default function ProductsDashboard() {
             : null,
           type: item.tipo || "producto",
           category: item.categoria,
-          visible: item.estado_producto === "activo",
-          descripcion: item.descripcion,   
-          duracion:    item.duracion,
+          visible: item.visible ?? true,
+          descripcion: item.descripcion,
+          duracion: item.duracion,
         }));
         setItems(normalized);
       } catch (err) {
@@ -80,12 +80,10 @@ export default function ProductsDashboard() {
     const item = items.find((i) => i.id === id);
     if (!item) return;
 
-    const nuevoEstado = item.visible ? "inactivo" : "activo";
-
     try {
-      await itemService.actualizar(id, { estado_producto: nuevoEstado });
+      const res = await itemService.toggleVisible(id); // ⬅️ nuevo método
       setItems((prev) =>
-        prev.map((i) => (i.id === id ? { ...i, visible: !i.visible } : i)),
+        prev.map((i) => (i.id === id ? { ...i, visible: res.visible } : i)),
       );
     } catch (err) {
       console.error("Error al cambiar visibilidad:", err);

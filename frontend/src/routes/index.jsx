@@ -13,7 +13,8 @@ import { authRoutes, CrudAyuda } from "@/features/auth/router";
 import { ProductosRoutes } from "@/features/products/router";
 import PrivateRoute from "./PrivateRoute";
 import { AdminRoutes } from "@/features/admin/router";
-
+import { TiendaRoutes } from "@/features/tienda/router"
+export { FaBoxOpen, FaShoppingBag, FaStore, FaPlus, FaTimes } from "react-icons/fa"
 // Componente que define las rutas de la aplicación.
 const AppRouter = () => {
     return(
@@ -36,6 +37,7 @@ const AppRouter = () => {
                 {AdminRoutes}
                 {CrudAyuda}
             </Route>
+            {TiendaRoutes}
         </Routes>
     )
 }

@@ -11,4 +11,14 @@ const storage = new CloudinaryStorage({
   },
 })
 
-export const upload = multer({ storage })
+const storageDocumentos = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder:          'eva-documentos',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
+    transformation:  [{ width: 1200, crop: 'limit' }],
+  },
+})
+
+export const upload = multer({ storage })                        // ← productos
+export const uploadDocumento = multer({ storage: storageDocumentos }) // ← documentos

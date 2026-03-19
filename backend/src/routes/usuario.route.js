@@ -3,9 +3,10 @@ import { CreaterDate,obtenerPerfil, actualizarPerfil } from '../controllers/usua
 import { verificarCodigo } from '../controllers/verificar.codigo.js'
 import { Login } from '../controllers/usuario.controller.js'
 import { verificarToken } from '../middleware/auth.middleware.js'
+import { uploadDocumento } from '../middleware/upload.middleware.js'
 
 const router = Router()
-router.post('/registro', CreaterDate)
+router.post('/registro', uploadDocumento.single('foto_documento'), CreaterDate)
 router.post('/verificar', verificarCodigo)
 router.post('/login', Login)
 router.get('/api/perfil', verificarToken, obtenerPerfil)
