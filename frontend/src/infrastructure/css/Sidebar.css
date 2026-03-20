@@ -1,5 +1,6 @@
 :root {
   --bg-dark: #160218;
+  --bg-white:#ffff;
   --bg-mid: #2b0f27;
   --accent: #29b1ff;
   --accent-glow: rgba(36, 79, 128, 0.14);
@@ -209,7 +210,7 @@
   border-radius: 0.6rem;
   border: 1px solid var(--border);
   background-color: var(--bg-mid);
-  color: var(--text);
+  color: var(--bg-dark);
   font-size: 0.9rem;
   outline: none;
   transition:
@@ -234,6 +235,11 @@
 .search-container:focus-within .search-icon {
   color: var(--accent);
 }
+
+.inventario-search::placeholder {
+  color: #000000 !important;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════
    SCROLL AREA
@@ -871,6 +877,56 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* Section labels */
+.aside-section-label {
+  padding: 1rem 0.75rem 0.3rem;
+  list-style: none;
+}
+.aside-section-label span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Avatar con iniciales */
+.aside-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.aside-avatar span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Info usuario */
+.aside-user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.aside-user-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aside-user-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 /* ═══════════════════════════════════════════════════════════════

@@ -1,3 +1,8 @@
+/* ═══════════════════════════════════════════════════════════════
+   PRODUCT CARD — diseño Figma con imagen grande, badge overlay,
+   precio destacado, acciones en hover
+═══════════════════════════════════════════════════════════════ */
+
 :root {
   --color-navbar:        #0f1f3a;
   --color-sidebar:       #0b1830;
@@ -10,203 +15,274 @@
   --color-bg-main:       #f8f9fc;
   --color-bg-hover:      #1f2f4d;
   --color-border:        #e5e7eb;
- 
+
   --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  16px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
   --shadow-sm:  0 1px 3px rgba(0,0,0,.07);
-  --shadow-md:  0 4px 16px rgba(15,31,58,.10);
-  --shadow-lg:  0 8px 32px rgba(15,31,58,.14);
-  --transition: 180ms ease;
+  --shadow-md:  0 4px 20px rgba(15,31,58,.10);
+  --shadow-lg:  0 12px 40px rgba(15,31,58,.16);
+  --transition: 200ms ease;
 }
- 
-/* ─── Card ───────────────────────────────────────────────── */
+
+/* ── Card ── */
 .product-card {
   background: #ffffff;
   border-radius: var(--radius-lg);
-  padding: 14px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   display: flex;
   flex-direction: column;
   transition: transform var(--transition), box-shadow var(--transition);
   position: relative;
   overflow: hidden;
 }
- 
+
 .product-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
 }
- 
-/* ─── Imagen ─────────────────────────────────────────────── */
-.product-card img {
+
+/* ── Imagen container ── */
+.product-card-img-wrapper {
+  position: relative;
   width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  margin-bottom: 14px;
-  background: var(--color-bg-main);
+  height: 200px;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
- 
-/* placeholder si no hay imagen */
-.product-card .img-placeholder {
+
+.product-card-img-wrapper img {
   width: 100%;
-  height: 180px;
-  border-radius: var(--radius-md);
-  margin-bottom: 14px;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-card-img-wrapper img {
+  transform: scale(1.04);
+}
+
+.product-card-img-wrapper .img-placeholder {
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, #e8eef7 0%, #dce6f5 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #94a3b8;
-  font-size: 2rem;
-}
- 
-/* ─── Tipo (producto / servicio) ─────────────────────────── */
-.type-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: .68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  padding: 3px 10px;
-  border-radius: 999px;
-  margin-bottom: 6px;
-  width: fit-content;
+  font-size: 2.5rem;
 }
 
-.type-badge::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
+/* ── Badge tipo sobre imagen ── */
+.type-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .type-badge.producto {
-  background: #eff6ff;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
 }
-.type-badge.producto::before { background: var(--color-primary); }
 
 .type-badge.servicio {
-  background: #f0fdf4;
-  color: #16a34a;
+  background: #16a34a;
+  color: #ffffff;
 }
-.type-badge.servicio::before { background: #22c55e; }
- 
-/* ─── Nombre ─────────────────────────────────────────────── */
+
+/* ── Acciones overlay en hover ── */
+.actions {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 3;
+}
+
+.product-card:hover .actions {
+  opacity: 1;
+}
+
+.actions button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+  backdrop-filter: blur(4px);
+}
+
+.actions button:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.actions button.danger:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* ── Etiqueta OCULTO ── */
+.hidden-label {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  z-index: 4;
+}
+
+/* ── Card body ── */
+.product-card-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+/* ── Nombre ── */
 .product-card h4 {
-  font-family: 'Syne', sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-navbar);
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   line-height: 1.3;
   letter-spacing: -.2px;
 }
- 
-/* ─── Categoría ──────────────────────────────────────────── */
+
+/* ── Categoría ── */
 .product-card .category {
   font-size: .78rem;
   color: #94a3b8;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   font-weight: 500;
 }
- 
-/* ─── Precio ─────────────────────────────────────────────── */
-.product-card .price {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-navbar);
-  margin: 0 0 12px;
-  letter-spacing: -.3px;
+
+/* ── Descripción ── */
+.product-card .description {
+  font-size: .82rem;
+  color: #6b7280;
+  line-height: 1.45;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
- 
-/* ─── Badge ──────────────────────────────────────────────── */
+
+/* ── Duración (solo servicios) ── */
+.product-card .duracion {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+
+/* ── Precio + estado row ── */
+.product-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  gap: 0.5rem;
+}
+
+.price-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: #eff6ff;
+  border-radius: var(--radius-md);
+  padding: 6px 12px;
+}
+
+.price-box .price-label {
+  font-size: .68rem;
+  font-weight: 600;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.price-box .price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -.3px;
+  margin: 0;
+}
+
+/* ── Badge activo/inactivo ── */
 .badge {
   display: inline-flex;
   align-items: center;
   font-size: .72rem;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 999px;
   letter-spacing: .02em;
 }
- 
-.badge.warning {
-  background: #fef3c7;
-  color: #b45309;
-}
- 
+
+.badge.activo,
 .badge.success {
   background: #dcfce7;
   color: #15803d;
 }
- 
-/* ─── Acciones ───────────────────────────────────────────── */
-.actions {
-  display: flex;
-  gap: 4px;
-  margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+
+.badge.inactivo,
+.badge.warning {
+  background: #fef3c7;
+  color: #b45309;
 }
- 
-.actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #94a3b8;
-  padding: 7px 9px;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition), color var(--transition), transform var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+/* ── Card oculta ── */
+.product-card.hidden-card {
+  opacity: 0.55;
+  filter: grayscale(70%);
 }
- 
-.actions button:hover {
-  background: #eff6ff;
-  color: var(--color-primary);
-  transform: scale(1.1);
-}
- 
-.actions button.danger:hover {
-  background: #fee2e2;
-  color: #ef4444;
-}
- 
-/* ─── Producto oculto ────────────────────────────────────── */
-.product-card.hidden,
-.hidden-card {
-  opacity: 0.5;
-  filter: grayscale(80%);
-}
- 
-.product-card.hidden:hover {
+
+.product-card.hidden-card:hover {
   transform: none;
   box-shadow: var(--shadow-md);
 }
- 
-/* ─── Etiqueta OCULTO ────────────────────────────────────── */
-.hidden-label {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #ef4444;
-  color: var(--color-text-light);
-  font-size: .68rem;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: var(--radius-sm);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
- 

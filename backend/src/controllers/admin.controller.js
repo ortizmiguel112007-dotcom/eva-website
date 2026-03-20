@@ -4,7 +4,7 @@ import prisma from "../conexion.js";
 export const GetUsuarios = async (req, res) => {
   try {
     const usuarios = await prisma.user.findMany({
-      where: { rol: { not: "admin" } },
+      where: { rol: "emprendedora" },
       select: {
         id: true,
         nombre: true,
@@ -14,6 +14,7 @@ export const GetUsuarios = async (req, res) => {
         verificado: true,
         activo: true,
         emprendedora: { select: { id_emprendedora: true } },
+        foto_documento: true,
       },
       orderBy: { id: "asc" },
     });
@@ -164,12 +165,30 @@ export const aprobarEmprendedora = async (req, res) => {
 
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
-    if (usuario.emprendedora)
-      return res.status(400).json({ error: "Ya es emprendedora" });
 
-    const resultado = await prisma.$transaction(async (tx) => {
+    if (usuario.emprendedora) {
+      // Ya tiene registro — solo activar
+      await prisma.user.update({
+        where: { id },
+        data: { activo: true },
+      });
+      return res.json({ message: "Emprendedora activada correctamente" });
+    }
+
+    // No tiene registro — crear todo
+    await prisma.$transaction(async (tx) => {
       const emprendedora = await tx.emprendedora.create({
         data: { id_usuario: id, estado: true },
+      });
+      await tx.seccion.create({
+        data: {
+          id_emprendedora: emprendedora.id_emprendedora,
+          nombre_seccion: "Mi tienda",
+        },
+      });
+      await tx.user.update({
+        where: { id },
+        data: { activo: true },
       });
       await tx.auditoria.create({
         data: {
@@ -181,26 +200,9 @@ export const aprobarEmprendedora = async (req, res) => {
           detalles: `Emprendedora aprobada: ${usuario.nombre}`,
         },
       });
-
-      await tx.seccion.create({
-        data: {
-          id_emprendedora: emprendedora.id_emprendedora,
-          nombre_seccion: "Mi tienda",
-        },
-      });
-
-      await tx.user.update({
-        where: { id },
-        data: { rol: "emprendedora" },
-      });
-
-      return emprendedora;
     });
 
-    res.json({
-      message: "Emprendedora aprobada correctamente",
-      emprendedora: resultado,
-    });
+    res.json({ message: "Emprendedora aprobada correctamente" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al aprobar emprendedora" });
@@ -210,60 +212,64 @@ export const aprobarEmprendedora = async (req, res) => {
 // PUT /admin/usuarios/:id/rol — cambiar rol
 export const cambiarRol = async (req, res) => {
   try {
-    const id = Number(req.params.id)
-    const { rol } = req.body
+    const id = Number(req.params.id);
+    const { rol } = req.body;
 
-    const rolesValidos = ["usuario", "emprendedora", "administrador"]
+    const rolesValidos = ["usuario", "emprendedora", "administrador"];
     if (!rolesValidos.includes(rol)) {
-      return res.status(400).json({ error: "Rol inválido" })
+      return res.status(400).json({ error: "Rol inválido" });
     }
 
-    const usuario = await prisma.user.findUnique({ where: { id } })
-    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" })
+    const usuario = await prisma.user.findUnique({ where: { id } });
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
 
     const actualizado = await prisma.user.update({
       where: { id },
-      data: { rol }
-    })
+      data: { rol },
+    });
 
-    await prisma.auditoria.create({       // ← agrega esto
+    await prisma.auditoria.create({
+      // ← agrega esto
       data: {
         id_usuario_accion: req.user.id,
-        id_registro:       id,
-        tabla_afectada:    'usuario',
-        accion:            'CAMBIO_ROL',
-        fecha:             new Date(),
-        detalles:          `Rol cambiado de ${usuario.rol} a ${rol}: ${usuario.nombre}`
-      }
-    })
+        id_registro: id,
+        tabla_afectada: "usuario",
+        accion: "CAMBIO_ROL",
+        fecha: new Date(),
+        detalles: `Rol cambiado de ${usuario.rol} a ${rol}: ${usuario.nombre}`,
+      },
+    });
 
-    res.json({ message: "Rol actualizado", usuario: actualizado })
+    res.json({ message: "Rol actualizado", usuario: actualizado });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Error al cambiar rol" })
+    console.error(error);
+    res.status(500).json({ error: "Error al cambiar rol" });
   }
-}
+};
 
+// GET /admin/auditoria — ver historial
 // GET /admin/auditoria — ver historial
 export const listarAuditoria = async (req, res) => {
   try {
     const registros = await prisma.auditoria.findMany({
       orderBy: { fecha: "desc" },
       include: {
-        usuario: { select: { nombre: true, email: true } }
-      }
-    })
-    res.json(registros)
+        usuario: { select: { nombre: true, email: true } },
+      },
+    });
+    res.json(registros);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: "Error al obtener auditoría" })
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener auditoría" });
   }
-}
+};
+// ← aquí termina, nada más abajo
 
 // GET /admin/auditoria — ver historial
 const registros = await prisma.auditoria.findMany({
   orderBy: { fecha: "desc" },
   include: {
-    usuario: { select: { nombre: true, email: true } }  // agrega esto
-  }
-})
+    usuario: { select: { nombre: true, email: true } }, // agrega esto
+  },
+});

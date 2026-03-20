@@ -1,0 +1,443 @@
+/* ═══════════════════════════════════════════════════════════════
+   PEDIDOS — diseño Figma con columnas coloridas y tarjetas modernas
+═══════════════════════════════════════════════════════════════ */
+
+.pedidos-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--color-bg-main);
+  color: var(--color-text-dark);
+}
+
+/* ── Header ── */
+.pedidos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pedidos-header h1 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-navbar);
+  letter-spacing: -.3px;
+}
+
+.pedidos-search {
+  padding: 0.55rem 1rem 0.55rem 2.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 0.75rem center;
+  background-size: 16px;
+  color: var(--color-text-dark);
+  font-size: 0.88rem;
+  width: 300px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pedidos-search::placeholder { color: #9ca3af; }
+.pedidos-search:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+/* ── Filtros pills ── */
+.pedidos-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
+}
+
+.pedidos-filtro-pill {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pedidos-filtro-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: #eff6ff;
+}
+
+.pedidos-filtro-pill.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+}
+
+.pedidos-filtro-pill.active.enviado   { background: #7c3aed; border-color: #7c3aed; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+.pedidos-filtro-pill.active.entregado { background: #059669; border-color: #059669; box-shadow: 0 2px 8px rgba(5,150,105,0.3); }
+.pedidos-filtro-pill.active.cancelado { background: #ef4444; border-color: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.3); }
+
+.pedidos-filtro-separador {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border);
+  margin: 0 0.25rem;
+}
+
+/* ── Métricas ── */
+.pedidos-metricas {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.pedidos-metrica {
+  flex: 1;
+  min-width: 110px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.pedidos-metrica h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-text-dark);
+}
+
+.pedidos-metrica span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.pedidos-metrica.en_proceso  { background: #eff6ff; border-color: #bfdbfe; }
+.pedidos-metrica.en_proceso h3 { color: var(--color-primary); }
+.pedidos-metrica.en_proceso span { color: var(--color-primary); }
+
+.pedidos-metrica.enviado     { background: #f5f3ff; border-color: #ddd6fe; }
+.pedidos-metrica.enviado h3  { color: #7c3aed; }
+.pedidos-metrica.enviado span { color: #7c3aed; }
+
+.pedidos-metrica.entregado   { background: #f0fdf4; border-color: #bbf7d0; }
+.pedidos-metrica.entregado h3 { color: #059669; }
+.pedidos-metrica.entregado span { color: #059669; }
+
+.pedidos-metrica.cancelado   { background: #fef2f2; border-color: #fecaca; }
+.pedidos-metrica.cancelado h3 { color: #ef4444; }
+.pedidos-metrica.cancelado span { color: #ef4444; }
+
+/* ── Kanban board ── */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+/* ── Columna ── */
+.kanban-col {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.kanban-col-header {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.kanban-col-header.en_proceso { background: var(--color-primary); }
+.kanban-col-header.enviado    { background: #7c3aed; }
+.kanban-col-header.entregado  { background: #059669; }
+.kanban-col-header.cancelado  { background: #ef4444; }
+
+.kanban-col-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+}
+
+.kanban-col-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.75);
+  text-align: center;
+}
+
+.kanban-col-body {
+  background: #f1f5f9;
+  flex: 1;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Tarjeta pedido ── */
+.pedido-card {
+  background: #ffffff;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.pedido-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+/* Header tarjeta */
+.pedido-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pedido-num {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-navbar);
+}
+
+.pedido-fecha {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+/* Cliente con avatar */
+.pedido-cliente-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pedido-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.pedido-avatar.en_proceso { background: var(--color-primary); }
+.pedido-avatar.enviado    { background: #7c3aed; }
+.pedido-avatar.entregado  { background: #059669; }
+.pedido-avatar.cancelado  { background: #ef4444; }
+
+.pedido-cliente {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.pedido-cliente-email {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+/* Productos */
+.pedido-productos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pedido-producto-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #374151;
+}
+
+.pedido-producto-img {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.pedido-producto-sin-img {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.pedido-producto-nombre {
+  flex: 1;
+  font-weight: 500;
+}
+
+.pedido-producto-cant {
+  font-size: 0.72rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* Total */
+.pedido-total-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pedido-total-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.pedido-total {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -.3px;
+}
+
+/* Método de pago */
+.pedido-metodo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: #059669;
+  color: #ffffff;
+  width: fit-content;
+}
+
+/* Botón cambiar estado */
+.pedido-cambiar-wrapper {
+  position: relative;
+}
+
+.pedido-cambiar-btn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: opacity 0.2s;
+}
+
+.pedido-cambiar-btn:hover { opacity: 0.88; }
+
+.pedido-cambiar-btn.en_proceso { background: var(--color-primary); }
+.pedido-cambiar-btn.enviado    { background: #7c3aed; }
+.pedido-cambiar-btn.entregado  { background: #059669; }
+.pedido-cambiar-btn.cancelado  { background: #ef4444; }
+
+.pedido-cambiar-dropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.pedido-cambiar-option {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pedido-cambiar-option:hover { background: #f8fafc; }
+.pedido-cambiar-option.en_proceso { color: var(--color-primary); }
+.pedido-cambiar-option.enviado    { color: #7c3aed; }
+.pedido-cambiar-option.entregado  { color: #059669; }
+.pedido-cambiar-option.cancelado  { color: #ef4444; }
+
+/* ── Empty ── */
+.kanban-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #9ca3af;
+  font-size: 0.82rem;
+}
+
+/* ── Toast ── */
+.pedidos-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #059669;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .kanban-board { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .pedidos-container { padding: 1rem; }
+  .kanban-board { grid-template-columns: 1fr; }
+  .pedidos-search { width: 100%; }
+}
