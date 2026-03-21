@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import {
   FaUser,
@@ -9,129 +9,149 @@ import {
   FaEdit,
   FaPlus,
   FaTimes,
-} from '@/infrastructure/icons/index.js'
+} from "@/infrastructure/icons/index.js";
 
-import '@/infrastructure/css/CrudAdmin.css'
+import "@/infrastructure/css/CrudAdmin.css";
 
-const BASE_URL = 'http://localhost:3000/admin'
-const getToken = () => localStorage.getItem("token")
+const BASE_URL = "http://localhost:3000/admin";
+const getToken = () => localStorage.getItem("token");
 
-const EMPTY_FORM = { nombre: '', email: '', telefono: '', password: '' }
+const EMPTY_FORM = { nombre: "", email: "", telefono: "", password: "" };
 
 const CrudAdmin = () => {
-  const [usuarios, setUsuarios]     = useState([])
-  const [form, setForm]             = useState(EMPTY_FORM)
-  const [editandoId, setEditandoId] = useState(null)
-  const [modalAbierto, setModal]    = useState(false)
-  const [mensaje, setMensaje]       = useState({ texto: '', tipo: '' })
-  const [cargando, setCargando]     = useState(false)
-  const [confirmToggle, setConfirmToggle] = useState(null)
+  const [usuarios, setUsuarios] = useState([]);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [editandoId, setEditandoId] = useState(null);
+  const [modalAbierto, setModal] = useState(false);
+  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
+  const [cargando, setCargando] = useState(false);
+  const [confirmToggle, setConfirmToggle] = useState(null);
 
-  const headers = { Authorization: `Bearer ${getToken()}` }
+  const headers = { Authorization: `Bearer ${getToken()}` };
 
   // ─── Cargar usuarios ─────────────────────────────────────
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/usuarios`, { headers })
-      setUsuarios(res.data)
+      const res = await axios.get(`${BASE_URL}/usuarios`, { headers });
+      setUsuarios(res.data);
     } catch (error) {
-      mostrarMensaje('Error al cargar los usuarios', 'error')
+      mostrarMensaje("Error al cargar los usuarios", "error");
     }
-  }
+  };
 
-  useEffect(() => { cargarUsuarios() }, [])
+  useEffect(() => {
+    cargarUsuarios();
+  }, []);
 
   // ─── Helpers ─────────────────────────────────────────────
-  const mostrarMensaje = (texto, tipo = 'ok') => {
-    setMensaje({ texto, tipo })
-    setTimeout(() => setMensaje({ texto: '', tipo: '' }), 3500)
-  }
+  const mostrarMensaje = (texto, tipo = "ok") => {
+    setMensaje({ texto, tipo });
+    setTimeout(() => setMensaje({ texto: "", tipo: "" }), 3500);
+  };
 
   const abrirModalCrear = () => {
-    setForm(EMPTY_FORM)
-    setEditandoId(null)
-    setModal(true)
-  }
+    setForm(EMPTY_FORM);
+    setEditandoId(null);
+    setModal(true);
+  };
 
   const abrirModalEditar = (usuario) => {
     setForm({
-      nombre:   usuario.nombre   || '',
-      email:    usuario.email    || '',
-      telefono: usuario.telefono || '',
-      password: '',
-    })
-    setEditandoId(usuario.id)
-    setModal(true)
-  }
+      nombre: usuario.nombre || "",
+      email: usuario.email || "",
+      telefono: usuario.telefono || "",
+      password: "",
+    });
+    setEditandoId(usuario.id);
+    setModal(true);
+  };
 
   const cerrarModal = () => {
-    setModal(false)
-    setForm(EMPTY_FORM)
-    setEditandoId(null)
-  }
+    setModal(false);
+    setForm(EMPTY_FORM);
+    setEditandoId(null);
+  };
 
   const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   // ─── Crear usuario ────────────────────────────────────────
   const handleCrear = async (e) => {
-    e.preventDefault()
-    setCargando(true)
+    e.preventDefault();
+    setCargando(true);
     try {
-      await axios.post(`${BASE_URL}/usuarios`, form, { headers })
-      mostrarMensaje('Usuario creado correctamente')
-      cerrarModal()
-      cargarUsuarios()
+      await axios.post(`${BASE_URL}/usuarios`, form, { headers });
+      mostrarMensaje("Usuario creado correctamente");
+      cerrarModal();
+      cargarUsuarios();
     } catch (error) {
-      mostrarMensaje(error.response?.data?.error || 'Error al crear el usuario', 'error')
+      mostrarMensaje(
+        error.response?.data?.error || "Error al crear el usuario",
+        "error",
+      );
     } finally {
-      setCargando(false)
+      setCargando(false);
     }
-  }
+  };
 
   // ─── Actualizar usuario ───────────────────────────────────
   const handleActualizar = async (e) => {
-    e.preventDefault()
-    setCargando(true)
-    const payload = { nombre: form.nombre, email: form.email, telefono: form.telefono }
-    if (form.password) payload.password = form.password
+    e.preventDefault();
+    setCargando(true);
+    const payload = {
+      nombre: form.nombre,
+      email: form.email,
+      telefono: form.telefono,
+    };
+    if (form.password) payload.password = form.password;
     try {
-      await axios.put(`${BASE_URL}/usuarios/${editandoId}`, payload, { headers })
-      mostrarMensaje('Usuario actualizado correctamente')
-      cerrarModal()
-      cargarUsuarios()
+      await axios.put(`${BASE_URL}/usuarios/${editandoId}`, payload, {
+        headers,
+      });
+      mostrarMensaje("Usuario actualizado correctamente");
+      cerrarModal();
+      cargarUsuarios();
     } catch (error) {
-      mostrarMensaje(error.response?.data?.error || 'Error al actualizar el usuario', 'error')
+      mostrarMensaje(
+        error.response?.data?.error || "Error al actualizar el usuario",
+        "error",
+      );
     } finally {
-      setCargando(false)
+      setCargando(false);
     }
-  }
+  };
 
   // ─── Habilitar / Inhabilitar ──────────────────────────────
   const handleToggleEstado = async () => {
-    if (!confirmToggle) return
-    setCargando(true)
+    if (!confirmToggle) return;
+    setCargando(true);
     try {
-      await axios.patch(`${BASE_URL}/usuarios/${confirmToggle.id}/estado`, {}, { headers })
+      await axios.patch(
+        `${BASE_URL}/usuarios/${confirmToggle.id}/estado`,
+        {},
+        { headers },
+      );
       mostrarMensaje(
         confirmToggle.activo
           ? `Usuario "${confirmToggle.nombre}" inhabilitado`
-          : `Usuario "${confirmToggle.nombre}" habilitado`
-      )
-      setConfirmToggle(null)
-      cargarUsuarios()
+          : `Usuario "${confirmToggle.nombre}" habilitado`,
+      );
+      setConfirmToggle(null);
+      cargarUsuarios();
     } catch (error) {
-      mostrarMensaje(error.response?.data?.error || 'Error al cambiar el estado', 'error')
+      mostrarMensaje(
+        error.response?.data?.error || "Error al cambiar el estado",
+        "error",
+      );
     } finally {
-      setCargando(false)
+      setCargando(false);
     }
-  }
+  };
 
   // ─── Render ───────────────────────────────────────────────
   return (
     <section className="crud-admin">
-
       <div className="crud-header">
         <h1>Gestión de Usuarios</h1>
         <button className="btn-primary" onClick={abrirModalCrear}>
@@ -140,7 +160,9 @@ const CrudAdmin = () => {
       </div>
 
       {mensaje.texto && (
-        <div className={`crud-toast ${mensaje.tipo === 'error' ? 'toast-error' : 'toast-ok'}`}>
+        <div
+          className={`crud-toast ${mensaje.tipo === "error" ? "toast-error" : "toast-ok"}`}
+        >
           {mensaje.texto}
         </div>
       )}
@@ -160,29 +182,43 @@ const CrudAdmin = () => {
           <tbody>
             {usuarios.length === 0 ? (
               <tr>
-                <td colSpan={6} className="td-empty">No hay usuarios registrados</td>
+                <td colSpan={6} className="td-empty">
+                  No hay usuarios registrados
+                </td>
               </tr>
             ) : (
               usuarios.map((u, i) => (
-                <tr key={u.id} className={!u.activo ? 'row-inactivo' : ''}>
+                <tr key={u.id} className={!u.activo ? "row-inactivo" : ""}>
                   <td>{i + 1}</td>
                   <td>{u.nombre}</td>
                   <td>{u.email}</td>
-                  <td>{u.telefono || '—'}</td>
+                  <td>{u.telefono || "—"}</td>
                   <td>
-                    <span className={`badge-estado ${u.activo ? 'badge-activo' : 'badge-inactivo'}`}>
-                      {u.activo ? 'Activo' : 'Inactivo'}
+                    <span
+                      className={`badge-estado ${u.activo ? "badge-activo" : "badge-inactivo"}`}
+                    >
+                      {u.activo ? "Activo" : "Inactivo"}
                     </span>
                   </td>
                   <td className="td-actions">
-                    <button className="btn-icon btn-edit" title="Modificar usuario" onClick={() => abrirModalEditar(u)}>
+                    <button
+                      className="btn-icon btn-edit"
+                      title="Modificar usuario"
+                      onClick={() => abrirModalEditar(u)}
+                    >
                       <FaEdit />
                     </button>
                     <button
-                      className={`btn-toggle ${u.activo ? 'btn-inhabilitar' : 'btn-habilitar'}`}
-                      onClick={() => setConfirmToggle({ id: u.id, nombre: u.nombre, activo: u.activo })}
+                      className={`btn-toggle ${u.activo ? "btn-inhabilitar" : "btn-habilitar"}`}
+                      onClick={() =>
+                        setConfirmToggle({
+                          id: u.id,
+                          nombre: u.nombre,
+                          activo: u.activo,
+                        })
+                      }
                     >
-                      {u.activo ? 'Inhabilitar' : 'Habilitar'}
+                      {u.activo ? "Inhabilitar" : "Habilitar"}
                     </button>
                   </td>
                 </tr>
@@ -194,38 +230,95 @@ const CrudAdmin = () => {
 
       {modalAbierto && (
         <div className="modal-overlay" onClick={cerrarModal}>
-          <div className="modal-card" onClick={e => e.stopPropagation()}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editandoId ? 'Modificar usuario' : 'Nuevo usuario'}</h2>
-              <button className="btn-icon-close" onClick={cerrarModal}><FaTimes /></button>
+              <h2>{editandoId ? "Modificar usuario" : "Nuevo usuario"}</h2>
+              <button className="btn-icon-close" onClick={cerrarModal}>
+                <FaTimes />
+              </button>
             </div>
-            <form onSubmit={editandoId ? handleActualizar : handleCrear} className="modal-form">
+            <form
+              onSubmit={editandoId ? handleActualizar : handleCrear}
+              className="modal-form"
+            >
               <div className="modal-inputs">
                 <div className="modal-input-row">
                   <FaUser />
                   <label htmlFor="nombre">Nombre</label>
-                  <input id="nombre" name="nombre" placeholder="Ej: Juan Pérez" value={form.nombre} onChange={handleChange} required />
+                  <input
+                    id="nombre"
+                    name="nombre"
+                    placeholder="Ej: Juan Pérez"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="modal-input-row">
                   <MdEmail />
                   <label htmlFor="email">Correo</label>
-                  <input id="email" name="email" type="email" placeholder="Ej: juan@gmail.com" value={form.email} onChange={handleChange} required />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Ej: juan@gmail.com"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="modal-input-row">
                   <FaPhone />
                   <label htmlFor="telefono">Teléfono</label>
-                  <input id="telefono" name="telefono" type="tel" placeholder="Ej: 1030318920" value={form.telefono} onChange={handleChange} />
+                  <input
+                    id="telefono"
+                    name="telefono"
+                    type="tel"
+                    placeholder="Ej: 1030318920"
+                    value={form.telefono}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="modal-input-row">
                   <IoMdLock />
-                  <label htmlFor="password">{editandoId ? 'Nueva contraseña' : 'Contraseña'}</label>
-                  <input id="password" name="password" type="password" placeholder={editandoId ? 'Dejar vacío para no cambiar' : 'Mínimo 8 caracteres'} value={form.password} onChange={handleChange} required={!editandoId} />
+                  <label htmlFor="password">
+                    {editandoId ? "Nueva contraseña" : "Contraseña"}
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder={
+                      editandoId
+                        ? "Dejar vacío para no cambiar"
+                        : "Mínimo 8 caracteres"
+                    }
+                    value={form.password}
+                    onChange={handleChange}
+                    required={!editandoId}
+                  />
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn-secondary" onClick={cerrarModal}>Cancelar</button>
-                <button type="submit" className="btn-primary" disabled={cargando}>
-                  {cargando ? (editandoId ? 'Guardando...' : 'Creando...') : (editandoId ? 'Guardar cambios' : 'Crear usuario')}
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={cerrarModal}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={cargando}
+                >
+                  {cargando
+                    ? editandoId
+                      ? "Guardando..."
+                      : "Creando..."
+                    : editandoId
+                      ? "Guardar cambios"
+                      : "Crear usuario"}
                 </button>
               </div>
             </form>
@@ -235,26 +328,52 @@ const CrudAdmin = () => {
 
       {confirmToggle && (
         <div className="modal-overlay" onClick={() => setConfirmToggle(null)}>
-          <div className="modal-card modal-confirm" onClick={e => e.stopPropagation()}>
-            <h2>{confirmToggle.activo ? 'Inhabilitar usuario' : 'Habilitar usuario'}</h2>
-            <p>
+          <div
+            className="modal-card modal-confirm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>
               {confirmToggle.activo
-                ? <><strong>{confirmToggle.nombre}</strong> será inhabilitado. Su información se conservará.</>
-                : <>¿Deseas habilitar nuevamente a <strong>{confirmToggle.nombre}</strong>?</>
-              }
+                ? "Inhabilitar usuario"
+                : "Habilitar usuario"}
+            </h2>
+            <p>
+              {confirmToggle.activo ? (
+                <>
+                  <strong>{confirmToggle.nombre}</strong> será inhabilitado. Su
+                  información se conservará.
+                </>
+              ) : (
+                <>
+                  ¿Deseas habilitar nuevamente a{" "}
+                  <strong>{confirmToggle.nombre}</strong>?
+                </>
+              )}
             </p>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setConfirmToggle(null)}>Cancelar</button>
-              <button className={confirmToggle.activo ? 'btn-danger' : 'btn-success'} disabled={cargando} onClick={handleToggleEstado}>
-                {cargando ? 'Procesando...' : confirmToggle.activo ? 'Sí, inhabilitar' : 'Sí, habilitar'}
+              <button
+                className="btn-secondary"
+                onClick={() => setConfirmToggle(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                className={confirmToggle.activo ? "btn-danger" : "btn-success"}
+                disabled={cargando}
+                onClick={handleToggleEstado}
+              >
+                {cargando
+                  ? "Procesando..."
+                  : confirmToggle.activo
+                    ? "Sí, inhabilitar"
+                    : "Sí, habilitar"}
               </button>
             </div>
           </div>
         </div>
       )}
-
     </section>
-  )
-}
+  );
+};
 
-export default CrudAdmin
+export default CrudAdmin;
