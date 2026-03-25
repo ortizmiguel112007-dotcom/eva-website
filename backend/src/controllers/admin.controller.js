@@ -4,7 +4,7 @@ import prisma from "../conexion.js";
 export const GetUsuarios = async (req, res) => {
   try {
     const usuarios = await prisma.user.findMany({
-      where: { rol: "emprendedora" },
+      where: { rol: { not: "admin" }},
       select: {
         id: true,
         nombre: true,

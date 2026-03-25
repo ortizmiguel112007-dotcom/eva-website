@@ -147,7 +147,9 @@ function UserManagement() {
           </tr>
         </thead>
         <tbody>
-          {usuariosFiltrados.map((u) => {
+          {usuariosFiltrados
+          .filter(user => user.rol === 'emprendedora')
+          .map((u) => {
             const pendiente = esPendienteAprobacion(u);
             return (
               <tr key={u.id}>
