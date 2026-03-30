@@ -117,7 +117,7 @@ const AuthButtons = ({ className = "" }) => {
       <NavLink end to="/login" className="content-login">
         <p>Ingresar</p>
       </NavLink>
-      <NavLink end to="/registro" className="content-register">
+      <NavLink to="/registro" className="content-register">
         <p>Registrarse</p>
       </NavLink>
     </div>
