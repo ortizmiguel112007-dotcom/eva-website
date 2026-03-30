@@ -1,6 +1,7 @@
 import { enviarCorreo } from "../services/email.service.js";
 import prisma from "../conexion.js";
 import jwt from "jsonwebtoken";
+import { enviarSolicitudAdmin } from '../services/notificacion.service.js'
 
 const emailRegex = /^[^\s@]+@(gmail\.com|sena\.edu)$/;
 
@@ -75,24 +76,31 @@ export const Login = async (req, res) => {
         .status(403)
         .json({ error: "Usuario no verificado. Vuelva a intentar registarte" });
     }
-    if (!usuario.activo) {
-      return res
-        .status(403)
-        .json({
-          error: "Tu cuenta está pendiente de aprobación por el administrador",
-        });
+    //cambio
+    if (!usuario.activo && usuario.rol !== "emprendedora") {
+      return res.status(403).json({ error: "Tu cuenta está desactivada" });
     }
 
     const token = jwt.sign(
       {
         id: usuario.id,
         email: usuario.email,
-        rol: usuario.rol,
+        rol: usuario.activo ? usuario.rol : "usuario", // ← si no está activa entra como usuario
         nombre: usuario.nombre,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
+
+    // agrega info extra si está pendiente
+    const response = { token };
+    if (!usuario.activo && usuario.rol === "emprendedora") {
+      response.pendiente = true;
+      response.mensaje =
+        "Tu solicitud está pendiente de aprobación. Puedes navegar como cliente mientras tanto.";
+    }
+
+    return res.json(response);
 
     return res.json({ token });
   } catch (error) {
@@ -111,6 +119,12 @@ export const CreaterDate = async (req, res) => {
       .status(400)
       .json({ error: "Las emprendedoras deben subir foto de su documento" });
   }
+
+  if (rol === 'emprendedora') {
+  await enviarSolicitudAdmin(nombre, email).catch(err =>
+    console.log('Error al notificar admin:', err)
+  )
+}
 
   try {
     const ErrorEmail = await ValidarEmail(email);

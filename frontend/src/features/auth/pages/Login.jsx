@@ -7,7 +7,7 @@ import { MdEmail, IoMdLock } from "@/infrastructure/icons/index.js";
 
 import "@/infrastructure/css/Login.css";
 import background from "@/infrastructure/imgs/Fondo2.png";
-import { jwtDecode } from "jwt-decode"
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -31,12 +31,14 @@ const LoginPage = () => {
 
       const decoded = jwtDecode(res.data.token);
 
-      if (decoded.rol === "emprendedora") {
-        navigate("/dashboard");
-      } else if (decoded.rol === "admin") {
-        navigate("/admin");
+      if (decoded.pendiente) {
+        // redirige al inicio con mensaje
+        navigate("/", { state: { mensaje: res.data.mensaje } });
       } else {
-        navigate("/");
+        const decoded = jwtDecode(res.data.token);
+        if (decoded.rol === "emprendedora") navigate("/dashboard");
+        else if (decoded.rol === "admin") navigate("/admin");
+        else navigate("/");
       }
     } catch (error) {
       setMensaje(error.response?.data?.error || "Error al iniciar sesión");
