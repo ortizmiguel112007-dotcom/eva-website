@@ -91,3 +91,21 @@ export const ocultarComentario = async (req, res) => {
     res.status(500).json({ error: 'Error al ocultar comentario' })
   }
 }
+
+// GET /api/comentarios/producto/:id — comentarios públicos de un producto
+export const listarComentariosPorProducto = async (req, res) => {
+  try {
+    const id_producto = Number(req.params.id)
+    const comentarios = await prisma.comentario.findMany({
+      where: { id_producto, activo: true },
+      include: {
+        usuario: { select: { nombre: true } }
+      },
+      orderBy: { fecha: 'desc' }
+    })
+    res.json(comentarios)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener comentarios' })
+  }
+}

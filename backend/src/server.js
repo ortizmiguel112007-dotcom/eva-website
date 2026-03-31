@@ -12,7 +12,7 @@ import alianzaRouter from './routes/alianza.route.js'
 import destacadoRouter from './routes/destacado.route.js'
 import cuponRouter from './routes/cupon.route.js'
 import comentarioRouter from './routes/comentario.route.js'
-
+import publicoRouter from './routes/publico.route.js'
 import prisma from './conexion.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -58,6 +58,8 @@ app.use(destacadoRouter)
 
 app.use(cuponRouter)
 app.use(comentarioRouter)
+
+app.use(publicoRouter)
 
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')

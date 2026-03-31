@@ -3,7 +3,9 @@ import { useAuth } from "@/core/context/AuthConten";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-
+import { useCarrito } from "@/core/context/CarritoContext";
+import { FaBell } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import "@/infrastructure/css/Sidebar.css";
 import Logo from "@/infrastructure/imgs/Logo.png";
 
@@ -12,9 +14,9 @@ import {
   FaHome,
   FaShoppingBag,
   FaStore,
-  FaUser,  
+  FaUser,
   MdKeyboardArrowLeft,
-  BsSearch,
+  FaShoppingCart,
   MdLogout,
   MdLocalOffer,
 } from "@/infrastructure/icons/index.js";
@@ -115,7 +117,7 @@ const AuthButtons = ({ className = "" }) => {
       <NavLink end to="/login" className="content-login">
         <p>Ingresar</p>
       </NavLink>
-      <NavLink end to="/registro" className="content-register">
+      <NavLink to="/registro" className="content-register">
         <p>Registrarse</p>
       </NavLink>
     </div>
@@ -149,6 +151,7 @@ function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [animating, setAnimating] = useState(false);
+  const { totalItems, setCarritoAbierto } = useCarrito();
 
   const { user, logout, idEmprendedora } = useAuth();
   const navigate = useNavigate();
@@ -236,14 +239,14 @@ function MainLayout() {
         </div>
 
         {/* Buscador */}
-        <div className="search-container">
+        {/* <div className="search-container">
           <input
             type="search"
             className="search-input"
             placeholder="Buscar..."
           />
           <BsSearch className="search-icon" />
-        </div>
+        </div> */}
 
         {/* Scroll area */}
         <div className={`aside-items-scroll${animating ? " no-click" : ""}`}>
@@ -358,7 +361,7 @@ function MainLayout() {
                               `item-component${isActive ? " active" : ""}`
                             }
                           >
-                            <span className="aside-icon normal">🏪</span>
+                            <span className="aside-icon normal"></span>
                             <div className="Text-content">
                               <p className="aside-text">Tiendas</p>
                             </div>
@@ -372,13 +375,13 @@ function MainLayout() {
                               `item-component${isActive ? " active" : ""}`
                             }
                           >
-                            <span className="aside-icon normal">📦</span>
+                            <span className="aside-icon normal"></span>
                             <div className="Text-content">
                               <p className="aside-text">Productos</p>
                             </div>
                           </NavLink>
                         </li>
-                        <li>
+                        {/* <li>
                           <NavLink
                             end
                             to="/servicios"
@@ -391,7 +394,7 @@ function MainLayout() {
                               <p className="aside-text">Servicios</p>
                             </div>
                           </NavLink>
-                        </li>
+                        </li> */}
                       </ul>
                     </li>
                   )}
@@ -431,6 +434,28 @@ function MainLayout() {
               <span>Sin registrarse</span>
             </>
           )}
+          {/* <SectionLabel label="CATEGORÍAS" sidebarOpen={effectiveOpen} />
+
+          <ItemSimple
+            to="/categoria/ropa"
+            icon={FaStore}
+            label="Ropa"
+            sidebarClosed={!effectiveOpen}
+          />
+
+          <ItemSimple
+            to="/categoria/accesorios"
+            icon={FaStore}
+            label="Accesorios"
+            sidebarClosed={!effectiveOpen}
+          />
+
+          <ItemSimple
+            to="/categoria/tecnologia"
+            icon={FaStore}
+            label="Tecnología"
+            sidebarClosed={!effectiveOpen}
+          /> */}
         </div>
       </aside>
 
@@ -477,9 +502,27 @@ function MainLayout() {
             <NavLink end to="/productos">
               <p>Productos</p>
             </NavLink>
-            <NavLink end to="/servicios">
+            {/* <NavLink end to="/servicios">
               <p>Servicios</p>
-            </NavLink>
+            </NavLink> */}
+            {!isEmprendedora && !isAdmin && (
+              <button
+                className="carrito-btn"
+                onClick={() => setCarritoAbierto(true)}
+              >
+                <FaShoppingCart />
+                {totalItems > 0 && (
+                  <span className="carrito-badge">{totalItems}</span>
+                )}
+              </button>
+            )}
+            <button className="notif-btn">
+              <FaBell />
+              <span className="notif-badge">3</span>
+            </button>
+            <button className="fav-btn">
+              <FaHeart />
+            </button>
           </nav>
         )}
       </header>

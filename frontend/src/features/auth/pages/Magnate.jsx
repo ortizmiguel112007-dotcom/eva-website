@@ -377,3 +377,4 @@ const CrudAdmin = () => {
 };
 
 export default CrudAdmin;
+

@@ -1,4 +1,5 @@
 import prisma from "../conexion.js";
+import { enviarAprobacion } from "../services/notificacion.service.js";
 
 // GET /admin/usuarios - Obtener todos los usuarios (excepto admins)
 export const GetUsuarios = async (req, res) => {
@@ -163,19 +164,22 @@ export const aprobarEmprendedora = async (req, res) => {
       include: { emprendedora: true },
     });
 
+    // ← verificar primero
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
 
     if (usuario.emprendedora) {
-      // Ya tiene registro — solo activar
       await prisma.user.update({
         where: { id },
         data: { activo: true },
       });
+      // ← enviar correo aquí
+      await enviarAprobacion(usuario.email, usuario.nombre).catch(err =>
+        console.log("Error al enviar correo:", err)
+      );
       return res.json({ message: "Emprendedora activada correctamente" });
     }
 
-    // No tiene registro — crear todo
     await prisma.$transaction(async (tx) => {
       const emprendedora = await tx.emprendedora.create({
         data: { id_usuario: id, estado: true },
@@ -201,6 +205,11 @@ export const aprobarEmprendedora = async (req, res) => {
         },
       });
     });
+
+    // ← enviar correo aquí también
+    await enviarAprobacion(usuario.email, usuario.nombre).catch(err =>
+      console.log("Error al enviar correo:", err)
+    );
 
     res.json({ message: "Emprendedora aprobada correctamente" });
   } catch (error) {

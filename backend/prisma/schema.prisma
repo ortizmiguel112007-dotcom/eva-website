@@ -71,7 +71,7 @@ model Producto {
   id_seccion                Int
   nombre_producto           String
   descripcion               String?
-  precio                    Decimal  @db.Decimal(10, 3)
+  precio  Decimal  @db.Decimal(15, 2)
   categoria                 String?
   estado_producto           String   @default("activo")
   duracion String? 
