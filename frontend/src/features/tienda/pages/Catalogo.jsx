@@ -1,19 +1,38 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { tiendaService } from "../services/tienda.service";
-import { FiSearch } from "react-icons/fi";
-import "@/infrastructure/css/inicio.css";
+import {
+  FiSearch,
+  FiPackage,
+  FiX,
+  FiSliders,
+  FiShoppingCart,
+  FiClock,
+  FiChevronDown,
+  FiHeart,
+  FiHome,
+  FiBook,
+  FiMonitor,
+  FiTrendingUp,
+  FiScissors,
+  FiStar,
+  FiShoppingBag,
+  FiCpu,
+  FiFeather,
+  FiEye 
+} from "react-icons/fi";
 import "@/infrastructure/css/catalogo.css";
 
 const CATEGORIAS = [
-  { label: "Artesanías", value: "artesanias", emoji: "🎨" },
-  { label: "Belleza", value: "belleza", emoji: "💄" },
-  { label: "Alimentos", value: "alimentos", emoji: "🍕" },
-  { label: "Hogar", value: "hogar", emoji: "🏠" },
-  { label: "Moda", value: "moda", emoji: "👗" },
-  { label: "Consultoría", value: "consultoria", emoji: "💼" },
-  { label: "Educación", value: "educacion", emoji: "📚" },
-  { label: "Marketing", value: "marketing", emoji: "📣" },
-  { label: "Tecnología", value: "tecnologia", emoji: "💻" },
+  { label: "Artesanías", value: "artesanias", Icon: FiFeather },
+  { label: "Belleza", value: "belleza", Icon: FiScissors },
+  { label: "Alimentos", value: "alimentacion", Icon: FiStar },
+  { label: "Hogar", value: "hogar", Icon: FiHome },
+  { label: "Moda", value: "moda", Icon: FiShoppingBag },
+  { label: "Consultoría", value: "consultoria", Icon: FiTrendingUp },
+  { label: "Educación", value: "educacion", Icon: FiBook },
+  { label: "Marketing", value: "marketing", Icon: FiMonitor },
+  { label: "Tecnología", value: "tecnologia", Icon: FiCpu },
 ];
 
 const ORDENAR = [
@@ -24,18 +43,20 @@ const ORDENAR = [
 
 const POR_PAGINA = 9;
 
-function formatPrecio(precio) {
-  return "$" + Number(precio).toLocaleString("es-CO");
+function formatPrecio(p) {
+  return "$" + Number(p).toLocaleString("es-CO");
 }
 
 export default function Catalogo() {
+  const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [tipoActivo, setTipoActivo] = useState("");
-  const [cats, setCats] = useState([]); // categorías seleccionadas
+  const [cats, setCats] = useState([]);
   const [ordenar, setOrdenar] = useState("recientes");
   const [pagina, setPagina] = useState(1);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     const cargar = async () => {
@@ -52,7 +73,6 @@ export default function Catalogo() {
     cargar();
   }, []);
 
-  // precio max dinámico
   const precioMax = useMemo(
     () =>
       todos.length
@@ -63,12 +83,10 @@ export default function Catalogo() {
   );
 
   const [rangoMax, setRangoMax] = useState(5000000);
-
   useEffect(() => {
     if (precioMax > 0) setRangoMax(precioMax);
   }, [precioMax]);
 
-  // toggle categoría
   const toggleCat = (val) => {
     setCats((prev) =>
       prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val],
@@ -76,56 +94,52 @@ export default function Catalogo() {
     setPagina(1);
   };
 
-  // filtrado + ordenamiento
   const filtrados = useMemo(() => {
     let result = todos.filter((p) => {
-      const matchBusqueda =
+      const matchB =
         p.nombre_producto.toLowerCase().includes(busqueda.toLowerCase()) ||
         (p.categoria || "").toLowerCase().includes(busqueda.toLowerCase()) ||
         (p.seccion?.emprendedora?.usuario?.nombre || "")
           .toLowerCase()
           .includes(busqueda.toLowerCase());
-      const matchTipo = !tipoActivo || p.tipo === tipoActivo;
-      const matchCat = cats.length === 0 || cats.includes(p.categoria);
-      const matchPrecio = Number(p.precio) <= rangoMax;
-      return matchBusqueda && matchTipo && matchCat && matchPrecio;
+      const matchT = !tipoActivo || p.tipo === tipoActivo;
+      const matchC = cats.length === 0 || cats.includes(p.categoria);
+      const matchP = Number(p.precio) <= rangoMax;
+      return matchB && matchT && matchC && matchP;
     });
-
     if (ordenar === "precio_asc")
       result = [...result].sort((a, b) => Number(a.precio) - Number(b.precio));
     if (ordenar === "precio_desc")
       result = [...result].sort((a, b) => Number(b.precio) - Number(a.precio));
-
     return result;
   }, [todos, busqueda, tipoActivo, cats, rangoMax, ordenar]);
 
-  // contador por categoría
   const contadorCat = (val) =>
     todos.filter(
       (p) => p.categoria === val && (!tipoActivo || p.tipo === tipoActivo),
     ).length;
-
   const visible = filtrados.slice(0, pagina * POR_PAGINA);
   const hayMas = visible.length < filtrados.length;
+  const hayFiltros = cats.length > 0 || tipoActivo || rangoMax < precioMax;
 
   return (
-    <div className="inicio-page">
-      <div className="catalogo-wrapper">
-        {/* ── Header ── */}
-        <div className="catalogo-header">
-          <div>
-            <h1 className="catalogo-titulo">Catálogo de Productos</h1>
-            <p className="catalogo-subtitulo">
-              {filtrados.length} productos y servicios disponibles
-            </p>
-          </div>
+    <div className="cat-page">
+      {/* ── Hero ── */}
+      <div className="cat-hero">
+        <div className="cat-hero-blur cat-b1" />
+        <div className="cat-hero-blur cat-b2" />
+        <div className="cat-hero-content">
+          <h1 className="cat-hero-titulo">Catálogo</h1>
+          <p className="cat-hero-sub">
+            {filtrados.length} productos y servicios disponibles
+          </p>
 
           {/* Buscador */}
-          <div className="catalogo-search-wrapper">
-            <FiSearch className="catalogo-search-icon" />
+          <div className="cat-search-wrap">
+            <FiSearch size={16} color="#94a3b8" />
             <input
+              className="cat-search-input"
               type="text"
-              className="catalogo-search"
               placeholder="Buscar productos, servicios, emprendedoras..."
               value={busqueda}
               onChange={(e) => {
@@ -133,126 +147,56 @@ export default function Catalogo() {
                 setPagina(1);
               }}
             />
+            {busqueda && (
+              <button
+                className="cat-search-clear"
+                onClick={() => setBusqueda("")}
+              >
+                <FiX size={14} />
+              </button>
+            )}
           </div>
-        </div>
 
-        {/* ── Pills tipo ── */}
-        <div className="catalogo-pills-row">
-          {[
-            { label: "Todas", value: "" },
-            { label: "Productos", value: "producto" },
-            { label: "Servicios", value: "servicio" },
-          ].map((t) => (
-            <button
-              key={t.value}
-              className={`categoria-pill ${tipoActivo === t.value ? "active" : ""}`}
-              onClick={() => {
-                setTipoActivo(t.value);
-                setPagina(1);
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ── Pills categoría ── */}
-        <div className="catalogo-pills-row" style={{ marginBottom: "1.5rem" }}>
-          <button
-            className={`categoria-pill ${cats.length === 0 ? "active" : ""}`}
-            onClick={() => {
-              setCats([]);
-              setPagina(1);
-            }}
-          >
-            Todas
-          </button>
-          {CATEGORIAS.map((cat) => (
-            <button
-              key={cat.value}
-              className={`categoria-pill ${cats.includes(cat.value) ? "active" : ""}`}
-              onClick={() => toggleCat(cat.value)}
-            >
-              {cat.emoji} {cat.label}
-              <span className="cat-count">{contadorCat(cat.value)}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* ── Contenido principal ── */}
-        <div className="catalogo-content">
-          {/* Sidebar filtros */}
-          <aside className="catalogo-sidebar">
-            <h3 className="sidebar-titulo">Filtros</h3>
-
-            {/* Rango de precio */}
-            <div className="sidebar-seccion">
-              <h4 className="sidebar-seccion-titulo">Rango de Precio</h4>
-              <input
-                type="range"
-                min={0}
-                max={precioMax}
-                value={rangoMax}
-                step={10000}
-                onChange={(e) => {
-                  setRangoMax(Number(e.target.value));
+          {/* Pills tipo */}
+          <div className="cat-tipo-pills">
+            {[
+              { label: "Todo", value: "" },
+              { label: "Productos", value: "producto" },
+              { label: "Servicios", value: "servicio" },
+            ].map((t) => (
+              <button
+                key={t.value}
+                className={`cat-tipo-pill ${tipoActivo === t.value ? "active" : ""}`}
+                onClick={() => {
+                  setTipoActivo(t.value);
                   setPagina(1);
                 }}
-                className="precio-slider"
-              />
-              <div className="precio-labels">
-                <span>$0</span>
-                <span>{formatPrecio(rangoMax)}</span>
-              </div>
-            </div>
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            {/* Tipo */}
-            <div className="sidebar-seccion">
-              <h4 className="sidebar-seccion-titulo">Tipo</h4>
-              {[
-                { label: "Productos", value: "producto" },
-                { label: "Servicios", value: "servicio" },
-              ].map((t) => (
-                <label key={t.value} className="sidebar-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={tipoActivo === t.value}
-                    onChange={() => {
-                      setTipoActivo((prev) =>
-                        prev === t.value ? "" : t.value,
-                      );
-                      setPagina(1);
-                    }}
-                  />
-                  <span>{t.label}</span>
-                </label>
-              ))}
+      {/* ── Body ── */}
+      <div className="cat-body">
+        {/* Sidebar */}
+        <aside className={`cat-sidebar ${sidebarOpen ? "" : "closed"}`}>
+          <div className="cat-sidebar-header">
+            <div className="cat-sidebar-titulo">
+              <FiSliders size={14} /> Filtros
+              {hayFiltros && (
+                <span className="cat-filtros-badge">
+                  {cats.length +
+                    (tipoActivo ? 1 : 0) +
+                    (rangoMax < precioMax ? 1 : 0)}
+                </span>
+              )}
             </div>
-
-            {/* Categorías */}
-            <div className="sidebar-seccion">
-              <h4 className="sidebar-seccion-titulo">Categorías</h4>
-              {CATEGORIAS.map((cat) => (
-                <label key={cat.value} className="sidebar-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={cats.includes(cat.value)}
-                    onChange={() => toggleCat(cat.value)}
-                  />
-                  <span>
-                    {cat.emoji} {cat.label}
-                  </span>
-                  <span className="sidebar-count">
-                    {contadorCat(cat.value)}
-                  </span>
-                </label>
-              ))}
-            </div>
-
-            {/* Limpiar filtros */}
-            {(cats.length > 0 || tipoActivo || rangoMax < precioMax) && (
+            {hayFiltros && (
               <button
-                className="btn-limpiar"
+                className="cat-btn-limpiar"
                 onClick={() => {
                   setCats([]);
                   setTipoActivo("");
@@ -260,21 +204,75 @@ export default function Catalogo() {
                   setPagina(1);
                 }}
               >
-                Limpiar filtros
+                Limpiar
               </button>
             )}
-          </aside>
+          </div>
 
-          {/* Grid */}
-          <div className="catalogo-main">
-            {/* Toolbar */}
-            <div className="catalogo-toolbar">
-              <span className="catalogo-resultados">
-                Mostrando <strong>{visible.length}</strong> de{" "}
-                <strong>{filtrados.length}</strong> resultados
-              </span>
+          {/* Precio */}
+          <div className="cat-sidebar-seccion">
+            <h4 className="cat-sidebar-seccion-titulo">Precio máximo</h4>
+            <input
+              type="range"
+              min={0}
+              max={precioMax}
+              value={rangoMax}
+              step={10000}
+              className="cat-slider"
+              onChange={(e) => {
+                setRangoMax(Number(e.target.value));
+                setPagina(1);
+              }}
+            />
+            <div className="cat-precio-labels">
+              <span>$0</span>
+              <span className="cat-precio-val">{formatPrecio(rangoMax)}</span>
+            </div>
+          </div>
+
+          {/* Categorías */}
+          <div className="cat-sidebar-seccion">
+            <h4 className="cat-sidebar-seccion-titulo">Categorías</h4>
+            <div className="cat-cats-list">
+              {CATEGORIAS.map((c) => (
+                <label
+                  key={c.value}
+                  className={`cat-check-label ${cats.includes(c.value) ? "active" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={cats.includes(c.value)}
+                    onChange={() => toggleCat(c.value)}
+                  />
+                  <c.Icon size={13} />
+                  <span className="cat-check-txt">{c.label}</span>
+                  <span className="cat-check-count">
+                    {contadorCat(c.value)}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <main className="cat-main">
+          {/* Toolbar */}
+          <div className="cat-toolbar">
+            <button
+              className="cat-toggle-sidebar"
+              onClick={() => setSidebarOpen((p) => !p)}
+            >
+              <FiSliders size={14} />{" "}
+              {sidebarOpen ? "Ocultar filtros" : "Mostrar filtros"}
+            </button>
+            <span className="cat-toolbar-count">
+              <strong>{visible.length}</strong> de{" "}
+              <strong>{filtrados.length}</strong> resultados
+            </span>
+            <div className="cat-ordenar-wrap">
               <select
-                className="catalogo-ordenar"
+                className="cat-ordenar"
                 value={ordenar}
                 onChange={(e) => setOrdenar(e.target.value)}
               >
@@ -284,98 +282,121 @@ export default function Catalogo() {
                   </option>
                 ))}
               </select>
+              <FiChevronDown size={13} className="cat-ordenar-icon" />
             </div>
+          </div>
 
-            {cargando ? (
-              <div className="pub-loading">Cargando productos...</div>
-            ) : filtrados.length === 0 ? (
-              <div className="catalogo-empty">
-                <p>No encontramos productos que coincidan</p>
-                <span>Intenta con otros filtros o busca algo diferente</span>
-              </div>
-            ) : (
-              <>
-                <div className="pub-grid-3">
-                  {visible.map((p) => (
-                    <div
-                      key={p.id_producto}
-                      className="pub-product-card"
-                      onClick={() => navigate(`/producto/${p.id_producto}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="pub-product-img">
-                        {p.imagen ? (
-                          <img src={p.imagen} alt={p.nombre_producto} />
-                        ) : (
-                          <div className="no-img">📦</div>
-                        )}
-                        <span className={`pub-tipo-badge ${p.tipo}`}>
-                          {p.tipo}
+          {/* Pills categoría horizontal */}
+          <div className="cat-cats-pills">
+            <button
+              className={`cat-cat-pill ${cats.length === 0 ? "active" : ""}`}
+              onClick={() => {
+                setCats([]);
+                setPagina(1);
+              }}
+            >
+              <FiPackage size={12} /> Todas
+            </button>
+            {CATEGORIAS.map((c) => (
+              <button
+                key={c.value}
+                className={`cat-cat-pill ${cats.includes(c.value) ? "active" : ""}`}
+                onClick={() => toggleCat(c.value)}
+              >
+                <c.Icon size={12} /> {c.label}
+                <span className="cat-cat-pill-count">
+                  {contadorCat(c.value)}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Grid */}
+          {cargando ? (
+            <div className="cat-loading">
+              <div className="cat-spinner" />
+              <p>Cargando productos...</p>
+            </div>
+          ) : filtrados.length === 0 ? (
+            <div className="cat-empty">
+              <FiPackage size={48} color="#cbd5e1" />
+              <h3>Sin resultados</h3>
+              <p>Intenta con otros filtros</p>
+            </div>
+          ) : (
+            <>
+              <div className="cat-grid">
+                {visible.map((p, idx) => (
+                  <div
+                    key={p.id_producto}
+                    className="cat-card"
+                    style={{ animationDelay: `${(idx % 9) * 0.04}s` }}
+                    onClick={() => navigate(`/producto/${p.id_producto}`)}
+                  >
+                    <div className="cat-card-img">
+                      {p.imagen ? (
+                        <img src={p.imagen} alt={p.nombre_producto} />
+                      ) : (
+                        <div className="cat-card-no-img">
+                          <FiPackage size={36} color="#cbd5e1" />
+                        </div>
+                      )}
+                      <div className="cat-card-img-overlay">
+                        <span className="cat-card-ver-btn">
+                          <FiEye size={15} /> Ver detalle
                         </span>
                       </div>
-                      <div className="pub-product-body">
-                        <h3>{p.nombre_producto}</h3>
-                        <span className="cat">{p.categoria}</span>
-                        {p.descripcion && (
-                          <span
-                            style={{
-                              fontSize: "0.78rem",
-                              color: "#6b7280",
-                              lineHeight: 1.4,
-                              display: "-webkit-box",
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
-                            {p.descripcion}
-                          </span>
-                        )}
-                        {p.tipo === "servicio" && p.duracion && (
-                          <span
-                            style={{
-                              fontSize: "0.75rem",
-                              color: "#16a34a",
-                              fontWeight: 600,
-                            }}
-                          >
-                            ⏱ {p.duracion}
-                          </span>
-                        )}
-                        <span className="tienda-name">
-                          {p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
-                        </span>
-                        <div className="pub-product-footer">
-                          <span className="pub-precio">
-                            {formatPrecio(p.precio)}
-                          </span>
-                          <button className="btn-agregar">+</button>
+                      <span className={`cat-badge cat-badge--${p.tipo}`}>
+                        {p.tipo}
+                      </span>
+                    </div>
+
+                    <div className="cat-card-body">
+                      <span className="cat-card-cat">{p.categoria}</span>
+                      <h3 className="cat-card-nombre">{p.nombre_producto}</h3>
+                      {p.descripcion && (
+                        <p className="cat-card-desc">{p.descripcion}</p>
+                      )}
+                      {p.tipo === "servicio" && p.duracion && (
+                        <div className="cat-card-duracion">
+                          <FiClock size={11} /> {p.duracion}
                         </div>
+                      )}
+                      <span className="cat-card-tienda">
+                        {p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
+                      </span>
+                      <div className="cat-card-footer">
+                        <span className="cat-card-precio">
+                          {formatPrecio(p.precio)}
+                        </span>
+                        <button
+                          className="cat-btn-ver"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/producto-detalle/${p.id_producto}`);
+                          }}
+                        >
+                          <FiShoppingCart size={13} /> Ver
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                {hayMas && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginTop: "2rem",
-                    }}
-                  >
-                    <button
-                      className="btn-cargar-mas"
-                      onClick={() => setPagina((prev) => prev + 1)}
-                    >
-                      Cargar más productos
-                    </button>
                   </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+                ))}
+              </div>
+
+              {hayMas && (
+                <div className="cat-cargar-mas-wrap">
+                  <button
+                    className="cat-btn-cargar-mas"
+                    onClick={() => setPagina((p) => p + 1)}
+                  >
+                    Cargar más productos
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </main>
       </div>
     </div>
   );

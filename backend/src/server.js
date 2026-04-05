@@ -2,31 +2,30 @@ import express from 'express'
 import cors from 'cors'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import usuariosRoutes from './routes/usuario.route.js'
-import adminRoutes from './routes/admin.route.js'
-import productoRoutes from './routes/producto.route.js'
+import usuariosRoutes     from './routes/usuario.route.js'
+import adminRoutes        from './routes/admin.route.js'
+import productoRoutes     from './routes/producto.route.js'
 import emprendedoraRoutes from './routes/emprendedora.route.js'
-import inventarioRouter from './routes/inventario.route.js'
-import pedidoRouter from './routes/pedido.route.js'
-import alianzaRouter from './routes/alianza.route.js'
-import destacadoRouter from './routes/destacado.route.js'
-import cuponRouter from './routes/cupon.route.js'
-import comentarioRouter from './routes/comentario.route.js'
-import publicoRouter from './routes/publico.route.js'
+import inventarioRouter   from './routes/inventario.route.js'
+import pedidoRouter       from './routes/pedido.route.js'
+import alianzaRouter      from './routes/alianza.route.js'
+import destacadoRouter    from './routes/destacado.route.js'
+import cuponRouter        from './routes/cupon.route.js'
+import comentarioRouter   from './routes/comentario.route.js'
+import publicoRouter      from './routes/publico.route.js'
+import carritoRouter from './routes/carrito.route.js'
+import pagoRouter from './routes/pago.route.js'
 import prisma from './conexion.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = dirname(__filename)
 
+// Limpieza de verificaciones expiradas cada 5 min
 setInterval(async () => {
-  console.log('Revisando expirados... hora actual:', new Date())
   const Borrados = await prisma.verificacionPendiente.deleteMany({
     where: { expiracion: { lt: new Date() } }
   })
-  console.log(`Registros revisados, borrados: ${Borrados.count}`)
-  if (Borrados.count > 0) {
-    console.log(`Eliminados ${Borrados.count} códigos expirados`)
-  }
+  if (Borrados.count > 0) console.log(`Eliminados ${Borrados.count} códigos expirados`)
 }, 5 * 60 * 1000)
 
 const app = express()
@@ -43,28 +42,25 @@ app.use(cors({
 app.use(express.json())
 app.use('/uploads', express.static(join(__dirname, '../../uploads')))
 
-app.use(usuariosRoutes)
-app.use(adminRoutes)
-app.use('/api/items', productoRoutes)
-app.use('/api/emprendedora', emprendedoraRoutes)
-
-app.use(inventarioRouter)
-
-app.use(pedidoRouter)
-
-app.use(alianzaRouter)
-
-app.use(destacadoRouter)
-
-app.use(cuponRouter)
-app.use(comentarioRouter)
-
-app.use(publicoRouter)
-
+// ── Rutas sin prefijo adicional ────────────────────────────
+// Los routers ya traen sus prefijos internamente (/api/...) 
+app.use(usuariosRoutes)       // /registro, /verificar, /login, /api/perfil
+app.use(adminRoutes)          // /admin/usuarios, /admin/auditoria
+app.use('/api/items', productoRoutes)          // /api/items/...
+app.use('/api/emprendedora', emprendedoraRoutes) // /api/emprendedora/mi-seccion
+app.use(inventarioRouter)     // /api/inventario, /api/inventario/:id
+app.use(pedidoRouter)         // /api/pedidos, /api/cliente/pedidos
+app.use(alianzaRouter)        // /api/alianzas
+app.use(destacadoRouter)      // /api/destacados
+app.use(cuponRouter)          // /api/cupones
+app.use(comentarioRouter)     // /api/comentarios
+app.use(publicoRouter)        // /api/publico
+app.use(carritoRouter)         // /api/carrito, /api/carrito/agregar, /api/carrito/quitar
+app.use(pagoRouter)
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')
 }).on('error', (err) => {
-  console.error('Error:', err)
+  console.error('Error al iniciar servidor:', err)
 })
 
 process.on('uncaughtException', (err) => {

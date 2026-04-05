@@ -36,9 +36,13 @@ const LoginPage = () => {
         navigate("/", { state: { mensaje: res.data.mensaje } });
       } else {
         const decoded = jwtDecode(res.data.token);
-        if (decoded.rol === "emprendedora") navigate("/dashboard");
-        else if (decoded.rol === "admin") navigate("/admin");
-        else navigate("/");
+        if (decoded.rol === "emprendedora") {
+          navigate("/dashboard");
+        } else if (decoded.rol === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/inicio");
+        }
       }
     } catch (error) {
       setMensaje(error.response?.data?.error || "Error al iniciar sesión");

@@ -236,3 +236,25 @@ export const eliminarItem = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// GET /api/items/admin/todos — todos los productos (solo admin)
+export const listarTodosAdmin = async (req, res) => {
+  try {
+    const productos = await prisma.producto.findMany({
+      include: {
+        inventario: true,
+        seccion: {
+          include: {
+            emprendedora: {
+              include: { usuario: { select: { nombre: true } } }
+            }
+          }
+        }
+      },
+      orderBy: { id_producto: 'desc' }
+    })
+    res.json(productos)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener productos' })
+  }
+}

@@ -1,0 +1,263 @@
+
+
+/* ─── Container ──────────────────────────────────────────── */
+.ad-container {
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.ad-header {
+  margin-bottom: 1.5rem;
+}
+
+.ad-header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+}
+
+.ad-header p {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ─── Métricas ───────────────────────────────────────────── */
+.ad-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.ad-metrica-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ad-metrica-card p {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ad-metrica-valor {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.ad-metrica-valor.total      { color: #1e293b; }
+.ad-metrica-valor.destacados { color: #f59e0b; }
+.ad-metrica-valor.normales   { color: #64748b; }
+
+/* ─── Filtros ────────────────────────────────────────────── */
+.ad-filtros {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.ad-search-box {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.ad-search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', system-ui;
+}
+
+.ad-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+}
+
+.ad-select {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Grid ───────────────────────────────────────────────── */
+.ad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.ad-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+.ad-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ad-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.ad-card.destacado {
+  border-color: #fde68a;
+}
+
+/* ─── Imagen ─────────────────────────────────────────────── */
+.ad-card-img {
+  height: 160px;
+  overflow: hidden;
+  background: #f8fafc;
+  position: relative;
+}
+
+.ad-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ad-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-badge-destacado {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* ─── Body ───────────────────────────────────────────────── */
+.ad-card-body {
+  padding: 1rem;
+}
+
+.ad-card-body h3 {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.ad-card-meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.ad-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ad-precio {
+  font-weight: 800;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+/* ─── Botón destacar ─────────────────────────────────────── */
+.ad-btn-destacar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.45rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.ad-btn-destacar.activo {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.ad-btn-destacar:hover {
+  background: #f1f5f9;
+}
+
+.ad-btn-destacar.activo:hover {
+  background: #fef3c7;
+}
+
+/* ─── Toast ──────────────────────────────────────────────── */
+.ad-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  z-index: 999;
+  font-family: 'DM Sans', system-ui;
+}
+
+.ad-toast.ok    { background: #16a34a; }
+.ad-toast.error { background: #ef4444; }
+
+/* ─── Loading ────────────────────────────────────────────── */
+.ad-loading {
+  color: #64748b;
+  padding: 2rem;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .ad-container { padding: 1.25rem; }
+  .ad-metricas  { grid-template-columns: repeat(2, 1fr); }
+}

@@ -4,8 +4,18 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useCarrito } from "@/core/context/CarritoContext";
-import { FaBell } from "react-icons/fa";
-import { FaHeart } from "react-icons/fa";
+import CarritoDrawer from "@/core/context/CarritoDrawer";
+import {
+  FiShoppingCart,
+  FiPackage,
+  FiStar,
+  FiFileText,
+  FiSettings,
+  FiCreditCard,
+  FiDollarSign,
+} from "react-icons/fi"; // ← agrega aquí
+import { MdOutlineReceiptLong } from "react-icons/md"; // ← agrega aquí
+import { FaBell, FaHeart } from "react-icons/fa";
 import "@/infrastructure/css/Sidebar.css";
 import Logo from "@/infrastructure/imgs/Logo.png";
 
@@ -15,10 +25,11 @@ import {
   FaShoppingBag,
   FaStore,
   FaUser,
-  MdKeyboardArrowLeft,
   FaShoppingCart,
+  MdKeyboardArrowLeft,
   MdLogout,
   MdLocalOffer,
+  BsSearch,
 } from "@/infrastructure/icons/index.js";
 
 import { FiMessageSquare, FiUsers } from "react-icons/fi";
@@ -158,6 +169,7 @@ function MainLayout() {
 
   const isEmprendedora = user?.rol === "emprendedora";
   const isAdmin = user?.rol === "admin";
+  const isUsuario = user?.rol === "usuario";
 
   useEffect(() => {
     if (isMobile) setDrawerOpen(false);
@@ -238,30 +250,32 @@ function MainLayout() {
           )}
         </div>
 
-        {/* Buscador */}
-        {/* <div className="search-container">
-          <input
-            type="search"
-            className="search-input"
-            placeholder="Buscar..."
-          />
-          <BsSearch className="search-icon" />
-        </div> */}
-
         {/* Scroll area */}
         <div className={`aside-items-scroll${animating ? " no-click" : ""}`}>
           <div className="aside-items">
             <ul className="items">
+              {/* ── ADMIN ── */}
               {isAdmin ? (
                 <>
-                  <SectionLabel
-                    label="ADMINISTRACIÓN"
-                    sidebarOpen={effectiveOpen}
+                  <SectionLabel label="DASHBOARD" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin"
+                    icon={FaHome}
+                    label="Resumen general"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel label="USUARIOS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/Admincrud"
+                    icon={FaUser}
+                    label="Gestionar usuarios"
+                    sidebarClosed={!effectiveOpen}
                   />
                   <ItemSimple
                     to="/admin/users"
                     icon={FiUsers}
-                    label="Emprendedoras"
+                    label="Solicitudes Emprendedoras"
                     sidebarClosed={!effectiveOpen}
                   />
                   <ItemSimple
@@ -270,22 +284,67 @@ function MainLayout() {
                     label="Roles"
                     sidebarClosed={!effectiveOpen}
                   />
+
+                  <SectionLabel label="PRODUCTOS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin/productos"
+                    icon={FaStore}
+                    label="Gestionar productos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel label="PEDIDOS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin/pedidos"
+                    icon={FaShoppingBag}
+                    label="Ver todos los pedidos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel label="RESEÑAS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin/resenas"
+                    icon={FiStar}
+                    label="Moderar comentarios"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel
+                    label="PROMOCIONES"
+                    sidebarOpen={effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/admin/destacados"
+                    icon={MdLocalOffer}
+                    label="Destacados"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/admin/cupones"
+                    icon={RiCoupon3Line}
+                    label="Cupones"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel label="ALIANZAS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin/alianzas"
+                    icon={FiUsers}
+                    label="Promociones colaborativas"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  <SectionLabel label="SISTEMA" sidebarOpen={effectiveOpen} />
                   <ItemSimple
                     to="/admin/logs"
-                    icon={FaRegUserCircle}
+                    icon={FiFileText}
                     label="Auditoría"
                     sidebarClosed={!effectiveOpen}
                   />
-                  <ItemSimple
-                    to="/Admincrud"
-                    icon={FaUser}
-                    label="Usuarios"
-                    sidebarClosed={!effectiveOpen}
-                  />
                 </>
-              ) : isEmprendedora ? (
+              ) : /* ── EMPRENDEDORA ── */
+              isEmprendedora ? (
                 <>
-                  {/* GENERAL */}
                   <SectionLabel label="GENERAL" sidebarOpen={effectiveOpen} />
                   <ItemSimple
                     to="/dashboard"
@@ -300,13 +359,18 @@ function MainLayout() {
                     sidebarClosed={!effectiveOpen}
                   />
                   <ItemSimple
+                    to="/pagos"
+                    icon={FiDollarSign}
+                    label="Comprobantes de Pago"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
                     to="/inventario"
                     icon={MdOutlineInventory2}
                     label="Stock e Inventario"
                     sidebarClosed={!effectiveOpen}
                   />
 
-                  {/* MARKETING */}
                   <SectionLabel label="MARKETING" sidebarOpen={effectiveOpen} />
                   <ItemSimple
                     to="/destacados"
@@ -333,7 +397,6 @@ function MainLayout() {
                     sidebarClosed={!effectiveOpen}
                   />
 
-                  {/* CLIENTES */}
                   <SectionLabel label="CLIENTES" sidebarOpen={effectiveOpen} />
                   <ItemSimple
                     to="/comentarios"
@@ -341,8 +404,128 @@ function MainLayout() {
                     label="Comentarios"
                     sidebarClosed={!effectiveOpen}
                   />
+
+                  <SectionLabel label="MI CUENTA" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/mi-perfil"
+                    icon={FaRegUserCircle}
+                    label="Mi perfil"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                </>
+              ) : /* ── USUARIO CLIENTE ── */
+              isUsuario ? (
+                <>
+                  {/* PRINCIPAL */}
+                  <SectionLabel label="PRINCIPAL" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/inicio"
+                    icon={FaHome}
+                    label="Inicio"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/productos"
+                    icon={BsSearch}
+                    label="Explorar"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* COMPRAS */}
+                  <SectionLabel label="COMPRAS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/carrito"
+                    icon={FaShoppingCart}
+                    label="Carrito"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/mis-pedidos"
+                    icon={FaShoppingBag}
+                    label="Mis pedidos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/seguimiento"
+                    icon={FiPackage}
+                    label="Seguimiento de pedidos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* PAGOS */}
+                  <SectionLabel label="PAGOS" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/metodos-pago"
+                    icon={FiCreditCard}
+                    label="Métodos de pago"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/historial-pagos"
+                    icon={MdOutlineReceiptLong}
+                    label="Historial de pagos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* INTERACCIÓN */}
+                  <SectionLabel
+                    label="INTERACCIÓN"
+                    sidebarOpen={effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/mis-resenas"
+                    icon={FiStar}
+                    label="Mis reseñas y calificaciones"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* PROMOCIONES */}
+                  <SectionLabel
+                    label="PROMOCIONES"
+                    sidebarOpen={effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/mis-cupones"
+                    icon={RiCoupon3Line}
+                    label="Cupones"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/destacados-pub"
+                    icon={MdLocalOffer}
+                    label="Ofertas / Destacados"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* DOCUMENTOS */}
+                  <SectionLabel
+                    label="DOCUMENTOS"
+                    sidebarOpen={effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/mis-facturas"
+                    icon={FiFileText}
+                    label="Facturas"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
+                  {/* USUARIO */}
+                  <SectionLabel label="USUARIO" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/perfil"
+                    icon={FaRegUserCircle}
+                    label="Mi perfil"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  {/* <ItemSimple
+                    to="/configuracion"
+                    icon={FiSettings}
+                    label="Configuración"
+                    sidebarClosed={!effectiveOpen}
+                  /> */}
                 </>
               ) : (
+                /* ── PÚBLICO ── */
                 <>
                   <ItemSimple
                     to="/"
@@ -350,6 +533,18 @@ function MainLayout() {
                     label="Inicio"
                     sidebarClosed={!effectiveOpen}
                   />
+                  {/* <ItemSimple
+                    to="/productos"
+                    icon={FaShoppingBag}
+                    label="Catálogo"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/tiendas"
+                    icon={FaStore}
+                    label="Tiendas"
+                    sidebarClosed={!effectiveOpen}
+                  /> */}
                   {isMobile && (
                     <li className="aside-li aside-li--divider">
                       <ul className="catalog-links-mobile">
@@ -361,7 +556,7 @@ function MainLayout() {
                               `item-component${isActive ? " active" : ""}`
                             }
                           >
-                            <span className="aside-icon normal"></span>
+                            <span className="aside-icon normal">🏪</span>
                             <div className="Text-content">
                               <p className="aside-text">Tiendas</p>
                             </div>
@@ -375,26 +570,12 @@ function MainLayout() {
                               `item-component${isActive ? " active" : ""}`
                             }
                           >
-                            <span className="aside-icon normal"></span>
+                            <span className="aside-icon normal">📦</span>
                             <div className="Text-content">
                               <p className="aside-text">Productos</p>
                             </div>
                           </NavLink>
                         </li>
-                        {/* <li>
-                          <NavLink
-                            end
-                            to="/servicios"
-                            className={({ isActive }) =>
-                              `item-component${isActive ? " active" : ""}`
-                            }
-                          >
-                            <span className="aside-icon normal">🛠</span>
-                            <div className="Text-content">
-                              <p className="aside-text">Servicios</p>
-                            </div>
-                          </NavLink>
-                        </li> */}
                       </ul>
                     </li>
                   )}
@@ -410,8 +591,13 @@ function MainLayout() {
         {/* Usuario */}
         <div
           className="aside-user"
-          onClick={() => (isEmprendedora ? navigate("/perfil") : null)}
-          style={{ cursor: isEmprendedora ? "pointer" : "default" }}
+          onClick={() => {
+            if (isEmprendedora) navigate("/mi-perfil");
+            if (isUsuario) navigate("/perfil");
+          }}
+          style={{
+            cursor: isEmprendedora || isUsuario ? "pointer" : "default",
+          }}
         >
           {user ? (
             <>
@@ -419,7 +605,11 @@ function MainLayout() {
               <div className="aside-user-info">
                 <span className="aside-user-name">{user.nombre}</span>
                 <span className="aside-user-role">
-                  {user.rol === "emprendedora" ? "Emprendedora" : user.rol}
+                  {user.rol === "emprendedora"
+                    ? "Emprendedora"
+                    : user.rol === "usuario"
+                      ? "Cliente"
+                      : user.rol}
                 </span>
               </div>
               <MdLogout
@@ -434,28 +624,6 @@ function MainLayout() {
               <span>Sin registrarse</span>
             </>
           )}
-          {/* <SectionLabel label="CATEGORÍAS" sidebarOpen={effectiveOpen} />
-
-          <ItemSimple
-            to="/categoria/ropa"
-            icon={FaStore}
-            label="Ropa"
-            sidebarClosed={!effectiveOpen}
-          />
-
-          <ItemSimple
-            to="/categoria/accesorios"
-            icon={FaStore}
-            label="Accesorios"
-            sidebarClosed={!effectiveOpen}
-          />
-
-          <ItemSimple
-            to="/categoria/tecnologia"
-            icon={FaStore}
-            label="Tecnología"
-            sidebarClosed={!effectiveOpen}
-          /> */}
         </div>
       </aside>
 
@@ -494,36 +662,38 @@ function MainLayout() {
             </svg>
           </button>
         )}
-        {!isMobile && !isEmprendedora && (
+
+        {/* Nav catálogo — solo para no emprendedoras y no admin */}
+        {!isMobile && !isEmprendedora && !isAdmin && (
           <nav className="header-content-catalogo">
+            <NavLink end to={isUsuario ? "/productos" : "/catalogo"}>
+              <p>Catálogo</p>
+            </NavLink>
             <NavLink end to="/tiendas">
               <p>Tiendas</p>
             </NavLink>
-            <NavLink end to="/productos">
-              <p>Productos</p>
-            </NavLink>
-            {/* <NavLink end to="/servicios">
-              <p>Servicios</p>
-            </NavLink> */}
-            {!isEmprendedora && !isAdmin && (
-              <button
-                className="carrito-btn"
-                onClick={() => setCarritoAbierto(true)}
-              >
-                <FaShoppingCart />
-                {totalItems > 0 && (
-                  <span className="carrito-badge">{totalItems}</span>
-                )}
-              </button>
-            )}
+          </nav>
+        )}
+
+        {/* Iconos de acción — solo para usuario cliente y público */}
+        {!isEmprendedora && !isAdmin && (
+          <div className="header-actions">
+            <button
+              className="carrito-btn"
+              onClick={() => setCarritoAbierto(true)}
+            >
+              <FaShoppingCart />
+              {totalItems > 0 && (
+                <span className="carrito-badge">{totalItems}</span>
+              )}
+            </button>
             <button className="notif-btn">
               <FaBell />
-              <span className="notif-badge">3</span>
             </button>
             <button className="fav-btn">
               <FaHeart />
             </button>
-          </nav>
+          </div>
         )}
       </header>
 
@@ -533,6 +703,8 @@ function MainLayout() {
       >
         <Outlet />
       </div>
+
+      <CarritoDrawer />
     </>
   );
 }

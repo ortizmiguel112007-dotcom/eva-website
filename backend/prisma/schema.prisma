@@ -28,6 +28,7 @@ model User {
   cupones Cupon[]
   comentarios Comentario[]
   foto_documento String?
+  carrito      Carrito?
 }
 
 model VerificacionPendiente {
@@ -88,7 +89,7 @@ model Producto {
 
   destacado Boolean @default(false)
   visible   Boolean @default(true)
-
+  carritoItems CarritoItem[]
   @@map("producto")
 }
 
@@ -127,6 +128,7 @@ model Pedido {
   metodo_pago  String?
   fecha        DateTime @default(now())
   nota         String?
+  pago    Pago?
 
   cliente      User          @relation(fields: [id_cliente], references: [id])
   seccion      Seccion       @relation(fields: [id_seccion], references: [id_seccion])
@@ -211,4 +213,43 @@ model Comentario {
   pedido        Pedido   @relation(fields: [id_pedido], references: [id_pedido])
 
   @@map("comentarios")
+}
+
+model Carrito {
+  id_carrito   Int      @id @default(autoincrement())
+  id_usuario   Int      @unique
+  fecha_act    DateTime @default(now()) @updatedAt
+
+  usuario      User     @relation(fields: [id_usuario], references: [id])
+  items        CarritoItem[]
+
+  @@map("carritos")
+}
+
+model CarritoItem {
+  id_item      Int     @id @default(autoincrement())
+  id_carrito   Int
+  id_producto  Int
+  cantidad     Int     @default(1)
+
+  carrito      Carrito  @relation(fields: [id_carrito], references: [id_carrito], onDelete: Cascade)
+  producto     Producto @relation(fields: [id_producto], references: [id_producto], onDelete: Cascade)
+
+  @@unique([id_carrito, id_producto])
+  @@map("carrito_items")
+}
+
+model Pago {
+  id_pago       Int      @id @default(autoincrement())
+  id_pedido     Int      @unique
+  metodo        String   // "qr"
+  estado        String   @default("pendiente") // pendiente, verificado, rechazado
+  comprobante   String?  // URL de la imagen subida
+  fecha         DateTime @default(now())
+  fecha_verif   DateTime?
+  nota_rechazo  String?
+
+  pedido        Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+
+  @@map("pagos")
 }

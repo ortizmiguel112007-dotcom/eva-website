@@ -13,8 +13,10 @@ import { authRoutes, CrudAyuda } from "@/features/auth/router";
 import { ProductosRoutes } from "@/features/products/router";
 import PrivateRoute from "./PrivateRoute";
 import { AdminRoutes } from "@/features/admin/router";
-import { TiendaRoutes } from "@/features/tienda/router"
-export { FaBoxOpen, FaShoppingBag, FaStore, FaPlus, FaTimes } from "react-icons/fa"
+import { TiendaRoutes } from "@/features/tienda/router";
+export { FaBoxOpen, FaShoppingBag, FaStore, FaPlus, FaTimes } from "react-icons/fa";
+
+import { UsuarioRoutes } from "@/features/usuario/Routes"
 // Componente que define las rutas de la aplicación.
 const AppRouter = () => {
     return(
@@ -25,6 +27,9 @@ const AppRouter = () => {
             {/* Rutas privadas */}
             <Route element={<PrivateRoute rolRequerido="usuario"/>}>
                 {/* Aquí van las rutas que requieren autenticación y permisos. */}
+                {UsuarioRoutes}
+
+               
             </Route>
 
             <Route element={<PrivateRoute rolRequerido="emprendedora"/>}>

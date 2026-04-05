@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { crearItem, obtenerItems, obtenerItemPorId, actualizarItem, eliminarItem, obtenerProductosPublicos, toggleVisible } from '../controllers/producto.controller.js'
+import { crearItem, obtenerItems, obtenerItemPorId, actualizarItem, eliminarItem, obtenerProductosPublicos, toggleVisible, listarTodosAdmin  } from '../controllers/producto.controller.js'
 import { upload } from '../middleware/upload.middleware.js'
 import { verificarToken } from '../middleware/auth.middleware.js'
 
@@ -12,5 +12,6 @@ router.patch('/:id/visible',             verificarToken, toggleVisible)
 router.get('/:id',                       obtenerItemPorId)           // ⬅️ al final
 router.put('/:id',                       verificarToken, upload.single('imagen'), actualizarItem)
 router.delete('/:id',                    verificarToken, eliminarItem)
+router.get('/admin/todos', verificarToken, listarTodosAdmin)
 
 export default router

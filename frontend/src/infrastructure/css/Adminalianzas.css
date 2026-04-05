@@ -1,0 +1,306 @@
+
+
+/* ─── Container ──────────────────────────────────────────── */
+.aa-container {
+  padding: 2rem 2.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.aa-header {
+  margin-bottom: 1.5rem;
+}
+
+.aa-header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+}
+
+.aa-header p {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ─── Métricas ───────────────────────────────────────────── */
+.aa-metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.aa-metrica-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.aa-metrica-card p {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.aa-metrica-valor {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.aa-metrica-valor.total     { color: #1e293b; }
+.aa-metrica-valor.activas   { color: #16a34a; }
+.aa-metrica-valor.pendientes{ color: #f59e0b; }
+.aa-metrica-valor.finalizadas{ color: #64748b; }
+
+/* ─── Filtros ────────────────────────────────────────────── */
+.aa-filtros {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.aa-search-box {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.aa-search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', system-ui;
+}
+
+.aa-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+}
+
+.aa-select {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Lista ──────────────────────────────────────────────── */
+.aa-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.aa-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+}
+
+.aa-empty p {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+.aa-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.aa-card-header {
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  cursor: pointer;
+}
+
+.aa-card-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.6rem;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aa-card-info {
+  flex: 1;
+  min-width: 180px;
+}
+
+.aa-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.aa-card-nombre {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+/* ─── Badges estado ──────────────────────────────────────── */
+.aa-badge {
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+}
+
+.aa-badge.pendiente  { background: #fffbeb; color: #f59e0b; }
+.aa-badge.activa     { background: #f0fdf4; color: #16a34a; }
+.aa-badge.finalizada { background: #f1f5f9; color: #64748b; }
+
+/* ─── Meta info ──────────────────────────────────────────── */
+.aa-card-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  flex-wrap: wrap;
+}
+
+.aa-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ─── Botón finalizar ────────────────────────────────────── */
+.aa-btn-finalizar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.45rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui;
+  transition: background 180ms ease;
+}
+
+.aa-btn-finalizar:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.aa-chevron {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+/* ─── Expandido ──────────────────────────────────────────── */
+.aa-card-body {
+  border-top: 1px solid #f1f5f9;
+  padding: 1rem 1.25rem;
+  background: #fafbfc;
+}
+
+.aa-card-desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.aa-participantes-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.aa-participantes-list {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.aa-participante-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+}
+
+.aa-participante-badge.autorizado {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.aa-participante-badge.pendiente {
+  background: #fffbeb;
+  color: #f59e0b;
+  border: 1px solid #fde68a;
+}
+
+/* ─── Toast ──────────────────────────────────────────────── */
+.aa-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  z-index: 999;
+  font-family: 'DM Sans', system-ui;
+}
+
+.aa-toast.ok    { background: #16a34a; }
+.aa-toast.error { background: #ef4444; }
+
+/* ─── Loading ────────────────────────────────────────────── */
+.aa-loading {
+  color: #64748b;
+  padding: 2rem;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .aa-container { padding: 1.25rem; }
+  .aa-metricas  { grid-template-columns: repeat(2, 1fr); }
+}
