@@ -1,34 +1,30 @@
 import { useState, useEffect } from "react";
 import { inventarioService } from "@/features/products/services/inventario.service";
-import { FiEdit } from "react-icons/fi";
-import { FiSearch } from "react-icons/fi";
+import { FiEdit, FiSearch } from "react-icons/fi";
 import "@/infrastructure/css/inventario.css";
 
-// determina el estado semáforo
-const getEstado = (cantidad, stock_minimo) => {
-  if (cantidad === 0) return "vacio";
-  if (cantidad <= stock_minimo) return "bajo";
+const getEstado = (item) => {
+  if (item.tipo === "servicio") return "servicio";
+  if (item.cantidad === 0) return "vacio";
+  if (item.cantidad <= item.stock_minimo) return "bajo";
   return "ok";
 };
 
-// porcentaje para la barra (respecto al máximo)
 const getPorcentaje = (cantidad, stock_maximo) => {
   if (!stock_maximo || stock_maximo === 0) return 0;
   return Math.min(100, Math.round((cantidad / stock_maximo) * 100));
 };
 
 export default function Inventario() {
-  const [items, setItems] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [busqueda, setBusqueda] = useState("");
-  const [modal, setModal] = useState(null);
-  const [form, setForm] = useState({
-    cantidad: "",
-    stock_minimo: "",
-    stock_maximo: "",
-  });
+  const [items, setItems]         = useState([]);
+  const [cargando, setCargando]   = useState(true);
+  const [busqueda, setBusqueda]   = useState("");
+  const [modal, setModal]         = useState(null);
+  const [form, setForm]           = useState({ cantidad: "", stock_minimo: "", stock_maximo: "" });
   const [guardando, setGuardando] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast]         = useState(null);
+  const [pagina, setPagina]       = useState(1);
+  const POR_PAGINA = 10;
 
   useEffect(() => {
     const cargar = async () => {
@@ -44,12 +40,15 @@ export default function Inventario() {
     cargar();
   }, []);
 
+  useEffect(() => { setPagina(1); }, [busqueda]);
+
   const mostrarToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   };
 
   const abrirModal = (item) => {
+    if (item.tipo === "servicio") return;
     setModal(item);
     setForm({
       cantidad: String(item.cantidad),
@@ -95,12 +94,16 @@ export default function Inventario() {
       (i.categoria || "").toLowerCase().includes(busqueda.toLowerCase()),
   );
 
-  // métricas
+  const totalPaginas    = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+  const filtradosPagina = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+
   const totalProductos = items.length;
   const stockBajo = items.filter(
-    (i) => i.cantidad > 0 && i.cantidad <= i.stock_minimo,
+    (i) => i.tipo !== "servicio" && i.cantidad > 0 && i.cantidad <= i.stock_minimo,
   ).length;
-  const sinStock = items.filter((i) => i.cantidad === 0).length;
+  const sinStock = items.filter(
+    (i) => i.tipo !== "servicio" && i.cantidad === 0,
+  ).length;
 
   if (cargando)
     return (
@@ -111,6 +114,7 @@ export default function Inventario() {
 
   return (
     <div className="inventario-container">
+
       {/* Header */}
       <div className="inventario-header">
         <h1>Stock e Inventario</h1>
@@ -155,89 +159,94 @@ export default function Inventario() {
             </tr>
           </thead>
           <tbody>
-            {filtrados.length === 0 ? (
+            {filtradosPagina.length === 0 ? (
               <tr>
                 <td colSpan={5}>
-                  <div className="inv-empty">
-                    No hay productos en el inventario
-                  </div>
+                  <div className="inv-empty">No hay productos en el inventario</div>
                 </td>
               </tr>
             ) : (
-              filtrados.map((item) => {
-                const estado = getEstado(item.cantidad, item.stock_minimo);
-                const porcentaje = getPorcentaje(
-                  item.cantidad,
-                  item.stock_maximo,
-                );
+              filtradosPagina.map((item) => {
+                const estado     = getEstado(item);
+                const esServicio = item.tipo === "servicio";
+                const porcentaje = esServicio ? 100 : getPorcentaje(item.cantidad, item.stock_maximo);
 
                 return (
                   <tr key={item.id_producto}>
-                    {/* Producto */}
                     <td>
                       <div className="inv-producto-info">
                         {item.imagen ? (
-                          <img
-                            src={item.imagen}
-                            alt={item.nombre}
-                            className="inv-producto-img"
-                          />
+                          <img src={item.imagen} alt={item.nombre} className="inv-producto-img" />
                         ) : (
-                          <div className="inv-producto-sin-img">📦</div>
+                          <div className="inv-producto-sin-img">{esServicio ? "✂️" : "📦"}</div>
                         )}
                         <div>
                           <div className="inv-producto-nombre">
                             {item.nombre}
+                            {item.es_alianza && (
+                              <span style={{
+                                marginLeft: "0.5rem", fontSize: "0.62rem", fontWeight: 700,
+                                padding: "2px 7px", borderRadius: "999px",
+                                background: "rgba(99,102,241,0.1)", color: "#6366f1",
+                                border: "1px solid rgba(99,102,241,0.3)", verticalAlign: "middle",
+                              }}>
+                                Alianza
+                              </span>
+                            )}
                           </div>
                           <div className="inv-producto-categoria">
-                            {item.categoria || "Sin categoría"}
+                            {item.es_alianza && item.nombre_seccion
+                              ? item.nombre_seccion
+                              : item.categoria || "Sin categoría"}
                           </div>
                         </div>
                       </div>
                     </td>
 
-                    {/* Cantidad */}
                     <td>
-                      <span className={`inv-cantidad-num ${estado}`}>
-                        {item.cantidad}
-                      </span>
+                      {esServicio ? (
+                        <span className="inv-cantidad-num ok">—</span>
+                      ) : (
+                        <span className={`inv-cantidad-num ${estado}`}>{item.cantidad}</span>
+                      )}
                     </td>
 
-                    {/* Barra progreso */}
                     <td>
-                      <div className="inv-progreso-wrapper">
-                        <div className="inv-progreso-labels">
-                          <span>Min: {item.stock_minimo}</span>
-                          <span>Max: {item.stock_maximo}</span>
+                      {esServicio ? (
+                        <span style={{ color: "#6b7280", fontSize: "0.82rem" }}>No aplica</span>
+                      ) : (
+                        <div className="inv-progreso-wrapper">
+                          <div className="inv-progreso-labels">
+                            <span>Min: {item.stock_minimo}</span>
+                            <span>Max: {item.stock_maximo}</span>
+                          </div>
+                          <div className="inv-progreso-bar">
+                            <div className={`inv-progreso-fill ${estado}`} style={{ width: `${porcentaje}%` }} />
+                          </div>
                         </div>
-                        <div className="inv-progreso-bar">
-                          <div
-                            className={`inv-progreso-fill ${estado}`}
-                            style={{ width: `${porcentaje}%` }}
-                          />
-                        </div>
-                      </div>
+                      )}
                     </td>
 
-                    {/* Estado */}
                     <td>
-                      <span className={`badge-alerta ${estado}`}>
-                        {estado === "vacio"
-                          ? "⊗ Sin Stock"
-                          : estado === "bajo"
-                            ? "⚠ Stock Bajo"
-                            : "✓ Stock OK"}
-                      </span>
+                      {esServicio ? (
+                        <span className="badge-alerta servicio">✦ Servicio</span>
+                      ) : (
+                        <span className={`badge-alerta ${estado}`}>
+                          {estado === "vacio" ? "⊗ Sin Stock" : estado === "bajo" ? "⚠ Stock Bajo" : "✓ Stock OK"}
+                        </span>
+                      )}
                     </td>
 
-                    {/* Acciones */}
                     <td>
-                      <button
-                        className="btn-editar-stock"
-                        onClick={() => abrirModal(item)}
-                      >
-                        <FiEdit size={13} /> Editar Stock
-                      </button>
+                      {esServicio ? (
+                        <button className="btn-editar-stock" disabled style={{ opacity: 0.4, cursor: "not-allowed" }}>
+                          <FiEdit size={13} /> No aplica
+                        </button>
+                      ) : (
+                        <button className="btn-editar-stock" onClick={() => abrirModal(item)}>
+                          <FiEdit size={13} /> Editar Stock
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
@@ -247,6 +256,24 @@ export default function Inventario() {
         </table>
       </div>
 
+      {/* Paginación */}
+      {totalPaginas > 1 && (
+        <div className="crud-pagination">
+          <span className="pagination-info">
+            {filtrados.length} producto{filtrados.length !== 1 ? "s" : ""} · Página {pagina} de {totalPaginas}
+          </span>
+          <div className="pagination-controls">
+            <button className="page-btn page-btn-arrow" onClick={() => setPagina(1)} disabled={pagina === 1}>«</button>
+            <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p - 1)} disabled={pagina === 1}>‹</button>
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
+              <button key={n} className={`page-btn ${n === pagina ? "page-btn-active" : ""}`} onClick={() => setPagina(n)}>{n}</button>
+            ))}
+            <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p + 1)} disabled={pagina === totalPaginas}>›</button>
+            <button className="page-btn page-btn-arrow" onClick={() => setPagina(totalPaginas)} disabled={pagina === totalPaginas}>»</button>
+          </div>
+        </div>
+      )}
+
       {/* Modal */}
       {modal && (
         <div className="inv-modal-overlay" onClick={() => setModal(null)}>
@@ -255,55 +282,24 @@ export default function Inventario() {
               <h3>Editar Stock</h3>
               <span>{modal.nombre}</span>
             </div>
-
             <div className="inv-modal-field">
               <label>Cantidad actual</label>
-              <input
-                type="number"
-                min="0"
-                value={form.cantidad}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, cantidad: e.target.value }))
-                }
-              />
+              <input type="number" min="0" value={form.cantidad}
+                onChange={(e) => setForm((prev) => ({ ...prev, cantidad: e.target.value }))} />
             </div>
-
             <div className="inv-modal-field">
               <label>Stock mínimo</label>
-              <input
-                type="number"
-                min="0"
-                value={form.stock_minimo}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, stock_minimo: e.target.value }))
-                }
-              />
+              <input type="number" min="0" value={form.stock_minimo}
+                onChange={(e) => setForm((prev) => ({ ...prev, stock_minimo: e.target.value }))} />
             </div>
-
             <div className="inv-modal-field">
               <label>Stock máximo</label>
-              <input
-                type="number"
-                min="0"
-                value={form.stock_maximo}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, stock_maximo: e.target.value }))
-                }
-              />
+              <input type="number" min="0" value={form.stock_maximo}
+                onChange={(e) => setForm((prev) => ({ ...prev, stock_maximo: e.target.value }))} />
             </div>
-
             <div className="inv-modal-buttons">
-              <button
-                className="btn-cancelar-inv"
-                onClick={() => setModal(null)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="btn-guardar-inv"
-                onClick={guardarStock}
-                disabled={guardando}
-              >
+              <button className="btn-cancelar-inv" onClick={() => setModal(null)}>Cancelar</button>
+              <button className="btn-guardar-inv" onClick={guardarStock} disabled={guardando}>
                 {guardando ? "Guardando..." : "Guardar"}
               </button>
             </div>

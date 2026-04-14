@@ -13,7 +13,7 @@ import { useAuth } from "@/core/context/AuthConten";
 
 /**
  * PrivateRoute
- * 
+ *
  * Responsabilidad:
  * - Validar autenticación.
  * - Validar permisos (rol).
@@ -21,31 +21,36 @@ import { useAuth } from "@/core/context/AuthConten";
  */
 
 const PrivateRoute = ({ rolRequerido }) => {
+  // Simulación de autenticación.
+  // En un caso real vendría de:
+  // - Context
+  // - Redux
+  // - Zustand
+  // - JWT almacenado
+  const { user } = useAuth();
 
-    // Simulación de autenticación.
-    // En un caso real vendría de:
-    // - Context
-    // - Redux
-    // - Zustand
-    // - JWT almacenado
-    const { user } = useAuth();
+  console.log("Usuario en PrivateRoute:", user); // ← agrega esto
+  console.log("Rol del usuario:", user?.rol);
+  console.log("Rol requerido:", rolRequerido);
+  // Simulación de usuario con rol.
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
-    console.log('Usuario en PrivateRoute:', user) // ← agrega esto
-    console.log('Rol del usuario:', user?.rol)
-    console.log('Rol requerido:', rolRequerido)
-    // Simulación de usuario con rol.
-    if(!user){
-        return <Navigate to="/registro" />;
-    }
+  // Validar rol requerido.
+    // Rol no coincide
+  if (rolRequerido && user.rol !== rolRequerido) {
+    // si es emprendedora va a su dashboard
+    if (user.rol === "emprendedora") return <Navigate to="/dashboard" />
+    // si es admin va a su panel
+    if (user.rol === "admin") return <Navigate to="/admin" />
+    // cliente va al inicio
+    return <Navigate to="/inicio" />
+  }
 
-    // Validar rol requerido.
-    if(rolRequerido && user.rol !== rolRequerido){
-        return <Navigate to="/" />;
-    }
-
-    // Si pasa validaciones, renderizar rutas hijas.
-    return <Outlet />;
-}
+  // Si pasa validaciones, renderizar rutas hijas.
+  return <Outlet />;
+};
 
 // Exportación del componente.
 export default PrivateRoute;

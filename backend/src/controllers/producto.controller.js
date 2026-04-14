@@ -12,7 +12,7 @@ export const crearItem = async (req, res) => {
     const emprendedora = await prisma.emprendedora.findUnique({
       where: { id_usuario },
       include: {
-        secciones: { orderBy: { fecha_creacion: "asc" }, take: 1 },
+        secciones: { orderBy: { fecha_creacion: "asc" } },
       },
     });
 
@@ -23,7 +23,22 @@ export const crearItem = async (req, res) => {
     if (!emprendedora.secciones.length)
       return res.status(404).json({ error: "No tienes sección creada" });
 
-    const id_seccion = emprendedora.secciones[0].id_seccion;
+    let id_seccion =
+      emprendedora.secciones.find((s) => !s.id_alianza)?.id_seccion ||
+      emprendedora.secciones[0].id_seccion;
+    // Si se especificó una sección de alianza, verificar que la emprendedora participa
+    if (req.body.id_seccion_alianza) {
+      const seccionAlianza = await prisma.seccion.findFirst({
+        where: { id_seccion: Number(req.body.id_seccion_alianza) },
+        include: { alianza: { include: { participantes: true } } },
+      });
+      const participa = seccionAlianza?.alianza?.participantes?.some(
+        (p) => p.id_usuario === id_usuario && p.autorizado,
+      );
+      if (seccionAlianza && participa) {
+        id_seccion = seccionAlianza.id_seccion;
+      }
+    }
     const {
       nombre_producto,
       descripcion,
@@ -44,6 +59,7 @@ export const crearItem = async (req, res) => {
       const producto = await tx.producto.create({
         data: {
           id_seccion,
+          id_creador: id_usuario,
           nombre_producto,
           descripcion,
           precio: Number(precio),
@@ -55,12 +71,14 @@ export const crearItem = async (req, res) => {
         },
       });
 
+      const esServicio = (tipo || "producto") === "servicio";
+
       const inventario = await tx.inventario.create({
         data: {
           id_producto: producto.id_producto,
-          cantidad: Number(cantidad) || 0,
-          stock_minimo: Number(stock_minimo) || 0,
-          stock_maximo: 100,
+          cantidad: esServicio ? 9999 : Number(cantidad) || 0,
+          stock_minimo: esServicio ? 0 : Number(stock_minimo) || 0,
+          stock_maximo: esServicio ? 9999 : 100,
         },
       });
 
@@ -102,6 +120,15 @@ export const obtenerItemPorId = async (req, res) => {
         inventario: true,
         seccion: {
           include: {
+            alianza: {
+              include: {
+                participantes: {
+                  include: {
+                    usuario: { select: { nombre: true } }
+                  }
+                }
+              }
+            },
             emprendedora: {
               include: {
                 usuario: { select: { nombre: true, email: true } },
@@ -110,11 +137,11 @@ export const obtenerItemPorId = async (req, res) => {
           },
         },
       },
-    });
-    if (!item) return res.status(404).json({ error: "Item no encontrado" });
-    res.json(item);
+    })
+    if (!item) return res.status(404).json({ error: "Item no encontrado" })
+    res.json(item)
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener item" });
+    res.status(500).json({ error: "Error al obtener item" })
   }
 };
 
@@ -124,7 +151,10 @@ export const obtenerProductosPublicos = async (req, res) => {
     const id_emprendedora = Number(req.params.id_emprendedora);
     const productos = await prisma.producto.findMany({
       where: {
-        seccion: { id_emprendedora },
+        seccion: {
+          id_emprendedora,
+          id_alianza: null  // ← AGREGAR: excluir secciones de alianza
+        },
         estado_producto: "activo",
         visible: true,
       },
@@ -193,18 +223,25 @@ export const actualizarItem = async (req, res) => {
         },
       });
 
-      await tx.inventario.update({
+      const productoActual = await tx.producto.findUnique({
         where: { id_producto },
-        data: {
-          ...(cantidad !== undefined && { cantidad: Number(cantidad) }),
-          ...(stock_minimo !== undefined && {
-            stock_minimo: Number(stock_minimo),
-          }),
-          ...(stock_maximo !== undefined && {
-            stock_maximo: Number(stock_maximo),
-          }),
-        },
+        select: { tipo: true },
       });
+
+      if (productoActual?.tipo !== "servicio") {
+        await tx.inventario.update({
+          where: { id_producto },
+          data: {
+            ...(cantidad !== undefined && { cantidad: Number(cantidad) }),
+            ...(stock_minimo !== undefined && {
+              stock_minimo: Number(stock_minimo),
+            }),
+            ...(stock_maximo !== undefined && {
+              stock_maximo: Number(stock_maximo),
+            }),
+          },
+        });
+      }
 
       return producto;
     });
@@ -236,3 +273,64 @@ export const eliminarItem = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// GET /api/items/admin/todos — todos los productos (solo admin)
+export const listarTodosAdmin = async (req, res) => {
+  try {
+    const productos = await prisma.producto.findMany({
+      include: {
+        inventario: true,
+        seccion: {
+          include: {
+            emprendedora: {
+              include: { usuario: { select: { nombre: true } } },
+            },
+          },
+        },
+      },
+      orderBy: { id_producto: "desc" },
+    });
+    res.json(productos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener productos" });
+  }
+};
+
+// GET /api/items/mis-items — todos los items de la emprendedora (propios + alianza)
+export const listarMisItems = async (req, res) => {
+  try {
+    const id_usuario = req.user.id
+
+    const emprendedora = await prisma.emprendedora.findUnique({
+      where: { id_usuario },
+      include: { secciones: true }
+    })
+    if (!emprendedora) return res.status(404).json({ error: 'No encontrada' })
+
+    const idSecciones = emprendedora.secciones.map(s => s.id_seccion)
+
+    // Productos propios + productos creados por esta emprendedora en alianzas
+    const items = await prisma.producto.findMany({
+      where: {
+        estado_producto: 'activo',
+        OR: [
+          { id_seccion: { in: idSecciones } },
+          { id_creador: id_usuario }
+        ]
+      },
+      include: {
+        inventario: true,
+        seccion: {
+          include: {
+            alianza: { select: { nombre: true, id_alianza: true } }
+          }
+        }
+      },
+      orderBy: { nombre_producto: 'asc' }
+    })
+    res.json(items)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener items' })
+  }
+}

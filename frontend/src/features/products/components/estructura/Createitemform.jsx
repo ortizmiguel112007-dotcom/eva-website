@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { FiX } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiX, FiShoppingBag, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/core/context/AuthConten";
+import { alianzaService } from "@/features/products/services/alianza.service";
 import axios from "axios";
 
 function CreateItemForm({
@@ -16,6 +17,8 @@ function CreateItemForm({
 
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
+  const [seccionesAlianza, setSeccionesAlianza] = useState([]);
+  const [seccionSeleccionada, setSeccionSeleccionada] = useState("propia"); // "propia" o id_seccion
 
   const [form, setForm] = useState(
     initialData || {
@@ -32,6 +35,16 @@ function CreateItemForm({
 
   const [errors, setErrors] = useState({});
 
+  // Cargar secciones de alianza activas
+  useEffect(() => {
+    if (!isEdit) {
+      alianzaService
+        .listarSeccionesAlianza()
+        .then((data) => setSeccionesAlianza(Array.isArray(data) ? data : []))
+        .catch(() => setSeccionesAlianza([]));
+    }
+  }, [isEdit]);
+
   const formatCOP = (value) => {
     if (!value) return "";
     return new Intl.NumberFormat("es-CO").format(value);
@@ -47,6 +60,7 @@ function CreateItemForm({
     const valor = Math.max(0, Number(raw));
     setForm((prev) => ({ ...prev, precio: valor === 0 ? "" : String(valor) }));
   };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -96,11 +110,15 @@ function CreateItemForm({
     formData.append("tipo", type === "product" ? "producto" : "servicio");
     if (form.imagen instanceof File) formData.append("imagen", form.imagen);
 
+    // Si eligió sección de alianza, enviarla
+    if (seccionSeleccionada !== "propia") {
+      formData.append("id_seccion_alianza", seccionSeleccionada);
+    }
+
     setCargando(true);
     setError(null);
     try {
       if (isEdit && initialData?.id_producto) {
-        // EDITAR — PUT
         await axios.put(
           `http://localhost:3000/api/items/${initialData.id_producto}`,
           formData,
@@ -112,7 +130,6 @@ function CreateItemForm({
           },
         );
       } else {
-        // CREAR — POST
         await axios.post(
           "http://localhost:3000/api/items/crearitem",
           formData,
@@ -201,6 +218,120 @@ function CreateItemForm({
         </div>
 
         <form className="form-container" onSubmit={handleSubmit}>
+          {/* ── Selector de sección (solo al crear) ── */}
+          {!isEdit && seccionesAlianza.length > 0 && (
+            <div className="form-group">
+              <label
+                style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}
+              >
+                <FiUsers size={14} color="#3b82f6" /> ¿Dónde publicar?
+              </label>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                }}
+              >
+                {/* Opción tienda propia */}
+                <div
+                  onClick={() => setSeccionSeleccionada("propia")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.65rem 1rem",
+                    borderRadius: "0.6rem",
+                    cursor: "pointer",
+                    border: `1.5px solid ${seccionSeleccionada === "propia" ? "#3b82f6" : "#e5e7eb"}`,
+                    background:
+                      seccionSeleccionada === "propia" ? "#eff6ff" : "#fff",
+                  }}
+                >
+                  <FiShoppingBag size={16} color="#3b82f6" />
+                  <span
+                    style={{
+                      fontSize: "0.88rem",
+                      fontWeight: 600,
+                      color: "#1e293b",
+                    }}
+                  >
+                    Mi tienda propia
+                  </span>
+                  {seccionSeleccionada === "propia" && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        fontSize: "0.72rem",
+                        color: "#3b82f6",
+                        fontWeight: 700,
+                      }}
+                    >
+                      ✓ Seleccionada
+                    </span>
+                  )}
+                </div>
+
+                {/* Opciones alianza */}
+                {seccionesAlianza.map((s) => (
+                  <div
+                    key={s.id_seccion}
+                    onClick={() => setSeccionSeleccionada(s.id_seccion)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.65rem 1rem",
+                      borderRadius: "0.6rem",
+                      cursor: "pointer",
+                      border: `1.5px solid ${seccionSeleccionada === s.id_seccion ? "#3b82f6" : "#e5e7eb"}`,
+                      background:
+                        seccionSeleccionada === s.id_seccion
+                          ? "#eff6ff"
+                          : "#fff",
+                    }}
+                  >
+                    <FiUsers size={16} color="#8b5cf6" />
+                    <span
+                      style={{
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        color: "#1e293b",
+                      }}
+                    >
+                      {s.nombre_alianza}
+                    </span>
+                    {seccionSeleccionada === s.id_seccion && (
+                      <span
+                        style={{
+                          marginLeft: "auto",
+                          fontSize: "0.72rem",
+                          color: "#3b82f6",
+                          fontWeight: 700,
+                        }}
+                      >
+                        ✓ Seleccionada
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {seccionSeleccionada !== "propia" && (
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#3b82f6",
+                    margin: "0.3rem 0 0",
+                    fontWeight: 500,
+                  }}
+                >
+                  Este producto se publicará en la tienda conjunta de la alianza
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="form-group">
             <label>{isProduct ? "Nombre:" : "Nombre del servicio"}</label>
             <input

@@ -28,6 +28,31 @@ export default function ProductCard({ item, onDelete, onToggleVisibility }) {
         <span className={`type-badge ${item.type}`}>
           {item.type === "producto" ? "Producto" : "Servicio"}
         </span>
+        {/* Badge alianza */}
+        {item.es_alianza && (
+          <span
+            style={{
+              position: "absolute",
+              bottom: "10px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(15,23,42,0.75)",
+              color: "#a5b4fc",
+              fontSize: "0.6rem",
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: "999px",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+              zIndex: 3,
+              backdropFilter: "blur(6px)",
+              border: "1px solid rgba(165,180,252,0.4)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {item.nombre_alianza || "Alianza"}
+          </span>
+        )}
 
         {/* Acciones overlay */}
         {/* Badge oculto — separado de las acciones */}
@@ -58,6 +83,23 @@ export default function ProductCard({ item, onDelete, onToggleVisibility }) {
       <div className="product-card-body">
         <h4>{item.name}</h4>
         <p className="category">{item.category}</p>
+
+        {/* Alianza info ← AGREGAR */}
+        {item.es_alianza && (
+          <p
+            style={{
+              fontSize: "0.72rem",
+              color: "#6366f1",
+              fontWeight: 600,
+              margin: "0 0 0.4rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            Campaña: {item.nombre_alianza}
+          </p>
+        )}
 
         {/* Descripción */}
         {item.descripcion && <p className="description">{item.descripcion}</p>}

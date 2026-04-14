@@ -1,4 +1,5 @@
 import prisma from "../conexion.js";
+import { crearNotificacion } from "./notificacion.controller.js";
 import jwt from "jsonwebtoken";
 
 export const verificarCodigo = async (req, res) => {
@@ -31,7 +32,7 @@ export const verificarCodigo = async (req, res) => {
         telefono: pendiente.telefono,
         password: pendiente.password,
         verificado: true,
-        activo: pendiente.rol === "emprendedora" ? false : true, 
+        activo: pendiente.rol === "emprendedora" ? false : true,
         rol: pendiente.rol || "usuario",
         foto_documento: pendiente.foto_documento || null,
       },
@@ -49,6 +50,24 @@ export const verificarCodigo = async (req, res) => {
     );
 
     await prisma.verificacionPendiente.delete({ where: { email } });
+    // Notificar a todos los admins si es emprendedora
+    if (pendiente.rol === "emprendedora") {
+      const admins = await prisma.user.findMany({
+        where: { rol: { in: ["administrador", "admin"] } },
+        select: { id: true },
+      });
+      await Promise.all(
+        admins.map((a) =>
+          crearNotificacion(
+            a.id,
+            "solicitud",
+            "Nueva solicitud de emprendedora",
+            `${pendiente.nombre} ha enviado una solicitud para ser emprendedora.`,
+            "/admin/users",
+          ),
+        ),
+      );
+    }
 
     return res.json({ message: "Cuenta verificada con éxito", token });
   } catch (error) {

@@ -1,0 +1,285 @@
+
+
+/* ─── Container ──────────────────────────────────────────── */
+.ap-container {
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
+.ap-header {
+  margin-bottom: 1.5rem;
+}
+
+.ap-header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+}
+
+.ap-header p {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ─── Métricas ───────────────────────────────────────────── */
+.ap-metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.ap-metrica-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ap-metrica-card p {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ap-metrica-valor {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.ap-metrica-valor.total      { color: #1e293b; }
+.ap-metrica-valor.visibles   { color: #16a34a; }
+.ap-metrica-valor.ocultos    { color: #ef4444; }
+.ap-metrica-valor.destacados { color: #f59e0b; }
+
+/* ─── Filtros ────────────────────────────────────────────── */
+.ap-filtros {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.ap-search-box {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.ap-search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', system-ui;
+}
+
+.ap-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+}
+
+.ap-select {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* ─── Tabla wrapper ──────────────────────────────────────── */
+.ap-table-wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+}
+
+.ap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ap-table thead tr {
+  background: #1e293b;
+}
+
+.ap-table thead th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ap-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 180ms ease;
+}
+
+.ap-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.ap-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ap-table td {
+  padding: 0.85rem 1rem;
+  color: #64748b;
+  vertical-align: middle;
+}
+
+/* ─── Celda producto ─────────────────────────────────────── */
+.ap-producto-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ap-producto-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ap-producto-placeholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.4rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ap-producto-nombre {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* ─── Precio ─────────────────────────────────────────────── */
+.ap-precio {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ─── Badge stock ────────────────────────────────────────── */
+.ap-stock-badge {
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ap-stock-badge.disponible { background: #f0fdf4; color: #16a34a; }
+.ap-stock-badge.agotado    { background: #fef2f2; color: #ef4444; }
+
+/* ─── Badge estado ───────────────────────────────────────── */
+.ap-estado-badge {
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ap-estado-badge.visible { background: #f0fdf4; color: #16a34a; }
+.ap-estado-badge.oculto  { background: #fef2f2; color: #ef4444; }
+
+/* ─── Acciones ───────────────────────────────────────────── */
+.ap-acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ap-btn-accion {
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.4rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  font-family: 'DM Sans', system-ui;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.ap-btn-accion:hover {
+  background: #f1f5f9;
+}
+
+.ap-btn-accion.destacado {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.ap-btn-accion.destacado:hover {
+  background: #fef3c7;
+}
+
+/* ─── Empty ──────────────────────────────────────────────── */
+.ap-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+}
+
+/* ─── Loading ────────────────────────────────────────────── */
+.ap-loading {
+  color: #64748b;
+  padding: 2rem;
+}
+
+/* ─── Toast ──────────────────────────────────────────────── */
+.ap-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  z-index: 999;
+  font-family: 'DM Sans', system-ui;
+}
+
+.ap-toast.ok    { background: #16a34a; }
+.ap-toast.error { background: #ef4444; }
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ap-container  { padding: 1.25rem; }
+  .ap-metricas   { grid-template-columns: repeat(2, 1fr); }
+  .ap-table-wrapper { overflow-x: auto; }
+}

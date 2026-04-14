@@ -1,4 +1,5 @@
 import prisma from '../conexion.js'
+import { crearNotificacion } from './notificacion.controller.js'
 
 // GET /api/comentarios — comentarios de los productos de la emprendedora
 export const listarComentarios = async (req, res) => {
@@ -67,12 +68,28 @@ export const crearComentario = async (req, res) => {
         texto:        texto.trim(),
       }
     })
+     const prodConEmp = await prisma.producto.findUnique({
+      where: { id_producto: Number(id_producto) },
+      include: {
+        seccion: { include: { emprendedora: { include: { usuario: true } } } }
+      }
+    })
+    if (prodConEmp?.seccion?.emprendedora?.usuario) {
+      await crearNotificacion(
+        prodConEmp.seccion.emprendedora.usuario.id,
+        'comentario',
+        'Nuevo comentario',
+        `Alguien dejó una reseña en "${prodConEmp.nombre_producto}".`,
+        '/comentarios'
+      )
+    }
 
     res.status(201).json({ message: 'Comentario creado', comentario })
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Error al crear comentario' })
   }
+  
 }
 
 // PUT /api/comentarios/:id/ocultar — ocultar comentario (admin/emprendedora)
@@ -104,6 +121,30 @@ export const listarComentariosPorProducto = async (req, res) => {
       orderBy: { fecha: 'desc' }
     })
     res.json(comentarios)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Error al obtener comentarios' })
+  }
+}
+
+// GET /api/admin/comentarios — TODOS los comentarios (solo admin)
+export const listarTodosComentariosAdmin = async (req, res) => {
+  try {
+    const comentarios = await prisma.comentario.findMany({
+      include: {
+        usuario: { select: { nombre: true, email: true } },
+        producto: { select: { nombre_producto: true, imagen: true } }
+      },
+      orderBy: { fecha: 'desc' }
+    })
+
+    const resultado = comentarios.map(c => ({
+      ...c,
+      producto_nombre: c.producto?.nombre_producto,
+      producto_imagen: c.producto?.imagen,
+    }))
+
+    res.json(resultado)
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Error al obtener comentarios' })

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { alianzaService } from "@/features/products/services/alianza.service";
 import { useAuth } from "@/core/context/AuthConten";
-import { FiCalendar, FiUserCheck, FiFlag } from "react-icons/fi";
+import { FiCalendar, FiUserCheck, FiFlag, FiUsers } from "react-icons/fi";
 import "@/infrastructure/css/alianzas.css";
 
-// Colores para avatares
 const AVATAR_COLORS = [
   "#3b82f6", "#059669", "#d97706", "#7c3aed",
   "#ef4444", "#0891b2", "#be185d", "#65a30d"
@@ -23,6 +23,7 @@ function getInitials(nombre) {
 
 export default function Alianzas() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [alianzas, setAlianzas]           = useState([]);
   const [emprendedoras, setEmprendedoras] = useState([]);
@@ -171,6 +172,7 @@ export default function Alianzas() {
             const miParticipacion = alianza.participantes.find(p => p.id_usuario === user.id);
             const puedoAutorizar  = miParticipacion && !miParticipacion.autorizado;
             const puedoFinalizar  = alianza.creada_por === user.id && alianza.estado !== "finalizada";
+            const esActiva        = alianza.estado === "activa";
 
             return (
               <div key={alianza.id_alianza} className={`alianza-card ${alianza.estado}`}>
@@ -227,20 +229,26 @@ export default function Alianzas() {
                 </div>
 
                 {/* Acciones */}
-                {(puedoAutorizar || puedoFinalizar) && (
-                  <div className="alianza-card-actions">
-                    {puedoAutorizar && (
-                      <button className="btn-autorizar" onClick={() => handleAutorizar(alianza.id_alianza)}>
-                        <FiUserCheck size={13} /> Autorizar participación
-                      </button>
-                    )}
-                    {puedoFinalizar && (
-                      <button className="btn-finalizar" onClick={() => handleFinalizar(alianza.id_alianza)}>
-                        <FiFlag size={13} /> Finalizar
-                      </button>
-                    )}
-                  </div>
-                )}
+                <div className="alianza-card-actions">
+                  {puedoAutorizar && (
+                    <button className="btn-autorizar" onClick={() => handleAutorizar(alianza.id_alianza)}>
+                      <FiUserCheck size={13} /> Autorizar participación
+                    </button>
+                  )}
+                  {puedoFinalizar && (
+                    <button className="btn-finalizar" onClick={() => handleFinalizar(alianza.id_alianza)}>
+                      <FiFlag size={13} /> Finalizar
+                    </button>
+                  )}
+                  {esActiva && (
+                    <button
+                      className="btn-ver-tienda-conjunta"
+                      onClick={() => navigate(`/alianza/${alianza.id_alianza}`)}
+                    >
+                      <FiUsers size={13} /> Ver tienda conjunta
+                    </button>
+                  )}
+                </div>
 
               </div>
             );
@@ -311,7 +319,6 @@ export default function Alianzas() {
 
       {/* Toast */}
       {toast && <div className="alianzas-toast">{toast}</div>}
-
     </div>
   );
 }

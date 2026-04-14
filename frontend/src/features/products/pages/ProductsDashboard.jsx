@@ -5,7 +5,7 @@ import TopBar from "@/features/products/components/TopBar.jsx";
 import CategoryFilter from "@/features/products/components/CategoryFilter.jsx";
 import ProductList from "@/features/products/components/ProductList.jsx";
 import { itemService } from "@/features/products/services/item.service";
-
+import axios from "axios";
 import "@/infrastructure/css/form.css";
 import "@/infrastructure/css/categoryFilter.css";
 import "@/infrastructure/css/createItem.css";
@@ -16,7 +16,7 @@ import "@/infrastructure/css/topbar.css";
 const ID_SECCION = 1; // TODO: reemplazar con id_seccion real del usuario autenticado
 
 export default function ProductsDashboard() {
-  const { idSeccion } = useAuth();
+  const { idSeccion, token } = useAuth();
 
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -35,23 +35,29 @@ export default function ProductsDashboard() {
     const cargar = async () => {
       try {
         setCargando(true);
-        const data = await itemService.obtenerPorSeccion(idSeccion);
-        // Normalizamos para que el resto del dashboard funcione igual que antes
-        const normalized = data.map((item) => ({
+        const res = await axios.get(
+          "http://localhost:3000/api/items/mis-items",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        const normalized = res.data.map((item) => ({
           ...item,
           id: item.id_producto,
           name: item.nombre_producto,
           price: item.precio,
           image: item.imagen
             ? item.imagen.startsWith("http")
-              ? item.imagen // URL de Cloudinary - ya completa
-              : `http://localhost:3000${item.imagen}` // archivo local
+              ? item.imagen
+              : `http://localhost:3000${item.imagen}`
             : null,
           type: item.tipo || "producto",
           category: item.categoria,
           visible: item.visible ?? true,
           descripcion: item.descripcion,
           duracion: item.duracion,
+          es_alianza: !!item.seccion?.alianza,
+          nombre_alianza: item.seccion?.alianza?.nombre || null,
         }));
         setItems(normalized);
       } catch (err) {

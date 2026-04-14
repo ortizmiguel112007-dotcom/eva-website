@@ -44,19 +44,22 @@
   box-shadow: var(--shadow-lg);
 }
 
+
 /* ── Imagen container ── */
 .product-card-img-wrapper {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: #f8fafc;          /* ← mismo fondo */
 }
-
 .product-card-img-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;          /* ← muestra la imagen completa */
+  object-position: center;
+  background: #f8fafc;          /* ← fondo suave para los espacios vacíos */
   transition: transform 0.4s ease;
 }
 

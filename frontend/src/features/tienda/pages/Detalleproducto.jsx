@@ -1,382 +1,350 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { tiendaService } from "../services/tienda.service";
-import { useCarrito } from "@/core/context/CarritoContext";
-import "@/infrastructure/css/inicio.css";
-import "@/infrastructure/css/detalleProducto.css";
-
-const handleAgregar = () => {
-  agregar(producto, cantidad);
-  mostrarToast(`${producto.nombre_producto} agregado al carrito`);
-};
+import { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { tiendaService } from "../services/tienda.service"
+import { useCarrito } from "@/core/context/CarritoContext"
+import {
+  FiShoppingCart, FiMinus, FiPlus, FiStar,
+  FiArrowLeft, FiHeart, FiPackage, FiMessageSquare,
+  FiClock, FiTag, FiCheck, FiAlertCircle, FiLogIn
+} from "react-icons/fi"
+import "@/infrastructure/css/DetalleProductoUsuario.css"
 
 const AVATAR_COLORS = [
-  "#3b82f6",
-  "#059669",
-  "#d97706",
-  "#7c3aed",
-  "#ef4444",
-  "#0891b2",
-  "#be185d",
-  "#65a30d",
-];
+  ["#3b82f6","#1d4ed8"], ["#059669","#047857"], ["#d97706","#b45309"],
+  ["#7c3aed","#5b21b6"], ["#ef4444","#dc2626"], ["#0891b2","#0e7490"],
+]
 
-function getAvatarColor(nombre) {
-  if (!nombre) return AVATAR_COLORS[0];
-  const sum = nombre.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return AVATAR_COLORS[sum % AVATAR_COLORS.length];
+function getAvatarGradient(nombre) {
+  if (!nombre) return AVATAR_COLORS[0]
+  const sum = nombre.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length]
 }
 
 function getInitials(nombre) {
-  if (!nombre) return "?";
-  return nombre
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  if (!nombre) return "?"
+  return nombre.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
 }
 
-function formatPrecio(precio) {
-  return "$" + Number(precio).toLocaleString("es-CO");
+function formatPrecio(p) { return "$" + Number(p).toLocaleString("es-CO") }
+function formatFecha(f) {
+  return new Date(f).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })
 }
 
-function formatFecha(fecha) {
-  return new Date(fecha).toLocaleDateString("es-CO", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function Estrellas({ calificacion, size = "1rem" }) {
+function Estrellas({ cal, size = 15 }) {
   return (
-    <div className="detalle-estrellas" style={{ fontSize: size }}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <span
-          key={i}
-          className={i < calificacion ? "estrella-llena" : "estrella-vacia"}
-        >
-          ★
-        </span>
+    <div className="dp-estrellas">
+      {[1,2,3,4,5].map(i => (
+        <FiStar key={i} size={size}
+          fill={i <= cal ? "#f59e0b" : "none"}
+          color={i <= cal ? "#f59e0b" : "#d1d5db"} />
       ))}
     </div>
-  );
+  )
 }
 
 export default function DetalleProducto() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id }    = useParams()
+  const navigate  = useNavigate()
+  const { agregarAlCarrito } = useCarrito()
 
-  const [producto, setProducto] = useState(null);
-  const [relacionados, setRelacionados] = useState([]);
-  const [comentarios, setComentarios] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [cantidad, setCantidad] = useState(1);
-  const [toast, setToast] = useState(null);
-  const { agregar } = useCarrito();
+  const [producto, setProducto]         = useState(null)
+  const [relacionados, setRelacionados] = useState([])
+  const [comentarios, setComentarios]   = useState([])
+  const [cargando, setCargando]         = useState(true)
+  const [cantidad, setCantidad]         = useState(1)
+  const [toast, setToast]               = useState(null)
+  const [favorito, setFavorito]         = useState(false)
+  const [agregado, setAgregado]         = useState(false)
+
+  const mostrarToast = (msg, tipo = "ok") => {
+    setToast({ msg, tipo })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  useEffect(() => {
+    const favs = JSON.parse(localStorage.getItem("favoritos") || "[]")
+    setFavorito(favs.includes(Number(id)))
+  }, [id])
+
   useEffect(() => {
     const cargar = async () => {
-      setCargando(true);
+      setCargando(true)
       try {
-        const data = await tiendaService.getProducto(id);
-        setProducto(data);
-
-        // cargar relacionados por categoría
+        const data = await tiendaService.getProducto(id)
+        setProducto(data)
         if (data.categoria) {
-          const todos = await tiendaService.getCatalogo({
-            categoria: data.categoria,
-          });
-          setRelacionados(
-            todos.filter((p) => p.id_producto !== data.id_producto).slice(0, 4),
-          );
+          const todos = await tiendaService.getCatalogo({ categoria: data.categoria?.toLowerCase() })
+          setRelacionados(todos.filter(p => p.id_producto !== data.id_producto).slice(0, 4))
         }
-
-        // cargar comentarios
         try {
-          const coms = await tiendaService.getComentariosProducto(id);
-          setComentarios(coms);
-        } catch {
-          setComentarios([]);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setCargando(false);
-      }
-    };
-    cargar();
-    window.scrollTo(0, 0);
-  }, [id]);
-
-  const mostrarToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
-  };
+          const coms = await tiendaService.getComentariosProducto(id)
+          setComentarios(coms)
+        } catch { setComentarios([]) }
+      } catch (err) { console.error(err) }
+      finally { setCargando(false) }
+    }
+    cargar()
+    window.scrollTo(0, 0)
+  }, [id])
 
   const handleAgregar = () => {
-    mostrarToast(`${producto.nombre_producto} agregado al carrito`);
-  };
+    if (!producto) return
+    agregarAlCarrito({
+      id_producto: producto.id_producto, nombre_producto: producto.nombre_producto,
+      precio: producto.precio, imagen: producto.imagen, categoria: producto.categoria,
+    }, cantidad)
+    setAgregado(true)
+    mostrarToast(`${producto.nombre_producto} agregado al carrito`)
+    setTimeout(() => setAgregado(false), 2000)
+  }
 
-  if (cargando)
-    return (
-      <div className="detalle-wrapper">
-        <div className="pub-loading">Cargando producto...</div>
-      </div>
-    );
+  const handleFavorito = () => {
+    const favs = JSON.parse(localStorage.getItem("favoritos") || "[]")
+    const nuevo = favorito ? favs.filter(f => f !== Number(id)) : [...favs, Number(id)]
+    localStorage.setItem("favoritos", JSON.stringify(nuevo))
+    setFavorito(!favorito)
+  }
 
-  if (!producto)
-    return (
-      <div className="detalle-wrapper">
-        <div className="pub-empty">Producto no encontrado</div>
-      </div>
-    );
+  if (cargando) return (
+    <div className="dp-loading">
+      <div className="dp-spinner" />
+      <p>Cargando producto...</p>
+    </div>
+  )
 
-  const stock = producto.inventario?.cantidad ?? 0;
-  const stockMin = producto.inventario?.stock_minimo ?? 0;
-  const estadoStock =
-    stock === 0 ? "agotado" : stock <= stockMin ? "bajo" : "ok";
-  const stockLabel =
-    stock === 0
-      ? "Agotado"
-      : stock <= stockMin
-        ? `Stock bajo (${stock} disponibles)`
-        : `${stock} disponibles`;
+  if (!producto) return (
+    <div className="dp-loading">
+      <FiPackage size={48} color="#cbd5e1" />
+      <p>Producto no encontrado</p>
+    </div>
+  )
 
-  const emprendedora = producto.seccion?.emprendedora;
-  const nombreTienda = emprendedora?.usuario?.nombre || "EVA";
-  const idEmprendedora = emprendedora?.id_emprendedora;
+  const stock       = producto.inventario?.cantidad ?? 0
+  const stockMin    = producto.inventario?.stock_minimo ?? 0
+  const estadoStock = stock === 0 ? "agotado" : stock <= stockMin ? "bajo" : "ok"
+  const stockLabel  = stock === 0 ? "Agotado" : stock <= stockMin ? `Stock bajo (${stock})` : `${stock} disponibles`
 
-  const promedio =
-    comentarios.length > 0
-      ? (
-          comentarios.reduce((acc, c) => acc + c.calificacion, 0) /
-          comentarios.length
-        ).toFixed(1)
-      : null;
+  const emprendedora   = producto.seccion?.emprendedora
+  const nombreTienda   = emprendedora?.usuario?.nombre || "EVA"
+  const idEmprendedora = emprendedora?.id_emprendedora
+  const [c1, c2]       = getAvatarGradient(nombreTienda)
+
+  const promedio = comentarios.length
+    ? (comentarios.reduce((acc, c) => acc + c.calificacion, 0) / comentarios.length).toFixed(1)
+    : null
 
   return (
-    <div className="inicio-page">
-      <div className="detalle-wrapper">
-        {/* Breadcrumb */}
-        <div className="detalle-breadcrumb">
-          <button onClick={() => navigate("/")}>Inicio</button>
-          <span>›</span>
-          <button onClick={() => navigate("/productos")}>Catálogo</button>
-          <span>›</span>
-          <span>{producto.nombre_producto}</span>
+    <div className="dp-page">
+
+      {/* Toast */}
+      {toast && (
+        <div className={`dp-toast dp-toast--${toast.tipo}`}>
+          {toast.tipo === "ok" ? <FiCheck size={14} /> : <FiAlertCircle size={14} />}
+          {toast.msg}
         </div>
+      )}
 
-        {/* Layout principal */}
-        <div className="detalle-main">
-          {/* Imagen */}
-          <div className="detalle-img-wrapper">
-            {producto.imagen ? (
-              <img src={producto.imagen} alt={producto.nombre_producto} />
-            ) : (
-              <div className="detalle-img-placeholder">📦</div>
-            )}
-          </div>
+      {/* Breadcrumb */}
+      <div className="dp-breadcrumb">
+        <button className="dp-btn-volver" onClick={() => navigate("/")}>
+          <FiArrowLeft size={14} /> Inicio
+        </button>
+        <span className="dp-breadcrumb-sep">›</span>
+        <button className="dp-btn-volver" onClick={() => navigate("/catalogo")}>
+          Catálogo
+        </button>
+        <span className="dp-breadcrumb-sep">›</span>
+        <span className="dp-breadcrumb-actual">{producto.nombre_producto}</span>
+      </div>
 
-          {/* Info */}
-          <div className="detalle-info">
-            {/* Badges */}
-            <div className="detalle-badges">
-              <span className={`detalle-tipo-badge ${producto.tipo}`}>
-                {producto.tipo}
-              </span>
-              {producto.categoria && (
-                <span className="detalle-cat-badge">{producto.categoria}</span>
-              )}
-            </div>
+      {/* ── Layout principal ── */}
+      <div className="dp-main">
 
-            {/* Nombre */}
-            <h1 className="detalle-nombre">{producto.nombre_producto}</h1>
-
-            {/* Precio */}
-            <div className="detalle-precio">
-              {formatPrecio(producto.precio)}
-            </div>
-
-            {/* Descripción */}
-            {producto.descripcion && (
-              <p className="detalle-descripcion">{producto.descripcion}</p>
-            )}
-
-            {/* Duración (servicios) */}
-            {producto.tipo === "servicio" && producto.duracion && (
-              <span className="detalle-duracion">
-                ⏱ Duración: {producto.duracion}
-              </span>
-            )}
-
-            {/* Stock */}
-            <div className="detalle-stock">
-              <div className={`stock-dot ${estadoStock}`} />
-              <span className={`stock-texto ${estadoStock}`}>{stockLabel}</span>
-            </div>
-
-            {/* Cantidad + carrito */}
-            <div className="detalle-accion">
-              {producto.tipo === "producto" && (
-                <div className="detalle-cantidad">
-                  <button
-                    onClick={() => setCantidad((prev) => Math.max(1, prev - 1))}
-                  >
-                    −
-                  </button>
-                  <span>{cantidad}</span>
-                  <button
-                    onClick={() =>
-                      setCantidad((prev) => Math.min(stock, prev + 1))
-                    }
-                  >
-                    +
-                  </button>
-                </div>
-              )}
-              <button
-                className="btn-agregar-carrito"
-                onClick={handleAgregar}
-                disabled={estadoStock === "agotado"}
-              >
-                🛒{" "}
-                {estadoStock === "agotado" ? "Agotado" : "Agregar al carrito"}
-              </button>
-            </div>
-
-            {/* Tienda */}
-            <div className="detalle-tienda-card">
-              <div className="detalle-tienda-left">
-                <div
-                  className="detalle-tienda-avatar"
-                  style={{
-                    background: `linear-gradient(135deg, ${getAvatarColor(nombreTienda)}, ${getAvatarColor(nombreTienda)}bb)`,
-                  }}
-                >
-                  {getInitials(nombreTienda)}
-                </div>
-                <div>
-                  <p className="detalle-tienda-nombre">{nombreTienda}</p>
-                  <span className="detalle-tienda-sub">Emprendedora</span>
-                </div>
-              </div>
-              {idEmprendedora && (
-                <button
-                  className="btn-ver-tienda"
-                  onClick={() => navigate(`/tienda/${idEmprendedora}`)}
-                >
-                  Ver tienda →
-                </button>
-              )}
-            </div>
+        {/* Imagen */}
+        <div className="dp-col-img">
+          <div className="dp-img-principal">
+            {producto.imagen
+              ? <img src={producto.imagen} alt={producto.nombre_producto} />
+              : <div className="dp-img-placeholder"><FiPackage size={64} color="#cbd5e1" /></div>
+            }
+            <span className={`dp-badge dp-badge--${producto.tipo}`}>{producto.tipo}</span>
+            <button className={`dp-fav-btn ${favorito ? "active" : ""}`} onClick={handleFavorito}>
+              <FiHeart size={16} fill={favorito ? "#ef4444" : "none"} color={favorito ? "#ef4444" : "#94a3b8"} />
+            </button>
           </div>
         </div>
 
-        <hr className="detalle-divider" />
+        {/* Info */}
+        <div className="dp-col-info">
+          <div className="dp-cat-row">
+            <FiTag size={12} /> <span>{producto.categoria}</span>
+          </div>
 
-        {/* Comentarios */}
-        <div>
-          <h2 className="detalle-seccion-titulo">
-            ⭐ Comentarios y Calificaciones
-          </h2>
+          <h1 className="dp-nombre">{producto.nombre_producto}</h1>
 
           {promedio && (
-            <div className="detalle-promedio">
-              <span className="detalle-promedio-num">{promedio}</span>
-              <div>
-                <Estrellas calificacion={Math.round(Number(promedio))} />
-                <span className="detalle-total-comentarios">
-                  {comentarios.length} reseñas
-                </span>
-              </div>
+            <div className="dp-rating">
+              <Estrellas cal={Math.round(Number(promedio))} />
+              <span className="dp-rating-num">{promedio}</span>
+              <span className="dp-rating-count">({comentarios.length} reseñas)</span>
             </div>
           )}
 
-          {comentarios.length === 0 ? (
-            <div className="detalle-sin-comentarios">
-              <p>😊 Aún no hay comentarios para este producto</p>
-              <span>Sé el primero en comentar después de tu compra</span>
-            </div>
-          ) : (
-            comentarios.map((c) => (
-              <div key={c.id_comentario} className="comentario-pub-card">
-                <div className="comentario-pub-header">
-                  <div className="comentario-pub-usuario">
-                    <div className="comentario-pub-avatar">
-                      {getInitials(c.usuario?.nombre)}
-                    </div>
-                    <div>
-                      <div className="comentario-pub-nombre">
-                        {c.usuario?.nombre}
-                      </div>
-                      <Estrellas calificacion={c.calificacion} size="0.85rem" />
-                    </div>
-                  </div>
-                  <span className="comentario-pub-fecha">
-                    {formatFecha(c.fecha)}
-                  </span>
-                </div>
-                <p className="comentario-pub-texto">{c.texto}</p>
-              </div>
-            ))
+          <div className="dp-precio">{formatPrecio(producto.precio)}</div>
+
+          {producto.descripcion && (
+            <p className="dp-descripcion">{producto.descripcion}</p>
           )}
+
+          {producto.tipo === "servicio" && producto.duracion && (
+            <div className="dp-duracion">
+              <FiClock size={14} /> {producto.duracion}
+            </div>
+          )}
+
+          <div className={`dp-stock dp-stock--${estadoStock}`}>
+            <div className="dp-stock-dot" /> {stockLabel}
+          </div>
+
+          <div className="dp-acciones">
+            {producto.tipo === "producto" && (
+              <div className="dp-cantidad">
+                <button onClick={() => setCantidad(p => Math.max(1, p - 1))}><FiMinus size={13} /></button>
+                <span>{cantidad}</span>
+                <button onClick={() => setCantidad(p => Math.min(stock || 99, p + 1))}><FiPlus size={13} /></button>
+              </div>
+            )}
+            <button
+              className={`dp-btn-agregar ${agregado ? "agregado" : ""} ${estadoStock === "agotado" ? "agotado" : ""}`}
+              onClick={handleAgregar}
+              disabled={estadoStock === "agotado"}>
+              {agregado
+                ? <><FiCheck size={16} /> ¡Agregado!</>
+                : estadoStock === "agotado"
+                  ? "Agotado"
+                  : <><FiShoppingCart size={16} /> Agregar al carrito</>
+              }
+            </button>
+          </div>
+
+          {/* Card tienda */}
+          <div className="dp-tienda-card">
+            <div className="dp-tienda-left">
+              <div className="dp-tienda-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                {getInitials(nombreTienda)}
+              </div>
+              <div>
+                <p className="dp-tienda-nombre">{nombreTienda}</p>
+                <span className="dp-tienda-sub">Emprendedora EVA</span>
+              </div>
+            </div>
+            {idEmprendedora && (
+              <button className="dp-btn-ver-tienda"
+                onClick={() => navigate(`/tienda/${idEmprendedora}`)}>
+                Ver tienda →
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Comentarios ── */}
+      <div className="dp-seccion">
+        <div className="dp-seccion-header">
+          <h2 className="dp-seccion-titulo">
+            <FiStar size={18} color="#f59e0b" /> Reseñas y Calificaciones
+          </h2>
+          {/* Invitar a iniciar sesión para reseñar */}
+          <button className="dp-btn-resena" onClick={() => navigate("/login")}>
+            <FiLogIn size={14} /> Inicia sesión para reseñar
+          </button>
         </div>
 
-        {/* Productos relacionados */}
-        {relacionados.length > 0 && (
-          <>
-            <hr className="detalle-divider" />
+        {promedio && (
+          <div className="dp-promedio">
+            <span className="dp-promedio-num">{promedio}</span>
             <div>
-              <h2 className="detalle-seccion-titulo">
-                📦 Productos Relacionados
-              </h2>
-              <div className="relacionados-grid">
-                {relacionados.map((p) => (
-                  <div
-                    key={p.id_producto}
-                    className="pub-product-card"
-                    onClick={() => navigate(`/producto/${p.id_producto}`)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="pub-product-img">
-                      {p.imagen ? (
-                        <img src={p.imagen} alt={p.nombre_producto} />
-                      ) : (
-                        <div className="no-img">📦</div>
-                      )}
-                      <span className={`pub-tipo-badge ${p.tipo}`}>
-                        {p.tipo}
-                      </span>
-                    </div>
-                    <div className="pub-product-body">
-                      <h3>{p.nombre_producto}</h3>
-                      <span className="cat">{p.categoria}</span>
-                      <div className="pub-product-footer">
-                        <span className="pub-precio">
-                          {formatPrecio(p.precio)}
-                        </span>
-                        <button
-                          className="btn-agregar"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            mostrarToast(`${p.nombre_producto} agregado`);
-                          }}
-                        >
-                          +
-                        </button>
+              <Estrellas cal={Math.round(Number(promedio))} size={18} />
+              <span className="dp-promedio-count">{comentarios.length} reseñas</span>
+            </div>
+          </div>
+        )}
+
+        {comentarios.length === 0 ? (
+          <div className="dp-sin-comentarios">
+            <FiMessageSquare size={36} color="#cbd5e1" />
+            <p>Aún no hay reseñas</p>
+            <span>Inicia sesión y compra para comentar</span>
+          </div>
+        ) : (
+          <div className="dp-comentarios-lista">
+            {comentarios.map(c => {
+              const [ca, cb] = getAvatarGradient(c.usuario?.nombre)
+              return (
+                <div key={c.id_comentario} className="dp-comentario">
+                  <div className="dp-comentario-header">
+                    <div className="dp-comentario-usuario">
+                      <div className="dp-comentario-avatar"
+                        style={{ background: `linear-gradient(135deg, ${ca}, ${cb})` }}>
+                        {getInitials(c.usuario?.nombre)}
+                      </div>
+                      <div>
+                        <p className="dp-comentario-nombre">{c.usuario?.nombre}</p>
+                        <Estrellas cal={c.calificacion} size={12} />
                       </div>
                     </div>
+                    <span className="dp-comentario-fecha">{formatFecha(c.fecha)}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </>
+                  <p className="dp-comentario-texto">"{c.texto}"</p>
+                </div>
+              )
+            })}
+          </div>
         )}
       </div>
 
-      {/* Toast */}
-      {toast && <div className="detalle-toast">🛒 {toast}</div>}
+      {/* ── Relacionados ── */}
+      {relacionados.length > 0 && (
+        <div className="dp-seccion">
+          <div className="dp-seccion-header">
+            <h2 className="dp-seccion-titulo">
+              <FiPackage size={18} /> Productos Relacionados
+            </h2>
+          </div>
+          <div className="dp-relacionados-grid">
+            {relacionados.map(p => (
+              <div key={p.id_producto} className="dp-rel-card"
+                onClick={() => navigate(`/producto/${p.id_producto}`)}>
+                <div className="dp-rel-img">
+                  {p.imagen
+                    ? <img src={p.imagen} alt={p.nombre_producto} />
+                    : <div className="dp-rel-no-img"><FiPackage size={28} color="#cbd5e1" /></div>
+                  }
+                  <span className={`dp-badge dp-badge--${p.tipo}`}>{p.tipo}</span>
+                </div>
+                <div className="dp-rel-body">
+                  <span className="dp-rel-cat">{p.categoria}</span>
+                  <h4 className="dp-rel-nombre">{p.nombre_producto}</h4>
+                  <div className="dp-rel-footer">
+                    <span className="dp-rel-precio">{formatPrecio(p.precio)}</span>
+                    <button className="dp-rel-btn"
+                      onClick={e => {
+                        e.stopPropagation()
+                        agregarAlCarrito({
+                          id_producto: p.id_producto, nombre_producto: p.nombre_producto,
+                          precio: p.precio, imagen: p.imagen, categoria: p.categoria
+                        })
+                        mostrarToast(`${p.nombre_producto} agregado`)
+                      }}>
+                      <FiShoppingCart size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }
