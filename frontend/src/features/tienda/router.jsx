@@ -6,6 +6,7 @@ import Catalogo from "./pages/Catalogo"
 import Tiendas from "./pages/Tiendas"
 import DetalleProducto from "./pages/Detalleproducto"
 import Carrito from "./pages/Carrito"
+import TiendaAlianza from "./pages/TiendaAlianza"
 
 export const TiendaRoutes = (
   <Route element={<MainLayout />}>
@@ -15,5 +16,6 @@ export const TiendaRoutes = (
     <Route path="/tienda/:id_emprendedora" element={<PerfilTienda />} />
     <Route path="/producto-detalle/:id" element={<DetalleProducto />} />
     <Route path="/carrito" element={<Carrito />} />
+    <Route path="/alianza/:id_alianza" element={<TiendaAlianza />} />
   </Route>
 )

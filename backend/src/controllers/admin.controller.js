@@ -1,5 +1,6 @@
 import prisma from "../conexion.js";
 import { enviarAprobacion } from "../services/notificacion.service.js";
+import { crearNotificacion } from "./notificacion.controller.js";
 import jwt from "jsonwebtoken";
 
 // Normalizar rol para el token (mismo helper que en usuario.controller)
@@ -170,6 +171,13 @@ export const aprobarEmprendedora = async (req, res) => {
       await enviarAprobacion(usuario.email, usuario.nombre).catch((err) =>
         console.log("Error correo:", err),
       );
+      await crearNotificacion(
+        id,
+        "solicitud",
+        "Solicitud aprobada",
+        "Tu solicitud de emprendedora fue aprobada. ¡Bienvenida a EVA!",
+        "/dashboard",
+      );
       return res.json({ message: "Emprendedora activada correctamente" });
     }
 
@@ -195,6 +203,13 @@ export const aprobarEmprendedora = async (req, res) => {
         },
       });
     });
+    await crearNotificacion(
+      id,
+      "solicitud",
+      "¡Solicitud aprobada!",
+      "Tu solicitud de emprendedora fue aprobada. ¡Ya puedes ingresar como emprendedora!",
+      "/dashboard",
+    );
 
     await enviarAprobacion(usuario.email, usuario.nombre).catch((err) =>
       console.log("Error correo:", err),
@@ -316,6 +331,13 @@ export const rechazarEmprendedora = async (req, res) => {
         detalles: `Solicitud rechazada: ${usuario.nombre}`,
       },
     });
+    await crearNotificacion(
+      id,
+      "solicitud",
+      "Solicitud rechazada",
+      "Tu solicitud de emprendedora fue rechazada por el administrador.",
+      "/perfil",
+    );
 
     res.json({ message: "Solicitud rechazada correctamente" });
   } catch (error) {

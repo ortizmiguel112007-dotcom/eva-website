@@ -438,6 +438,22 @@
   from { opacity: 0; transform: translateY(1rem); }
   to   { opacity: 1; transform: translateY(0); }
 }
+.btn-ver-tienda-conjunta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'DM Sans', system-ui;
+}
+.btn-ver-tienda-conjunta:hover { background: #2563eb; }
 
 /* Responsive */
 @media (max-width: 1024px) {

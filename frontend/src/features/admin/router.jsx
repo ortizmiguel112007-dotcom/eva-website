@@ -11,6 +11,7 @@ import Adminresenas from "./pages/Adminresenas";
 import Admindestacados from "./pages/Admindestacados";
 import Admincupones from "./pages/Admincupones";
 import Adminalianzas from "./pages/Adminalianzas";
+import Notificaciones from "@/features/usuario/pages/Notificaciones"
 
 export const AdminRoutes = (
   <Route element={<MainLayout />}>
@@ -25,6 +26,7 @@ export const AdminRoutes = (
       <Route path="/admin/destacados"   element={<Admindestacados />} />
       <Route path="/admin/cupones"      element={<Admincupones />} />
       <Route path="/admin/alianzas"     element={<Adminalianzas />} />
+      <Route path="/notificaciones-admin" element={<Notificaciones />} />
     </Route>
   </Route>
 )

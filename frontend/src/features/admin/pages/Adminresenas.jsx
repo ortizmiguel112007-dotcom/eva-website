@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { FiStar, FiEyeOff, FiSearch, FiX, FiUser, FiPackage, FiMessageSquare } from "react-icons/fi"
+import { FiStar, FiEyeOff, FiSearch, FiX, FiPackage, FiMessageSquare } from "react-icons/fi"
 import "@/infrastructure/css/AdminResenas.css"
+import "@/infrastructure/css/CrudAdmin.css"
 
 const BASE  = "http://localhost:3000"
 const hdrs  = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
 const fmtFecha = f => new Date(f).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })
+const PAGE_SIZE = 10
 
 function Estrellas({ valor }) {
   return (
@@ -26,16 +28,18 @@ export default function AdminResenas() {
   const [busqueda, setBusqueda] = useState("")
   const [filtro, setFiltro]     = useState("activos")
   const [toast, setToast]       = useState(null)
+  const [pagina, setPagina]     = useState(1)
 
   const cargar = async () => {
     try {
-      const res = await axios.get(`${BASE}/api/comentarios`, { headers: hdrs() })
+      const res = await axios.get(`${BASE}/api/admin/comentarios`, { headers: hdrs() })
       setResenas(Array.isArray(res.data) ? res.data : [])
     } catch (err) { console.error(err) }
     finally { setCargando(false) }
   }
 
   useEffect(() => { cargar() }, [])
+  useEffect(() => { setPagina(1) }, [busqueda, filtro])
 
   const mostrarToast = (msg, tipo = "ok") => {
     setToast({ msg, tipo })
@@ -58,10 +62,13 @@ export default function AdminResenas() {
     return matchB && matchF
   })
 
+  const totalPaginas  = Math.max(1, Math.ceil(filtrados.length / PAGE_SIZE))
+  const resenasPagina = filtrados.slice((pagina - 1) * PAGE_SIZE, pagina * PAGE_SIZE)
+
   const metricas = [
-    { label: "Total",   valor: resenas.length,                       cls: "total"  },
-    { label: "Activos", valor: resenas.filter(r => r.activo).length, cls: "activo" },
-    { label: "Ocultos", valor: resenas.filter(r => !r.activo).length,cls: "oculto" },
+    { label: "Total",   valor: resenas.length,                        cls: "total"  },
+    { label: "Activos", valor: resenas.filter(r => r.activo).length,  cls: "activo" },
+    { label: "Ocultos", valor: resenas.filter(r => !r.activo).length, cls: "oculto" },
   ]
 
   return (
@@ -106,57 +113,79 @@ export default function AdminResenas() {
         </select>
       </div>
 
+      {/* Contador */}
+      <p style={{ fontSize: "0.78rem", color: "#94a3b8", marginBottom: "0.75rem", fontWeight: 600 }}>
+        Mostrando {filtrados.length} de {resenas.length} comentarios
+      </p>
+
       {/* Lista */}
       {cargando ? (
         <p className="ar-cargando">Cargando comentarios...</p>
       ) : (
-        <div className="ar-lista">
-          {filtrados.length === 0 ? (
-            <div className="ar-empty">
-              <FiMessageSquare size={40} color="#4a3050" />
-              <p>No hay comentarios</p>
-            </div>
-          ) : filtrados.map(r => (
-            <div key={r.id_comentario} className={`ar-card ${!r.activo ? "ar-card--oculto" : ""}`}>
+        <>
+          <div className="ar-lista">
+            {resenasPagina.length === 0 ? (
+              <div className="ar-empty">
+                <FiMessageSquare size={40} color="#4a3050" />
+                <p>No hay comentarios</p>
+              </div>
+            ) : resenasPagina.map(r => (
+              <div key={r.id_comentario} className={`ar-card ${!r.activo ? "ar-card--oculto" : ""}`}>
 
-              {/* Barra lateral acento */}
-              <div className={`ar-card-stripe ${r.activo ? "activo" : "oculto"}`} />
+                <div className={`ar-card-stripe ${r.activo ? "activo" : "oculto"}`} />
 
-              {/* Header card */}
-              <div className="ar-card-header">
-                <div className="ar-card-info">
-                  <div className="ar-card-usuario">
-                    <div className="ar-avatar">
-                      {(r.usuario?.nombre || "U")[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <span className="ar-usuario-nombre">{r.usuario?.nombre || "Usuario"}</span>
-                      <div className="ar-card-meta">
-                        <span><FiPackage size={11} /> {r.producto_nombre || "Producto"}</span>
-                        <span>· {fmtFecha(r.fecha)}</span>
+                <div className="ar-card-header">
+                  <div className="ar-card-info">
+                    <div className="ar-card-usuario">
+                      <div className="ar-avatar">
+                        {(r.usuario?.nombre || "U")[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="ar-usuario-nombre">{r.usuario?.nombre || "Usuario"}</span>
+                        <div className="ar-card-meta">
+                          <span><FiPackage size={11} /> {r.producto_nombre || "Producto"}</span>
+                          <span>· {fmtFecha(r.fecha)}</span>
+                        </div>
                       </div>
                     </div>
+                    <Estrellas valor={r.calificacion} />
                   </div>
-                  <Estrellas valor={r.calificacion} />
+
+                  <div className="ar-card-acciones">
+                    <span className={`ar-badge ${r.activo ? "activo" : "oculto"}`}>
+                      {r.activo ? "Activo" : "Oculto"}
+                    </span>
+                    {r.activo && (
+                      <button onClick={() => ocultar(r.id_comentario)} className="ar-btn-ocultar">
+                        <FiEyeOff size={13} /> Ocultar
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="ar-card-acciones">
-                  <span className={`ar-badge ${r.activo ? "activo" : "oculto"}`}>
-                    {r.activo ? "Activo" : "Oculto"}
-                  </span>
-                  {r.activo && (
-                    <button onClick={() => ocultar(r.id_comentario)} className="ar-btn-ocultar">
-                      <FiEyeOff size={13} /> Ocultar
-                    </button>
-                  )}
-                </div>
+                <blockquote className="ar-card-texto">"{r.texto}"</blockquote>
               </div>
+            ))}
+          </div>
 
-              {/* Texto reseña */}
-              <blockquote className="ar-card-texto">"{r.texto}"</blockquote>
+          {/* Paginación */}
+          {totalPaginas > 1 && (
+            <div className="crud-pagination">
+              <span className="pagination-info">
+                {filtrados.length} comentario{filtrados.length !== 1 ? "s" : ""} · Página {pagina} de {totalPaginas}
+              </span>
+              <div className="pagination-controls">
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(1)} disabled={pagina === 1}>«</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p - 1)} disabled={pagina === 1}>‹</button>
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
+                  <button key={n} className={`page-btn ${n === pagina ? "page-btn-active" : ""}`} onClick={() => setPagina(n)}>{n}</button>
+                ))}
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p + 1)} disabled={pagina === totalPaginas}>›</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(totalPaginas)} disabled={pagina === totalPaginas}>»</button>
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   )

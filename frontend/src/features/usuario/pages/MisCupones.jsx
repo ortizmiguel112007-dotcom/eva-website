@@ -35,7 +35,7 @@ export default function MisCupones() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/cupones", {
+        const res = await axios.get("http://localhost:3000/api/cupones/publicos", {
           headers: { Authorization: `Bearer ${token}` }
         })
         setCupones(Array.isArray(res.data) ? res.data.filter(c => c.activo) : [])

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { tiendaService } from "../services/tienda.service"
+import axios from "axios"
 import {
   FiSearch, FiArrowRight, FiPackage,
-  FiShoppingBag, FiX, FiUsers, FiGrid
+  FiShoppingBag, FiX, FiUsers, FiGrid, FiZap
 } from "react-icons/fi"
 import "@/infrastructure/css/Tiendas.css"
 
@@ -35,15 +36,20 @@ function getAvatarGradient(nombre) {
 
 export default function Tiendas() {
   const navigate  = useNavigate()
-  const [tiendas, setTiendas]   = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [busqueda, setBusqueda] = useState("")
+  const [tiendas, setTiendas]     = useState([])
+  const [alianzas, setAlianzas]   = useState([])
+  const [cargando, setCargando]   = useState(true)
+  const [busqueda, setBusqueda]   = useState("")
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        const data = await tiendaService.getTiendas()
-        setTiendas(data)
+        const [dataTiendas, dataAlianzas] = await Promise.all([
+          tiendaService.getTiendas(),
+          tiendaService.getAlianzas().catch(() => [])
+        ])
+        setTiendas(dataTiendas)
+        setAlianzas(Array.isArray(dataAlianzas) ? dataAlianzas : [])
       } catch (err) { console.error(err) }
       finally { setCargando(false) }
     }
@@ -52,6 +58,11 @@ export default function Tiendas() {
 
   const filtradas = tiendas.filter(t =>
     t.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+  )
+
+  const alianzasFiltradas = alianzas.filter(a =>
+    a.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+    a.participantes?.some(p => p.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase()))
   )
 
   return (
@@ -71,7 +82,6 @@ export default function Tiendas() {
           </p>
         </div>
 
-        {/* Buscador en hero */}
         <div className="ti-search-wrap">
           <FiSearch size={16} color="#94a3b8" />
           <input
@@ -92,7 +102,107 @@ export default function Tiendas() {
       {/* ── Contenido ── */}
       <div className="ti-contenido">
 
-        {/* Resultados */}
+        {/* ── Sección Alianzas ── */}
+        {alianzasFiltradas.length > 0 && (
+          <div className="ti-alianzas-seccion">
+            <div className="ti-seccion-header">
+              <div className="ti-seccion-tag">
+                <FiZap size={12} /> Campañas Colaborativas
+              </div>
+              <h2 className="ti-seccion-titulo">Tiendas en Alianza</h2>
+              <p className="ti-seccion-sub">Emprendedoras que se unen para ofrecerte más</p>
+            </div>
+
+            <div className="ti-alianzas-grid">
+              {alianzasFiltradas.map((a, idx) => {
+                const productos = a.secciones?.flatMap(s => s.productos) || []
+                const precioMin = productos.length
+                  ? Math.min(...productos.map(p => Number(p.precio)))
+                  : null
+
+                return (
+                  <div key={a.id_alianza}
+                    className="ti-alianza-card"
+                    style={{ animationDelay: `${idx * 0.05}s` }}
+                    onClick={() => navigate(`/alianza/${a.id_alianza}`)}>
+
+                    {/* Banner */}
+                    <div className="ti-alianza-banner">
+                      {productos.slice(0, 3).length > 0 ? (
+                        productos.slice(0, 3).map((p, i) => (
+                          <div key={i} className="ti-banner-img">
+                            {p.imagen
+                              ? <img src={p.imagen} alt={p.nombre_producto} />
+                              : <div className="ti-banner-placeholder"><FiPackage size={20} color="#94a3b8" /></div>
+                            }
+                          </div>
+                        ))
+                      ) : (
+                        <div className="ti-banner-empty">
+                          <FiUsers size={36} color="#cbd5e1" />
+                        </div>
+                      )}
+                      <div className="ti-banner-overlay" />
+                      <span className="ti-alianza-badge-collab">
+                        Campaña Colaborativa
+                      </span>
+                      <span className="ti-banner-badge">
+                        <FiPackage size={10} /> {productos.length} productos
+                      </span>
+                    </div>
+
+                    {/* Body */}
+                    <div className="ti-card-body">
+                      {/* Avatares participantes */}
+                      <div className="ti-alianza-avatares">
+                        {a.participantes?.map(p => {
+                          const [c1, c2] = getAvatarGradient(p.usuario?.nombre)
+                          return (
+                            <div key={p.id} className="ti-alianza-avatar"
+                              style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                              title={p.usuario?.nombre}>
+                              {getInitials(p.usuario?.nombre)}
+                            </div>
+                          )
+                        })}
+                      </div>
+
+                      <h3 className="ti-card-nombre">{a.nombre}</h3>
+
+                      <p className="ti-alianza-participantes">
+                        {a.participantes?.map(p => p.usuario?.nombre).join(" & ")}
+                      </p>
+
+                      {productos.length > 0 && (
+                        <div className="ti-tags">
+                          {productos.slice(0, 3).map(p => (
+                            <span key={p.id_producto} className="ti-tag">{p.nombre_producto}</span>
+                          ))}
+                          {productos.length > 3 && (
+                            <span className="ti-tag ti-tag-mas">+{productos.length - 3}</span>
+                          )}
+                        </div>
+                      )}
+
+                      {precioMin && (
+                        <p className="ti-card-precio-desde">
+                          Desde {formatPrecio(precioMin)}
+                        </p>
+                      )}
+
+                      <button className="ti-btn-visitar ti-btn-alianza"
+                        onClick={e => { e.stopPropagation(); navigate(`/alianza/${a.id_alianza}`) }}>
+                        Ver campaña <FiArrowRight size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── Tiendas individuales ── */}
         <div className="ti-resultados-bar">
           <span className="ti-resultados-txt">
             <FiGrid size={13} />
@@ -102,7 +212,6 @@ export default function Tiendas() {
           </span>
         </div>
 
-        {/* Grid */}
         {cargando ? (
           <div className="ti-loading">
             <div className="ti-spinner" />
@@ -114,9 +223,7 @@ export default function Tiendas() {
             <h3>No hay tiendas</h3>
             <p>{busqueda ? `Sin resultados para "${busqueda}"` : "Aún no hay tiendas registradas"}</p>
             {busqueda && (
-              <button onClick={() => setBusqueda("")} className="ti-btn-limpiar">
-                Limpiar búsqueda
-              </button>
+              <button onClick={() => setBusqueda("")} className="ti-btn-limpiar">Limpiar búsqueda</button>
             )}
           </div>
         ) : (
@@ -130,16 +237,13 @@ export default function Tiendas() {
                   style={{ animationDelay: `${idx * 0.05}s` }}
                   onClick={() => navigate(`/tienda/${t.id_emprendedora}`)}>
 
-                  {/* Banner imágenes */}
                   <div className="ti-card-banner">
                     {productos.slice(0, 3).length > 0 ? (
                       productos.slice(0, 3).map((p, i) => (
                         <div key={i} className="ti-banner-img">
                           {p.imagen
                             ? <img src={p.imagen} alt={p.nombre_producto} />
-                            : <div className="ti-banner-placeholder">
-                                <FiPackage size={20} color="#94a3b8" />
-                              </div>
+                            : <div className="ti-banner-placeholder"><FiPackage size={20} color="#94a3b8" /></div>
                           }
                         </div>
                       ))
@@ -148,50 +252,34 @@ export default function Tiendas() {
                         <FiShoppingBag size={36} color="#cbd5e1" />
                       </div>
                     )}
-
-                    {/* Overlay degradado */}
                     <div className="ti-banner-overlay" />
-
-                    {/* Badge productos */}
                     <span className="ti-banner-badge">
                       <FiPackage size={10} /> {productos.length} productos
                     </span>
                   </div>
 
-                  {/* Body */}
                   <div className="ti-card-body">
-                    {/* Avatar */}
                     <div className="ti-avatar-wrap">
                       <div className="ti-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                         {getInitials(t.usuario?.nombre)}
                       </div>
                     </div>
-
                     <h3 className="ti-card-nombre">{t.usuario?.nombre}</h3>
-
-                    {/* Tags productos */}
                     {productos.length > 0 && (
                       <div className="ti-tags">
                         {productos.slice(0, 3).map(p => (
-                          <span key={p.id_producto} className="ti-tag">
-                            {p.nombre_producto}
-                          </span>
+                          <span key={p.id_producto} className="ti-tag">{p.nombre_producto}</span>
                         ))}
                         {productos.length > 3 && (
-                          <span className="ti-tag ti-tag-mas">
-                            +{productos.length - 3}
-                          </span>
+                          <span className="ti-tag ti-tag-mas">+{productos.length - 3}</span>
                         )}
                       </div>
                     )}
-
-                    {/* Precio destacado */}
                     {productos.length > 0 && (
                       <p className="ti-card-precio-desde">
                         Desde {formatPrecio(Math.min(...productos.map(p => Number(p.precio))))}
                       </p>
                     )}
-
                     <button className="ti-btn-visitar"
                       onClick={e => { e.stopPropagation(); navigate(`/tienda/${t.id_emprendedora}`) }}>
                       Visitar tienda <FiArrowRight size={14} />

@@ -30,4 +30,8 @@ export const tiendaService = {
     const res = await axios.get(`${PUBLICO_URL}/tiendas`);
     return res.data;
   },
+  async getAlianzas() {
+    const res = await axios.get(`${PUBLICO_URL}/alianzas`);
+    return res.data;
+  },
 };

@@ -3,11 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useCarrito } from "@/core/context/CarritoContext";
 import { tiendaService } from "@/features/tienda/services/tienda.service";
 import {
-  FiSearch, FiShoppingCart, FiHeart, FiStar,
-  FiX, FiSliders, FiPackage, FiTag, FiClock,
-  FiChevronDown, FiFeather, FiHome, FiBook,
-  FiCpu, FiScissors, FiTrendingUp, FiMonitor,
-  FiShoppingBag, FiCheck, FiEye
+  FiSearch,
+  FiShoppingCart,
+  FiHeart,
+  FiStar,
+  FiX,
+  FiSliders,
+  FiPackage,
+  FiTag,
+  FiClock,
+  FiChevronDown,
+  FiFeather,
+  FiHome,
+  FiBook,
+  FiCpu,
+  FiScissors,
+  FiTrendingUp,
+  FiMonitor,
+  FiShoppingBag,
+  FiCheck,
+  FiEye,
 } from "react-icons/fi";
 import "@/infrastructure/css/CatalogoUsuario.css";
 
@@ -403,7 +418,8 @@ export default function CatalogoUsuario() {
             <>
               <div className="cu-grid">
                 {visible.map((p, idx) => {
-                  const agotado = p.inventario?.cantidad === 0;
+                  const agotado =
+                    p.tipo !== "servicio" && p.inventario?.cantidad === 0;
                   const yaAgregado = agregados[p.id_producto];
                   const esFavorito = favoritos.includes(p.id_producto);
                   const calPromedio = p.comentarios?.length
@@ -481,7 +497,11 @@ export default function CatalogoUsuario() {
 
                         <span className="cu-card-tienda">
                           <FiTag size={11} />{" "}
-                          {p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
+                          {p.seccion?.alianza
+                            ? p.seccion.alianza.participantes
+                                ?.map((p) => p.usuario?.nombre)
+                                .join(" & ")
+                            : p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
                         </span>
 
                         <div className="cu-card-footer">
@@ -499,6 +519,8 @@ export default function CatalogoUsuario() {
                               </>
                             ) : agotado ? (
                               "Agotado"
+                            ) : p.tipo === "servicio" ? (
+                              "Reservar"
                             ) : (
                               <>
                                 <FiShoppingCart size={13} /> Agregar

@@ -8,6 +8,7 @@ import {
   FiMapPin, FiHash, FiTruck
 } from "react-icons/fi"
 import "@/infrastructure/css/MisPedidos.css"
+import "@/infrastructure/css/CrudAdmin.css"
 
 function formatFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-CO", {
@@ -96,7 +97,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
     <div className="mp-modal-overlay" onClick={onClose}>
       <div className="mp-modal-detalle" onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
         <div className="mp-modal-detalle-header">
           <div>
             <h3>{id}</h3>
@@ -109,7 +109,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
 
         <div className="mp-modal-body">
 
-          {/* Estado */}
           <div className="mp-modal-seccion">
             <h4>Estado del pedido</h4>
             <span className={`mp-badge ${pedido.estado}`}>
@@ -119,7 +118,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
             </span>
           </div>
 
-          {/* Productos */}
           <div className="mp-modal-seccion">
             <h4>Productos</h4>
             {pedido.detalles.map(d => (
@@ -137,7 +135,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
             ))}
           </div>
 
-          {/* Método de pago */}
           {pedido.metodo_pago && (
             <div className="mp-modal-seccion">
               <h4>Método de pago</h4>
@@ -148,7 +145,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
             </div>
           )}
 
-          {/* Nota */}
           {pedido.nota && (
             <div className="mp-modal-seccion">
               <h4>Nota</h4>
@@ -156,7 +152,6 @@ function ModalDetalle({ pedido, onClose, onResena }) {
             </div>
           )}
 
-          {/* Número seguimiento */}
           <div className="mp-modal-seccion">
             <h4>Número de seguimiento</h4>
             <span className="mp-seguimiento-num">
@@ -164,20 +159,17 @@ function ModalDetalle({ pedido, onClose, onResena }) {
             </span>
           </div>
 
-          {/* Total */}
           <div className="mp-modal-total">
             <span>Total</span>
             <span>{formatPrecio(pedido.total)}</span>
           </div>
 
-          {/* Reseña si está entregado */}
           {pedido.estado === "entregado" && (
             <button className="mp-btn-resena-modal" onClick={() => { onClose(); onResena(pedido) }}>
               <FiStar size={14} /> Dejar reseña
             </button>
           )}
 
-          {/* Descargar factura */}
           <button className="mp-btn-factura">
             <FiDownload size={16} /> Descargar factura
           </button>
@@ -198,6 +190,8 @@ export default function MisPedidos() {
   const [modalDetalle, setModalDetalle] = useState(null)
   const [modalResena, setModalResena]   = useState(null)
   const [toast, setToast]               = useState(null)
+  const [pagina, setPagina]             = useState(1)
+  const POR_PAGINA = 5
 
   useEffect(() => {
     const cargar = async () => {
@@ -214,6 +208,8 @@ export default function MisPedidos() {
     }
     cargar()
   }, [])
+
+  useEffect(() => { setPagina(1) }, [filtro])
 
   const mostrarToast = (msg) => {
     setToast(msg)
@@ -232,6 +228,9 @@ export default function MisPedidos() {
     if (filtro === "entregado") return p.estado === "entregado"
     return true
   })
+
+  const totalPaginas    = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA))
+  const filtradosPagina = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
 
   const gastoTotal = pedidos.reduce((acc, p) => acc + Number(p.total), 0)
   const activos    = pedidos.filter(p => p.estado === "en_proceso" || p.estado === "enviado").length
@@ -308,53 +307,70 @@ export default function MisPedidos() {
           <button onClick={() => navigate("/")}>Explorar productos</button>
         </div>
       ) : (
-        <div className="mp-lista">
-          {filtrados.map(pedido => {
-            const primera = pedido.detalles?.[0]?.producto
-            return (
-              <div key={pedido.id_pedido} className="mp-card-nuevo">
+        <>
+          <div className="mp-lista">
+            {filtradosPagina.map(pedido => {
+              const primera = pedido.detalles?.[0]?.producto
+              return (
+                <div key={pedido.id_pedido} className="mp-card-nuevo">
 
-                {/* Thumbnail */}
-                <div className="mp-card-thumb">
-                  {primera?.imagen
-                    ? <img src={primera.imagen} alt={primera.nombre_producto} />
-                    : <FiPackage size={20} color="#94a3b8" />
-                  }
-                </div>
-
-                {/* Info */}
-                <div className="mp-card-info">
-                  <p className="mp-card-id">{formatId(pedido.id_pedido)}</p>
-                  <div className="mp-card-meta">
-                    <FiCalendar size={11} />
-                    <span>{formatFecha(pedido.fecha)}</span>
+                  <div className="mp-card-thumb">
+                    {primera?.imagen
+                      ? <img src={primera.imagen} alt={primera.nombre_producto} />
+                      : <FiPackage size={20} color="#94a3b8" />
+                    }
                   </div>
-                  <p className="mp-card-articulos">
-                    {pedido.detalles.length} {pedido.detalles.length === 1 ? "artículo" : "artículos"}
-                  </p>
-                </div>
 
-                {/* Derecha */}
-                <div className="mp-card-right">
-                  <span className={`mp-badge ${pedido.estado}`}>
-                    {pedido.estado === "en_proceso" ? <><FiClock size={11} /> En proceso</> :
-                     pedido.estado === "enviado"    ? <><FiTruck size={11} /> Enviado</> :
-                     pedido.estado === "entregado"  ? <><FiCheckCircle size={11} /> Entregado</> :
-                                                      "Cancelado"}
-                  </span>
-                  <div className="mp-card-total-wrap">
-                    <span className="mp-card-total-label">Total</span>
-                    <span className="mp-card-total-valor">{formatPrecio(pedido.total)}</span>
+                  <div className="mp-card-info">
+                    <p className="mp-card-id">{formatId(pedido.id_pedido)}</p>
+                    <div className="mp-card-meta">
+                      <FiCalendar size={11} />
+                      <span>{formatFecha(pedido.fecha)}</span>
+                    </div>
+                    <p className="mp-card-articulos">
+                      {pedido.detalles.length} {pedido.detalles.length === 1 ? "artículo" : "artículos"}
+                    </p>
                   </div>
-                  <button className="mp-btn-detalle" onClick={() => setModalDetalle(pedido)}>
-                    <FiEye size={14} /> Ver detalles
-                  </button>
-                </div>
 
+                  <div className="mp-card-right">
+                    <span className={`mp-badge ${pedido.estado}`}>
+                      {pedido.estado === "en_proceso" ? <><FiClock size={11} /> En proceso</> :
+                       pedido.estado === "enviado"    ? <><FiTruck size={11} /> Enviado</> :
+                       pedido.estado === "entregado"  ? <><FiCheckCircle size={11} /> Entregado</> :
+                                                        "Cancelado"}
+                    </span>
+                    <div className="mp-card-total-wrap">
+                      <span className="mp-card-total-label">Total</span>
+                      <span className="mp-card-total-valor">{formatPrecio(pedido.total)}</span>
+                    </div>
+                    <button className="mp-btn-detalle" onClick={() => setModalDetalle(pedido)}>
+                      <FiEye size={14} /> Ver detalles
+                    </button>
+                  </div>
+
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Paginación */}
+          {totalPaginas > 1 && (
+            <div className="crud-pagination">
+              <span className="pagination-info">
+                {filtrados.length} pedido{filtrados.length !== 1 ? "s" : ""} · Página {pagina} de {totalPaginas}
+              </span>
+              <div className="pagination-controls">
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(1)} disabled={pagina === 1}>«</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p - 1)} disabled={pagina === 1}>‹</button>
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
+                  <button key={n} className={`page-btn ${n === pagina ? "page-btn-active" : ""}`} onClick={() => setPagina(n)}>{n}</button>
+                ))}
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p + 1)} disabled={pagina === totalPaginas}>›</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(totalPaginas)} disabled={pagina === totalPaginas}>»</button>
               </div>
-            )
-          })}
-        </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal detalle */}
@@ -372,7 +388,7 @@ export default function MisPedidos() {
           pedido={modalResena}
           token={token}
           onClose={() => setModalResena(null)}
-          onEnviado={() => mostrarToast("✅ Reseña enviada correctamente")}
+          onEnviado={() => mostrarToast("Reseña enviada correctamente")}
         />
       )}
 

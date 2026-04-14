@@ -2,10 +2,12 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { FiPackage, FiEye, FiEyeOff, FiStar, FiSearch, FiX } from "react-icons/fi"
 import "@/infrastructure/css/AdminProductos.css"
+import "@/infrastructure/css/CrudAdmin.css"
 
 const BASE = "http://localhost:3000"
 const headers = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
 const formatPrecio = p => "$" + Number(p).toLocaleString("es-CO")
+const PAGE_SIZE = 10
 
 export default function AdminProductos() {
   const [productos, setProductos] = useState([])
@@ -13,6 +15,7 @@ export default function AdminProductos() {
   const [busqueda, setBusqueda]   = useState("")
   const [filtro, setFiltro]       = useState("todos")
   const [toast, setToast]         = useState(null)
+  const [pagina, setPagina]       = useState(1)
 
   const cargar = async () => {
     try {
@@ -23,6 +26,7 @@ export default function AdminProductos() {
   }
 
   useEffect(() => { cargar() }, [])
+  useEffect(() => { setPagina(1) }, [busqueda, filtro])
 
   const mostrarToast = (msg, tipo = "ok") => {
     setToast({ msg, tipo })
@@ -48,13 +52,16 @@ export default function AdminProductos() {
   const filtrados = productos.filter(p => {
     const matchB = p.nombre_producto?.toLowerCase().includes(busqueda.toLowerCase()) ||
       p.seccion?.emprendedora?.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
-    const matchF = filtro === "todos"      ? true
-      : filtro === "activos"   ? p.visible
-      : filtro === "ocultos"   ? !p.visible
-      : filtro === "destacados"? p.destacado
+    const matchF = filtro === "todos"       ? true
+      : filtro === "activos"    ? p.visible
+      : filtro === "ocultos"    ? !p.visible
+      : filtro === "destacados" ? p.destacado
       : true
     return matchB && matchF
   })
+
+  const totalPaginas    = Math.max(1, Math.ceil(filtrados.length / PAGE_SIZE))
+  const productosPagina = filtrados.slice((pagina - 1) * PAGE_SIZE, pagina * PAGE_SIZE)
 
   return (
     <div className="ap-container">
@@ -115,87 +122,98 @@ export default function AdminProductos() {
       {cargando ? (
         <p className="ap-loading">Cargando...</p>
       ) : (
-        <div className="ap-table-wrapper">
-          <table className="ap-table">
-            <thead>
-              <tr>
-                {["Producto", "Emprendedora", "Categoría", "Precio", "Stock", "Estado", "Acciones"].map(h => (
-                  <th key={h}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtrados.length === 0 ? (
+        <>
+          <div className="ap-table-wrapper">
+            <table className="ap-table">
+              <thead>
                 <tr>
-                  <td colSpan={7} className="ap-empty">No hay productos</td>
+                  {["#", "Producto", "Emprendedora", "Categoría", "Precio", "Stock", "Estado", "Acciones"].map(h => (
+                    <th key={h}>{h}</th>
+                  ))}
                 </tr>
-              ) : filtrados.map(p => {
-                const stock = p.inventario?.cantidad ?? null
-                return (
-                  <tr key={p.id_producto}>
-
-                    {/* Producto */}
-                    <td>
-                      <div className="ap-producto-cell">
-                        {p.imagen
-                          ? <img src={p.imagen} alt="" className="ap-producto-img" />
-                          : <div className="ap-producto-placeholder"><FiPackage size={16} color="#94a3b8" /></div>
-                        }
-                        <span className="ap-producto-nombre">{p.nombre_producto}</span>
-                      </div>
-                    </td>
-
-                    {/* Emprendedora */}
-                    <td>{p.seccion?.emprendedora?.usuario?.nombre || "—"}</td>
-
-                    {/* Categoría */}
-                    <td>{p.categoria || "—"}</td>
-
-                    {/* Precio */}
-                    <td className="ap-precio">{formatPrecio(p.precio)}</td>
-
-                    {/* Stock */}
-                    <td>
-                      <span className={`ap-stock-badge ${stock === 0 ? "agotado" : "disponible"}`}>
-                        {stock ?? "—"}
-                      </span>
-                    </td>
-
-                    {/* Estado */}
-                    <td>
-                      <span className={`ap-estado-badge ${p.visible ? "visible" : "oculto"}`}>
-                        {p.visible ? "Visible" : "Oculto"}
-                      </span>
-                    </td>
-
-                    {/* Acciones */}
-                    <td>
-                      <div className="ap-acciones">
-                        <button
-                          className="ap-btn-accion"
-                          onClick={() => toggleVisible(p.id_producto, p.visible)}
-                          title={p.visible ? "Ocultar" : "Mostrar"}
-                        >
-                          {p.visible ? <FiEyeOff size={13} /> : <FiEye size={13} />}
-                          {p.visible ? "Ocultar" : "Mostrar"}
-                        </button>
-                        <button
-                          className={`ap-btn-accion ${p.destacado ? "destacado" : ""}`}
-                          onClick={() => toggleDestacado(p.id_producto, p.destacado)}
-                          title={p.destacado ? "Quitar destacado" : "Destacar"}
-                        >
-                          <FiStar size={13} fill={p.destacado ? "#f59e0b" : "none"} color={p.destacado ? "#f59e0b" : "#374151"} />
-                          {p.destacado ? "Quitar" : "Destacar"}
-                        </button>
-                      </div>
-                    </td>
-
+              </thead>
+              <tbody>
+                {productosPagina.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="ap-empty">No hay productos</td>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+                ) : productosPagina.map((p, i) => {
+                  const stock = p.inventario?.cantidad ?? null
+                  return (
+                    <tr key={p.id_producto}>
+
+                      <td>{(pagina - 1) * PAGE_SIZE + i + 1}</td>
+
+                      <td>
+                        <div className="ap-producto-cell">
+                          {p.imagen
+                            ? <img src={p.imagen} alt="" className="ap-producto-img" />
+                            : <div className="ap-producto-placeholder"><FiPackage size={16} color="#94a3b8" /></div>
+                          }
+                          <span className="ap-producto-nombre">{p.nombre_producto}</span>
+                        </div>
+                      </td>
+
+                      <td>{p.seccion?.emprendedora?.usuario?.nombre || "—"}</td>
+                      <td>{p.categoria || "—"}</td>
+                      <td className="ap-precio">{formatPrecio(p.precio)}</td>
+
+                      <td>
+                        <span className={`ap-stock-badge ${stock === 0 ? "agotado" : "disponible"}`}>
+                          {stock ?? "—"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span className={`ap-estado-badge ${p.visible ? "visible" : "oculto"}`}>
+                          {p.visible ? "Visible" : "Oculto"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="ap-acciones">
+                          <button
+                            className="ap-btn-accion"
+                            onClick={() => toggleVisible(p.id_producto, p.visible)}
+                          >
+                            {p.visible ? <FiEyeOff size={13} /> : <FiEye size={13} />}
+                            {p.visible ? "Ocultar" : "Mostrar"}
+                          </button>
+                          <button
+                            className={`ap-btn-accion ${p.destacado ? "destacado" : ""}`}
+                            onClick={() => toggleDestacado(p.id_producto, p.destacado)}
+                          >
+                            <FiStar size={13} fill={p.destacado ? "#f59e0b" : "none"} color={p.destacado ? "#f59e0b" : "#374151"} />
+                            {p.destacado ? "Quitar" : "Destacar"}
+                          </button>
+                        </div>
+                      </td>
+
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          {totalPaginas > 1 && (
+            <div className="crud-pagination">
+              <span className="pagination-info">
+                {filtrados.length} producto{filtrados.length !== 1 ? "s" : ""} · Página {pagina} de {totalPaginas}
+              </span>
+              <div className="pagination-controls">
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(1)} disabled={pagina === 1}>«</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p - 1)} disabled={pagina === 1}>‹</button>
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
+                  <button key={n} className={`page-btn ${n === pagina ? "page-btn-active" : ""}`} onClick={() => setPagina(n)}>{n}</button>
+                ))}
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(p => p + 1)} disabled={pagina === totalPaginas}>›</button>
+                <button className="page-btn page-btn-arrow" onClick={() => setPagina(totalPaginas)} disabled={pagina === totalPaginas}>»</button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

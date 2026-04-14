@@ -15,6 +15,8 @@ import comentarioRouter   from './routes/comentario.route.js'
 import publicoRouter      from './routes/publico.route.js'
 import carritoRouter from './routes/carrito.route.js'
 import pagoRouter from './routes/pago.route.js'
+import notificacionRoutes from './routes/notificacion.routes.js'
+import favoritoRoutes from './routes/favorito.routes.js'
 import prisma from './conexion.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -57,6 +59,8 @@ app.use(comentarioRouter)     // /api/comentarios
 app.use(publicoRouter)        // /api/publico
 app.use(carritoRouter)         // /api/carrito, /api/carrito/agregar, /api/carrito/quitar
 app.use(pagoRouter)
+app.use(notificacionRoutes)   // /api/notificaciones, /api/notificaciones/leer-todas, /api/notificaciones/:id/leer
+app.use(favoritoRoutes)       // /api/favoritos, /api/favoritos/:id_producto, /api/favoritos/tienda
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')
 }).on('error', (err) => {

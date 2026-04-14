@@ -1,4 +1,6 @@
-
+/* ═══════════════════════════════════════════════════════════════
+   TIENDAS — CSS completo
+═══════════════════════════════════════════════════════════════ */
 
 .ti-page {
   min-height: 100vh;
@@ -29,17 +31,8 @@
   pointer-events: none;
 }
 
-.ti-blur-1 {
-  width: 400px; height: 400px;
-  background: #3b82f6;
-  top: -120px; left: -80px;
-}
-
-.ti-blur-2 {
-  width: 300px; height: 300px;
-  background: #f59e0b;
-  bottom: -80px; right: -60px;
-}
+.ti-blur-1 { width: 400px; height: 400px; background: #3b82f6; top: -120px; left: -80px; }
+.ti-blur-2 { width: 300px; height: 300px; background: #f59e0b; bottom: -80px; right: -60px; }
 
 .ti-hero-content { position: relative; z-index: 1; }
 
@@ -68,12 +61,7 @@
   line-height: 1.1;
 }
 
-.ti-hero-sub {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.55);
-  margin: 0;
-}
-
+.ti-hero-sub { font-size: 0.9rem; color: rgba(255,255,255,0.55); margin: 0; }
 .ti-hero-sub strong { color: #fbbf24; }
 
 /* ── Buscador ── */
@@ -128,6 +116,153 @@
   z-index: 2;
 }
 
+/* ══════════════════════════════
+   SECCIÓN ALIANZAS
+══════════════════════════════ */
+.ti-alianzas-seccion {
+  margin-bottom: 2.5rem;
+  padding-top: 3.5rem;
+}
+
+.ti-seccion-header { margin-bottom: 1.25rem; }
+
+.ti-seccion-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(59,130,246,0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ti-seccion-titulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.2rem;
+}
+
+.ti-seccion-sub { font-size: 0.82rem; color: #94a3b8; margin: 0; }
+
+/* Grid alianzas */
+.ti-alianzas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Card alianza */
+.ti-alianza-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  animation: tiFadeUp 0.4s ease both;
+}
+
+.ti-alianza-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(59,130,246,0.1);
+  border-color: #bfdbfe;
+}
+
+/* Banner alianza */
+.ti-alianza-banner {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 150px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+}
+
+.ti-alianza-banner .ti-banner-img img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.ti-alianza-card:hover .ti-alianza-banner .ti-banner-img img {
+  transform: scale(1.06);
+}
+
+.ti-alianza-badge-collab {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15,23,42,0.8);
+  color: #fff;
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  z-index: 2;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.03em;
+}
+
+/* Avatares */
+.ti-alianza-avatares {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  margin-top: -1rem;
+}
+
+.ti-alianza-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  border: 2.5px solid #fff;
+  margin-left: -8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.ti-alianza-avatar:first-child { margin-left: 0; }
+
+.ti-alianza-participantes {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+}
+
+/* Botón alianza */
+.ti-btn-alianza {
+  background: #1e293b !important;
+  color: #fff !important;
+  border-color: #1e293b !important;
+}
+
+.ti-btn-alianza:hover {
+  background: #334155 !important;
+  border-color: #334155 !important;
+}
+
+/* ══════════════════════════════
+   BARRA RESULTADOS
+══════════════════════════════ */
 .ti-resultados-bar {
   display: flex;
   align-items: center;
@@ -206,7 +341,7 @@
 .ti-btn-limpiar:hover { background: #3b82f6; color: #fff; }
 
 /* ══════════════════════════════
-   GRID
+   GRID TIENDAS
 ══════════════════════════════ */
 .ti-grid {
   display: grid;
@@ -215,7 +350,7 @@
 }
 
 /* ══════════════════════════════
-   CARD
+   CARD TIENDA
 ══════════════════════════════ */
 .ti-card {
   background: #fff;
@@ -239,7 +374,7 @@
   border-color: #bfdbfe;
 }
 
-/* Banner */
+/* Banner tienda */
 .ti-card-banner {
   height: 150px;
   display: grid;
@@ -278,7 +413,6 @@
   background: linear-gradient(135deg, #f8fafc, #e2e8f0);
 }
 
-/* Overlay degradado en el banner */
 .ti-banner-overlay {
   position: absolute;
   inset: 0;
@@ -286,7 +420,6 @@
   pointer-events: none;
 }
 
-/* Badge productos en banner */
 .ti-banner-badge {
   position: absolute;
   bottom: 8px;
@@ -304,11 +437,8 @@
 }
 
 /* Body */
-.ti-card-body {
-  padding: 0 1.25rem 1.25rem;
-}
+.ti-card-body { padding: 0 1.25rem 1.25rem; }
 
-/* Avatar */
 .ti-avatar-wrap {
   margin-top: -1.75rem;
   margin-bottom: 0.85rem;
@@ -340,7 +470,6 @@
   line-height: 1.2;
 }
 
-/* Tags */
 .ti-tags {
   display: flex;
   flex-wrap: wrap;
@@ -374,7 +503,6 @@
   font-weight: 500;
 }
 
-/* Botón */
 .ti-btn-visitar {
   width: 100%;
   padding: 0.6rem;
@@ -406,6 +534,7 @@
   .ti-hero { padding: 2.5rem 1.5rem 4rem; }
   .ti-contenido { padding: 0 1rem 2rem; }
   .ti-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .ti-alianzas-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {

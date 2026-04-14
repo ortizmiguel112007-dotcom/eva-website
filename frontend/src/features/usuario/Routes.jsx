@@ -13,6 +13,8 @@ import MisResenas             from "./pages/MisResenas"
 import MisCupones             from "./pages/MisCupones"
 import DestacadosUsuario      from "./pages/DestacadosUsuario"
 import MisFacturas            from "./pages/MisFacturas"
+import Notificaciones from "./pages/Notificaciones"
+import MisFavoritos from "./pages/MisFavoritos"
  
 export const UsuarioRoutes = (
   <Route element={<MainLayout />}>
@@ -29,6 +31,8 @@ export const UsuarioRoutes = (
       <Route path="/mis-cupones"     element={<MisCupones />} />
       <Route path="/destacados-pub"  element={<DestacadosUsuario />} />
       <Route path="/mis-facturas"    element={<MisFacturas />} />
+      <Route path="/notificaciones" element={<Notificaciones />} />
+      <Route path="/favoritos" element={<MisFavoritos />} />
     </Route>
   </Route>
 )

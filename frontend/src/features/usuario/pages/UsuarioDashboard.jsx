@@ -46,6 +46,7 @@ export default function UsuarioDashboard() {
   const [categoria, setCategoria] = useState("");
   const [tipo, setTipo] = useState("");
   const [cargando, setCargando] = useState(true);
+  const [totalFavoritos, setTotalFavoritos] = useState(0);
 
   useEffect(() => {
     const cargar = async () => {
@@ -58,13 +59,25 @@ export default function UsuarioDashboard() {
         setCatalogo(cat);
 
         if (token) {
-          const res = await axios.get(
+          const resPedidos = await axios.get(
             "http://localhost:3000/api/cliente/pedidos",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
+            { headers: { Authorization: `Bearer ${token}` } },
           );
-          setPedidos(res.data.slice(0, 3));
+          setPedidos(resPedidos.data.slice(0, 3));
+
+          try {
+            const favRes = await axios.get(
+              "http://localhost:3000/api/favoritos",
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+            setTotalFavoritos(
+              Array.isArray(favRes.data) ? favRes.data.length : 0,
+            );
+          } catch {
+            setTotalFavoritos(0);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -150,7 +163,7 @@ export default function UsuarioDashboard() {
         <div className="ud-metrica">
           <div className="ud-metrica-left">
             <h3>Productos favoritos</h3>
-            <span className="ud-metrica-num">0</span>
+            <span className="ud-metrica-num">{totalFavoritos}</span>
             <span className="ud-metrica-sub">En tu lista</span>
           </div>
           <div className="ud-metrica-icono" style={{ background: "#faf5ff" }}>

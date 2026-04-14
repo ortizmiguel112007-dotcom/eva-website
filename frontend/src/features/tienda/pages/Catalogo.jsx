@@ -19,7 +19,7 @@ import {
   FiShoppingBag,
   FiCpu,
   FiFeather,
-  FiEye 
+  FiEye,
 } from "react-icons/fi";
 import "@/infrastructure/css/catalogo.css";
 
@@ -363,7 +363,11 @@ export default function Catalogo() {
                         </div>
                       )}
                       <span className="cat-card-tienda">
-                        {p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
+                        {p.seccion?.alianza
+                          ? p.seccion.alianza.participantes
+                              ?.map((p) => p.usuario?.nombre)
+                              .join(" & ")
+                          : p.seccion?.emprendedora?.usuario?.nombre || "EVA"}
                       </span>
                       <div className="cat-card-footer">
                         <span className="cat-card-precio">

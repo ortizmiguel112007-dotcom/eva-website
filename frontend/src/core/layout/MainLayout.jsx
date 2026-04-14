@@ -13,8 +13,9 @@ import {
   FiSettings,
   FiCreditCard,
   FiDollarSign,
-} from "react-icons/fi"; // ← agrega aquí
-import { MdOutlineReceiptLong } from "react-icons/md"; // ← agrega aquí
+} from "react-icons/fi";
+import axios from "axios";
+import { MdOutlineReceiptLong } from "react-icons/md";
 import { FaBell, FaHeart } from "react-icons/fa";
 import "@/infrastructure/css/Sidebar.css";
 import Logo from "@/infrastructure/imgs/Logo.png";
@@ -164,12 +165,26 @@ function MainLayout() {
   const [animating, setAnimating] = useState(false);
   const { totalItems, setCarritoAbierto } = useCarrito();
 
-  const { user, logout, idEmprendedora } = useAuth();
+  const { user, logout, idEmprendedora, token } = useAuth();
   const navigate = useNavigate();
 
   const isEmprendedora = user?.rol === "emprendedora";
   const isAdmin = user?.rol === "admin";
   const isUsuario = user?.rol === "usuario";
+
+  const [noLeidas, setNoLeidas] = useState(0);
+
+  useEffect(() => {
+    if (!token || (!isUsuario && !isEmprendedora && !isAdmin)) return;
+    axios
+      .get("http://localhost:3000/api/notificaciones", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setNoLeidas(res.data.filter((n) => !n.leida).length);
+      })
+      .catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     if (isMobile) setDrawerOpen(false);
@@ -687,12 +702,124 @@ function MainLayout() {
                 <span className="carrito-badge">{totalItems}</span>
               )}
             </button>
-            <button className="notif-btn">
+            <button
+              className="notif-btn"
+              onClick={() => navigate("/notificaciones")}
+              style={{ position: "relative" }}
+            >
               <FaBell />
+              {noLeidas > 0 && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-4px",
+                    right: "-4px",
+                    background: "#ef4444",
+                    color: "#fff",
+                    borderRadius: "999px",
+                    fontSize: "0.6rem",
+                    fontWeight: 800,
+                    minWidth: "16px",
+                    height: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 3px",
+                    border: "2px solid #0f172a",
+                  }}
+                >
+                  {noLeidas}
+                </span>
+              )}
             </button>
-            <button className="fav-btn">
+            <button className="fav-btn" onClick={() => navigate("/favoritos")}>
               <FaHeart />
             </button>
+          </div>
+        )}
+        {isEmprendedora && (
+          <div className="header-actions">
+            <button
+              className="notif-btn"
+              onClick={() => navigate("/notificaciones-emp")}
+              style={{ position: "relative" }}
+            >
+              <FaBell />
+              {noLeidas > 0 && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "-4px",
+                    right: "-4px",
+                    background: "#ef4444",
+                    color: "#fff",
+                    borderRadius: "999px",
+                    fontSize: "0.6rem",
+                    fontWeight: 800,
+                    minWidth: "16px",
+                    height: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 3px",
+                    border: "2px solid #0f172a",
+                  }}
+                >
+                  {noLeidas}
+                </span>
+              )}
+            </button>
+            <button
+              className="fav-btn"
+              onClick={() => navigate("/favoritos-tienda")}
+            >
+              <FaHeart />
+            </button>
+          </div>
+        )}
+        {isAdmin && (
+          <div className="header-actions">
+            {isAdmin && (
+              <div className="header-actions">
+                <button
+                  className="notif-btn"
+                  onClick={() => navigate("/tiendas")}
+                  title="Ver tiendas"
+                >
+                  <FaStore />
+                </button>
+                <button
+                  className="notif-btn"
+                  onClick={() => navigate("/notificaciones-admin")}
+                  style={{ position: "relative" }}
+                >
+                  <FaBell />
+                  {noLeidas > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "-4px",
+                        right: "-4px",
+                        background: "#ef4444",
+                        color: "#fff",
+                        borderRadius: "999px",
+                        fontSize: "0.6rem",
+                        fontWeight: 800,
+                        minWidth: "16px",
+                        height: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 3px",
+                        border: "2px solid #0f172a",
+                      }}
+                    >
+                      {noLeidas}
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </header>

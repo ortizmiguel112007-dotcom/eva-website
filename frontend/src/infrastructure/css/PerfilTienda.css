@@ -547,7 +547,71 @@
   font-weight: 800;
   color: #0f172a;
 }
+.cu-card-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+}
 
+.cu-card:hover .cu-card-img::after {
+  background: rgba(0,0,0,0.08);
+}
+.cu-card-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+  z-index: 1;
+}
+
+.cu-card:hover .cu-card-img-overlay {
+  background: rgba(0,0,0,0.3);
+}
+
+.cu-card-ver-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  color: #0f172a;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.2s;
+  font-family: 'DM Sans', system-ui;
+}
+
+.cu-card:hover .cu-card-ver-btn {
+  opacity: 1;
+  transform: none;
+}
+@keyframes cuSpin { to { transform: rotate(360deg) } }
+/* ── Overlay Ver detalle ── */
+.pt-card-img {
+  cursor: pointer;
+}
+
+.pt-card-img .cu-card-img-overlay {
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+}
+
+.pt-card:hover .cu-card-img-overlay {
+  background: rgba(0,0,0,0.3);
+}
+
+.pt-card:hover .cu-card-ver-btn {
+  opacity: 1;
+  transform: none;
+}
 /* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */

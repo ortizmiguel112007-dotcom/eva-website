@@ -1,100 +1,99 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { FiUsers, FiSearch, FiX, FiCalendar, FiCheck, FiXCircle } from "react-icons/fi"
+import {
+  FiSearch, FiX, FiUsers, FiCalendar, FiPackage,
+  FiChevronDown, FiChevronUp, FiCheck, FiClock, FiFlag
+} from "react-icons/fi"
 import "@/infrastructure/css/AdminAlianzas.css"
 
 const BASE = "http://localhost:3000"
-const headers = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
-const formatFecha = f => f ? new Date(f).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" }) : "—"
+const hdrs = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
+
+const fmtFecha = (f) => f ? new Date(f).toLocaleDateString("es-CO", {
+  day: "2-digit", month: "short", year: "numeric"
+}) : "Sin fecha límite"
+
+const fmtPrecio = (p) => "$" + Number(p).toLocaleString("es-CO")
+
+const ESTADO_CONFIG = {
+  activa:     { cls: "aa-badge--activa",     label: "Activa",     icon: <FiCheck size={10} /> },
+  pendiente:  { cls: "aa-badge--pendiente",  label: "Pendiente",  icon: <FiClock size={10} /> },
+  finalizada: { cls: "aa-badge--finalizada", label: "Finalizada", icon: <FiFlag  size={10} /> },
+}
+
+function getInitials(nombre) {
+  if (!nombre) return "?"
+  return nombre.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
+}
+
+const AVATAR_COLORS = ["#3b82f6","#16a34a","#f97316","#a855f7","#ec4899","#0891b2"]
+function getAvatarColor(nombre) {
+  if (!nombre) return AVATAR_COLORS[0]
+  const sum = nombre.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  return AVATAR_COLORS[sum % AVATAR_COLORS.length]
+}
 
 export default function AdminAlianzas() {
   const [alianzas, setAlianzas]   = useState([])
   const [cargando, setCargando]   = useState(true)
   const [busqueda, setBusqueda]   = useState("")
   const [filtro, setFiltro]       = useState("todos")
-  const [toast, setToast]         = useState(null)
   const [expandido, setExpandido] = useState(null)
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        const res = await axios.get(`${BASE}/api/alianzas`, { headers: headers() })
+        const res = await axios.get(`${BASE}/api/admin/alianzas`, { headers: hdrs() })
         setAlianzas(Array.isArray(res.data) ? res.data : [])
-      } catch { setAlianzas([]) }
+      } catch (err) { console.error(err) }
       finally { setCargando(false) }
     }
     cargar()
   }, [])
 
-  const mostrarToast = (msg, tipo = "ok") => {
-    setToast({ msg, tipo })
-    setTimeout(() => setToast(null), 3000)
-  }
-
-  const finalizar = async (id) => {
-    if (!confirm("¿Finalizar esta alianza?")) return
-    try {
-      await axios.put(`${BASE}/api/alianzas/${id}/finalizar`, {}, { headers: headers() })
-      setAlianzas(prev => prev.map(a => a.id_alianza === id ? { ...a, estado: "finalizada" } : a))
-      mostrarToast("Alianza finalizada")
-    } catch { mostrarToast("Error", "error") }
-  }
-
   const filtrados = alianzas.filter(a => {
     const matchB = a.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      a.creador?.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+      a.creador?.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      a.participantes?.some(p => p.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase()))
     const matchF = filtro === "todos" || a.estado === filtro
     return matchB && matchF
   })
 
-  const metricas = {
-    total:      alianzas.length,
-    activas:    alianzas.filter(a => a.estado === "activa").length,
-    pendientes: alianzas.filter(a => a.estado === "pendiente").length,
-    finalizadas: alianzas.filter(a => a.estado === "finalizada").length,
-  }
+  const metricas = [
+    { label: "Total",      valor: alianzas.length,                              color: "#3b82f6" },
+    { label: "Activas",    valor: alianzas.filter(a => a.estado === "activa").length,    color: "#16a34a" },
+    { label: "Pendientes", valor: alianzas.filter(a => a.estado === "pendiente").length, color: "#f97316" },
+    { label: "Finalizadas",valor: alianzas.filter(a => a.estado === "finalizada").length,color: "#64748b" },
+  ]
 
   return (
-    <div className="aa-container">
-
-      {/* Toast */}
-      {toast && <div className={`aa-toast ${toast.tipo}`}>{toast.msg}</div>}
+    <div className="aa-page">
 
       {/* Header */}
       <div className="aa-header">
-        <h1>Alianzas Promocionales</h1>
-        <p>Supervisa las promociones colaborativas entre emprendedoras</p>
+        <div>
+          <h1 className="aa-titulo">Alianzas Promocionales</h1>
+          <p className="aa-sub">Supervisa las promociones colaborativas entre emprendedoras</p>
+        </div>
       </div>
 
       {/* Métricas */}
       <div className="aa-metricas">
-        <div className="aa-metrica-card">
-          <p>Total</p>
-          <strong className="aa-metrica-valor total">{metricas.total}</strong>
-        </div>
-        <div className="aa-metrica-card">
-          <p>Activas</p>
-          <strong className="aa-metrica-valor activas">{metricas.activas}</strong>
-        </div>
-        <div className="aa-metrica-card">
-          <p>Pendientes</p>
-          <strong className="aa-metrica-valor pendientes">{metricas.pendientes}</strong>
-        </div>
-        <div className="aa-metrica-card">
-          <p>Finalizadas</p>
-          <strong className="aa-metrica-valor finalizadas">{metricas.finalizadas}</strong>
-        </div>
+        {metricas.map(m => (
+          <div key={m.label} className="aa-metrica" style={{ borderTop: `3px solid ${m.color}` }}>
+            <p className="aa-metrica-label">{m.label}</p>
+            <strong className="aa-metrica-valor" style={{ color: m.color }}>{m.valor}</strong>
+          </div>
+        ))}
       </div>
 
       {/* Filtros */}
       <div className="aa-filtros">
-        <div className="aa-search-box">
+        <div className="aa-search">
           <FiSearch size={14} color="#94a3b8" />
-          <input
-            value={busqueda}
+          <input className="aa-search-input" value={busqueda}
             onChange={e => setBusqueda(e.target.value)}
-            placeholder="Buscar alianza o emprendedora..."
-          />
+            placeholder="Buscar alianza o emprendedora..." />
           {busqueda && (
             <button className="aa-search-clear" onClick={() => setBusqueda("")}>
               <FiX size={13} />
@@ -109,73 +108,121 @@ export default function AdminAlianzas() {
         </select>
       </div>
 
+      <p className="aa-contador">Mostrando {filtrados.length} de {alianzas.length} alianzas</p>
+
       {/* Lista */}
       {cargando ? (
-        <p className="aa-loading">Cargando...</p>
+        <p className="aa-cargando">Cargando alianzas...</p>
+      ) : filtrados.length === 0 ? (
+        <div className="aa-empty">
+          <FiUsers size={40} color="#e5e7eb" />
+          <p>No hay alianzas</p>
+        </div>
       ) : (
         <div className="aa-lista">
-          {filtrados.length === 0 ? (
-            <div className="aa-empty">
-              <FiUsers size={40} color="#e5e7eb" style={{ marginBottom: "0.75rem" }} />
-              <p>No hay alianzas</p>
-            </div>
-          ) : filtrados.map(a => {
-            const isExp = expandido === a.id_alianza
+          {filtrados.map(a => {
+            const est    = ESTADO_CONFIG[a.estado] || ESTADO_CONFIG.pendiente
+            const isExp  = expandido === a.id_alianza
+            const todosAutorizados = a.participantes?.every(p => p.autorizado)
+
             return (
               <div key={a.id_alianza} className="aa-card">
 
-                {/* Header de la card */}
-                <div className="aa-card-header" onClick={() => setExpandido(isExp ? null : a.id_alianza)}>
-                  <div className="aa-card-icon">
-                    <FiUsers size={16} color="#6366f1" />
-                  </div>
-
-                  <div className="aa-card-info">
-                    <div className="aa-card-title-row">
+                {/* Fila principal */}
+                <div className="aa-card-row" onClick={() => setExpandido(isExp ? null : a.id_alianza)}>
+                  <div className="aa-card-left">
+                    <div className="aa-card-titulo">
                       <span className="aa-card-nombre">{a.nombre}</span>
-                      <span className={`aa-badge ${a.estado}`}>
-                        {{ pendiente: "Pendiente", activa: "Activa", finalizada: "Finalizada" }[a.estado]}
+                      <span className={`aa-badge ${est.cls}`}>
+                        {est.icon} {est.label}
                       </span>
+                      {!todosAutorizados && (
+                        <span className="aa-badge aa-badge--pendiente-auth">
+                          <FiClock size={10} /> Esperando autorización
+                        </span>
+                      )}
                     </div>
                     <div className="aa-card-meta">
-                      <span><FiUsers size={11} /> Creada por: {a.creador?.nombre || "—"}</span>
-                      <span><FiCalendar size={11} /> Inicio: {formatFecha(a.fecha_inicio)}</span>
-                      {a.fecha_fin && <span>Fin: {formatFecha(a.fecha_fin)}</span>}
-                      <span>{a.participantes?.length || 0} participante(s)</span>
+                      <span><FiUsers size={11} /> {a.participantes?.length || 0} participantes</span>
+                      <span><FiCalendar size={11} /> Creada: {fmtFecha(a.fecha_inicio)}</span>
+                      <span><FiCalendar size={11} /> Fin: {fmtFecha(a.fecha_fin)}</span>
                     </div>
+                    {a.descripcion && (
+                      <p className="aa-card-desc">{a.descripcion}</p>
+                    )}
                   </div>
 
-                  {a.estado === "activa" && (
-                    <button
-                      className="aa-btn-finalizar"
-                      onClick={e => { e.stopPropagation(); finalizar(a.id_alianza) }}
-                    >
-                      <FiXCircle size={13} /> Finalizar
-                    </button>
-                  )}
+                  {/* Avatares participantes */}
+                  <div className="aa-avatares">
+                    {a.participantes?.map(p => (
+                      <div key={p.id} className="aa-avatar-wrap" title={p.usuario?.nombre}>
+                        <div className="aa-avatar" style={{ background: getAvatarColor(p.usuario?.nombre) }}>
+                          {getInitials(p.usuario?.nombre)}
+                        </div>
+                        {p.autorizado && <div className="aa-avatar-check"><FiCheck size={8} /></div>}
+                      </div>
+                    ))}
+                  </div>
 
-                  <span className="aa-chevron">{isExp ? "▲" : "▼"}</span>
+                  <div className="aa-chevron">
+                    {isExp ? <FiChevronUp size={14} /> : <FiChevronDown size={14} />}
+                  </div>
                 </div>
 
-                {/* Body expandido */}
+                {/* Detalle expandido */}
                 {isExp && (
-                  <div className="aa-card-body">
-                    {a.descripcion && <p className="aa-card-desc">{a.descripcion}</p>}
-                    <p className="aa-participantes-label">Participantes</p>
-                    <div className="aa-participantes-list">
-                      {a.participantes?.map(p => (
-                        <span
-                          key={p.id}
-                          className={`aa-participante-badge ${p.autorizado ? "autorizado" : "pendiente"}`}
-                        >
-                          {p.autorizado ? <FiCheck size={11} /> : <FiX size={11} />}
-                          {p.usuario?.nombre || "—"}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="aa-detalle">
+
+                    {/* Participantes con sus productos */}
+                    {a.participantes?.map(p => {
+                      const productos = p.usuario?.emprendedora?.secciones
+                        ?.flatMap(s => s.productos) || []
+
+                      return (
+                        <div key={p.id} className="aa-participante">
+                          <div className="aa-participante-header">
+                            <div className="aa-participante-avatar" style={{ background: getAvatarColor(p.usuario?.nombre) }}>
+                              {getInitials(p.usuario?.nombre)}
+                            </div>
+                            <div>
+                              <p className="aa-participante-nombre">{p.usuario?.nombre}</p>
+                              <span className="aa-participante-email">{p.usuario?.email}</span>
+                            </div>
+                            <span className={`aa-auth-badge ${p.autorizado ? "autorizado" : "pendiente"}`}>
+                              {p.autorizado ? <><FiCheck size={10} /> Autorizado</> : <><FiClock size={10} /> Pendiente</>}
+                            </span>
+                          </div>
+
+                          {/* Productos de esta emprendedora */}
+                          {productos.length > 0 ? (
+                            <div className="aa-productos-grid">
+                              {productos.map(prod => (
+                                <div key={prod.id_producto} className="aa-producto-card">
+                                  <div className="aa-producto-img">
+                                    {prod.imagen
+                                      ? <img src={prod.imagen} alt={prod.nombre_producto} />
+                                      : <div className="aa-producto-no-img"><FiPackage size={20} color="#cbd5e1" /></div>
+                                    }
+                                    <span className={`aa-tipo-badge aa-tipo-badge--${prod.tipo}`}>
+                                      {prod.tipo}
+                                    </span>
+                                  </div>
+                                  <div className="aa-producto-info">
+                                    <p className="aa-producto-nombre">{prod.nombre_producto}</p>
+                                    <span className="aa-producto-cat">{prod.categoria}</span>
+                                    <strong className="aa-producto-precio">{fmtPrecio(prod.precio)}</strong>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="aa-sin-productos">Sin productos activos</p>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
-
               </div>
             )
           })}
