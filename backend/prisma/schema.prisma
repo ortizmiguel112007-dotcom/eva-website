@@ -7,109 +7,110 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  nombre       String
-  email        String    @unique
-  telefono     String
-  password     String
-  verificado   Boolean   @default(false)
-  activo       Boolean   @default(true)
-  rol          String    @default("usuario")
-  token        String?
-  codigoExpira DateTime?
-  createdAt    DateTime  @default(now())
-
-  emprendedora Emprendedora?
-  auditorias   Auditoria[]
-  pedidos      Pedido[]
-  productosCreados  Producto[] @relation("ProductoCreador")
-
-  alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
-  alianzasParticipante AlianzaParticipante[]
-  cupones              Cupon[]
-  comentarios          Comentario[]
-  notificaciones Notificacion[]
-  favoritos Favorito[]
-  foto_documento       String?
-  carrito              Carrito?
+  id                     Int                      @id @default(autoincrement())
+  nombre                 String
+  email                  String                   @unique
+  telefono               String
+  password               String
+  verificado             Boolean                  @default(false)
+  rol                    String                   @default("usuario")
+  token                  String?
+  codigoExpira           DateTime?
+  createdAt              DateTime                 @default(now())
+  activo                 Boolean                  @default(true)
+  foto_documento         String?
+  alianzasParticipante   AlianzaParticipante[]
+  alianzasCreadas        Alianza[]                @relation("AlianzaCreador")
+  auditorias             Auditoria[]
+  carrito                Carrito?
+  comentarios            Comentario[]
+  cupones                Cupon[]
+  emprendedora           Emprendedora?
+  favoritos              Favorito[]
+  movimientos_inventario movimientos_inventario[]
+  notificaciones         Notificacion[]
+  pedidos                Pedido[]
+  productosCreados       Producto[]               @relation("ProductoCreador")
 }
 
 model VerificacionPendiente {
   email          String   @id
   nombre         String
-  telefono       String
   password       String
   codigo         String
   expiracion     DateTime
-  rol            String   @default("usuario")
+  telefono       String
   foto_documento String?
+  rol            String   @default("usuario")
 }
 
 model Emprendedora {
-  id_emprendedora Int     @id @default(autoincrement())
-  id_usuario      Int     @unique
-  datos_bancarios String?
-  estado          Boolean @default(true)
-
-  usuario   User      @relation(fields: [id_usuario], references: [id])
-  secciones Seccion[]
+  id_emprendedora      Int       @id @default(autoincrement())
+  id_usuario           Int       @unique
+  datos_bancarios      String?
+  estado               Boolean   @default(true)
+  acepta_contraentrega Boolean   @default(false)
+  bancolombia_numero   String?
+  bancolombia_tipo     String?
+  nequi_numero         String?
+  titular_cuenta       String?
+  usuario              User      @relation(fields: [id_usuario], references: [id])
+  secciones            Seccion[]
 
   @@map("emprendedoras")
 }
 
 model Seccion {
-  id_seccion      Int      @id @default(autoincrement())
+  id_seccion      Int          @id @default(autoincrement())
   id_emprendedora Int
   nombre_seccion  String
-  fecha_creacion  DateTime @default(now())
+  fecha_creacion  DateTime     @default(now())
   id_alianza      Int?
-
-  emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
-  productos    Producto[]
-  pedidos      Pedido[]
-  alianza      Alianza?     @relation(fields: [id_alianza], references: [id_alianza])
+  pedidos         Pedido[]
+  productos       Producto[]
+  alianza         Alianza?     @relation(fields: [id_alianza], references: [id_alianza])
+  emprendedora    Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
 
   @@map("secciones")
 }
 
 model Producto {
-  id_producto               Int      @id @default(autoincrement())
+  id_producto               Int                      @id @default(autoincrement())
   id_seccion                Int
-  id_creador                Int?
   nombre_producto           String
   descripcion               String?
-  precio                    Decimal  @db.Decimal(15, 2)
+  precio                    Decimal                  @db.Decimal(15, 2)
   categoria                 String?
-  estado_producto           String   @default("activo")
-  duracion                  String?
-  tipo                      String   @default("producto") // "producto" o "servicio"
+  estado_producto           String                   @default("activo")
   imagen                    String?
   tamano_imagen             Int?
-  stock_minimo              Int      @default(0)
-  ultima_modificacion_stock DateTime @default(now()) @updatedAt
-
-  seccion     Seccion         @relation(fields: [id_seccion], references: [id_seccion])
-  creador    User?       @relation("ProductoCreador", fields: [id_creador], references: [id])
-  inventario Inventario?
-  detalles    DetallePedido[]
-  comentarios Comentario[]
-  favoritos Favorito[]
-
-  destacado    Boolean       @default(false)
-  visible      Boolean       @default(true)
-  carritoItems CarritoItem[]
+  stock_minimo              Int                      @default(0)
+  ultima_modificacion_stock DateTime                 @default(now()) @updatedAt
+  duracion                  String?
+  tipo                      String                   @default("producto")
+  destacado                 Boolean                  @default(false)
+  visible                   Boolean                  @default(true)
+  id_creador                Int?
+  carritoItems              CarritoItem[]
+  comentarios               Comentario[]
+  detalles                  DetallePedido[]
+  favoritos                 Favorito[]
+  inventario                Inventario?
+  movimientos_inventario    movimientos_inventario[]
+  creador                   User?                    @relation("ProductoCreador", fields: [id_creador], references: [id])
+  seccion                   Seccion                  @relation(fields: [id_seccion], references: [id_seccion])
+  reglas_descuento          reglas_descuento[]
 
   @@map("producto")
 }
 
 model Inventario {
-  id_inventario Int @id @default(autoincrement())
-  id_producto   Int @unique
+  id_inventario Int      @id @default(autoincrement())
+  id_producto   Int      @unique
   cantidad      Int
   stock_minimo  Int
   stock_maximo  Int
-
-  producto Producto @relation(fields: [id_producto], references: [id_producto], onDelete: Cascade)
+  producto      Producto @relation(fields: [id_producto], references: [id_producto], onDelete: Cascade)
 
   @@map("inventario")
 }
@@ -122,55 +123,53 @@ model Auditoria {
   accion            String   @db.VarChar(50)
   fecha             DateTime
   detalles          String?  @db.VarChar(500)
-
-  usuario User @relation(fields: [id_usuario_accion], references: [id])
+  usuario           User     @relation(fields: [id_usuario_accion], references: [id])
 
   @@map("auditoria")
 }
 
 model Pedido {
-  id_pedido   Int      @id @default(autoincrement())
-  id_cliente  Int
-  id_seccion  Int
-  estado      String   @default("en_proceso")
-  total       Decimal  @db.Decimal(10, 3)
-  metodo_pago String?
-  fecha       DateTime @default(now())
-  nota        String?
-  pago        Pago?
-
-  cliente     User            @relation(fields: [id_cliente], references: [id])
-  seccion     Seccion         @relation(fields: [id_seccion], references: [id_seccion])
-  detalles    DetallePedido[]
-  comentarios Comentario[]
+  id_pedido        Int             @id @default(autoincrement())
+  id_cliente       Int
+  id_seccion       Int
+  estado           String          @default("pendiente_pago")
+  total            Decimal         @db.Decimal(10, 3)
+  metodo_pago      String?
+  fecha            DateTime        @default(now())
+  nota             String?
+  comprobante_pago String?
+  fecha_pago       DateTime?
+  comentarios      Comentario[]
+  detalles         DetallePedido[]
+  pago             Pago?
+  cliente          User            @relation(fields: [id_cliente], references: [id])
+  seccion          Seccion         @relation(fields: [id_seccion], references: [id_seccion])
 
   @@map("pedidos")
 }
 
 model DetallePedido {
-  id_detalle  Int     @id @default(autoincrement())
+  id_detalle  Int      @id @default(autoincrement())
   id_pedido   Int
   id_producto Int
   cantidad    Int
-  precio_unit Decimal @db.Decimal(10, 3)
-
-  pedido   Pedido   @relation(fields: [id_pedido], references: [id_pedido])
-  producto Producto @relation(fields: [id_producto], references: [id_producto])
+  precio_unit Decimal  @db.Decimal(10, 3)
+  pedido      Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+  producto    Producto @relation(fields: [id_producto], references: [id_producto])
 
   @@map("detalle_pedidos")
 }
 
 model Alianza {
-  id_alianza   Int       @id @default(autoincrement())
-  nombre       String
-  descripcion  String?
-  estado       String    @default("pendiente")
-  fecha_inicio DateTime  @default(now())
-  fecha_fin    DateTime?
-  creada_por   Int
-
-  creador       User                  @relation("AlianzaCreador", fields: [creada_por], references: [id])
+  id_alianza    Int                   @id @default(autoincrement())
+  nombre        String
+  descripcion   String?
+  estado        String                @default("pendiente")
+  fecha_inicio  DateTime              @default(now())
+  fecha_fin     DateTime?
+  creada_por    Int
   participantes AlianzaParticipante[]
+  creador       User                  @relation("AlianzaCreador", fields: [creada_por], references: [id])
   secciones     Seccion[]
 
   @@map("alianzas")
@@ -182,9 +181,8 @@ model AlianzaParticipante {
   id_usuario  Int
   autorizado  Boolean  @default(false)
   fecha_union DateTime @default(now())
-
-  alianza Alianza @relation(fields: [id_alianza], references: [id_alianza])
-  usuario User    @relation(fields: [id_usuario], references: [id])
+  alianza     Alianza  @relation(fields: [id_alianza], references: [id_alianza])
+  usuario     User     @relation(fields: [id_usuario], references: [id])
 
   @@unique([id_alianza, id_usuario])
   @@map("alianza_participantes")
@@ -194,7 +192,7 @@ model Cupon {
   id_cupon     Int       @id @default(autoincrement())
   id_usuario   Int
   codigo       String    @unique
-  tipo         String // "porcentaje" o "valor_fijo"
+  tipo         String
   valor        Decimal   @db.Decimal(10, 3)
   descripcion  String?
   activo       Boolean   @default(true)
@@ -202,8 +200,7 @@ model Cupon {
   fecha_fin    DateTime?
   limite_usos  Int?
   usos         Int       @default(0)
-
-  usuario User @relation(fields: [id_usuario], references: [id])
+  usuario      User      @relation(fields: [id_usuario], references: [id])
 
   @@map("cupones")
 }
@@ -213,37 +210,34 @@ model Comentario {
   id_producto   Int
   id_usuario    Int
   id_pedido     Int
-  calificacion  Int // 1-5
+  calificacion  Int
   texto         String
   activo        Boolean  @default(true)
   fecha         DateTime @default(now())
-
-  producto Producto @relation(fields: [id_producto], references: [id_producto])
-  usuario  User     @relation(fields: [id_usuario], references: [id])
-  pedido   Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+  pedido        Pedido   @relation(fields: [id_pedido], references: [id_pedido])
+  producto      Producto @relation(fields: [id_producto], references: [id_producto])
+  usuario       User     @relation(fields: [id_usuario], references: [id])
 
   @@map("comentarios")
 }
 
 model Carrito {
-  id_carrito Int      @id @default(autoincrement())
-  id_usuario Int      @unique
-  fecha_act  DateTime @default(now()) @updatedAt
-
-  usuario User          @relation(fields: [id_usuario], references: [id])
-  items   CarritoItem[]
+  id_carrito Int           @id @default(autoincrement())
+  id_usuario Int           @unique
+  fecha_act  DateTime      @default(now()) @updatedAt
+  items      CarritoItem[]
+  usuario    User          @relation(fields: [id_usuario], references: [id])
 
   @@map("carritos")
 }
 
 model CarritoItem {
-  id_item     Int @id @default(autoincrement())
+  id_item     Int      @id @default(autoincrement())
   id_carrito  Int
   id_producto Int
-  cantidad    Int @default(1)
-
-  carrito  Carrito  @relation(fields: [id_carrito], references: [id_carrito], onDelete: Cascade)
-  producto Producto @relation(fields: [id_producto], references: [id_producto], onDelete: Cascade)
+  cantidad    Int      @default(1)
+  carrito     Carrito  @relation(fields: [id_carrito], references: [id_carrito], onDelete: Cascade)
+  producto    Producto @relation(fields: [id_producto], references: [id_producto], onDelete: Cascade)
 
   @@unique([id_carrito, id_producto])
   @@map("carrito_items")
@@ -252,14 +246,13 @@ model CarritoItem {
 model Pago {
   id_pago      Int       @id @default(autoincrement())
   id_pedido    Int       @unique
-  metodo       String // "qr"
-  estado       String    @default("pendiente") // pendiente, verificado, rechazado
-  comprobante  String? // URL de la imagen subida
+  metodo       String
+  estado       String    @default("pendiente")
+  comprobante  String?
   fecha        DateTime  @default(now())
   fecha_verif  DateTime?
   nota_rechazo String?
-
-  pedido Pedido @relation(fields: [id_pedido], references: [id_pedido])
+  pedido       Pedido    @relation(fields: [id_pedido], references: [id_pedido])
 
   @@map("pagos")
 }
@@ -267,14 +260,13 @@ model Pago {
 model Notificacion {
   id_notificacion Int      @id @default(autoincrement())
   id_usuario      Int
-  tipo            String   // "pedido", "cupon", "solicitud"
+  tipo            String
   titulo          String
   mensaje         String
   leida           Boolean  @default(false)
   fecha           DateTime @default(now())
-  url             String?  // ruta a donde navegar al hacer click
-
-  usuario User @relation(fields: [id_usuario], references: [id])
+  url             String?
+  usuario         User     @relation(fields: [id_usuario], references: [id])
 
   @@map("notificaciones")
 }
@@ -284,10 +276,37 @@ model Favorito {
   id_usuario  Int
   id_producto Int
   fecha       DateTime @default(now())
-
-  usuario  User     @relation(fields: [id_usuario], references: [id])
-  producto Producto @relation(fields: [id_producto], references: [id_producto])
+  producto    Producto @relation(fields: [id_producto], references: [id_producto])
+  usuario     User     @relation(fields: [id_usuario], references: [id])
 
   @@unique([id_usuario, id_producto])
   @@map("favoritos")
+}
+
+model movimientos_inventario {
+  id_movimiento  Int      @id @default(autoincrement())
+  id_producto    Int
+  tipo           String
+  cantidad_antes Int
+  cantidad_nueva Int
+  motivo         String?
+  fecha          DateTime @default(now())
+  id_usuario     Int
+  producto       Producto @relation(fields: [id_producto], references: [id_producto])
+  User           User     @relation(fields: [id_usuario], references: [id])
+}
+
+model reglas_descuento {
+  id_regla     Int       @id @default(autoincrement())
+  id_producto  Int
+  nombre       String
+  tipo         String
+  valor        Decimal   @db.Decimal(10, 2)
+  condicion    String
+  stock_limite Int?
+  activa       Boolean   @default(true)
+  prioridad    Int       @default(1)
+  fecha_inicio DateTime  @default(now())
+  fecha_fin    DateTime?
+  producto     Producto  @relation(fields: [id_producto], references: [id_producto])
 }
