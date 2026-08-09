@@ -1,0 +1,111 @@
+.rd-page {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.rd-header { margin-bottom: 2rem; }
+
+.rd-titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rd-subtitulo { color: #64748b; margin: 0.25rem 0 0; font-size: 0.9rem; }
+
+.rd-toast {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.rd-toast.ok    { background: #10b981; }
+.rd-toast.error { background: #ef4444; }
+
+.rd-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+}
+
+.rd-cargando { color: #94a3b8; font-size: 0.85rem; padding: 1rem 0; }
+
+.rd-empty {
+  background: #fff;
+  border-radius: 1rem;
+  border: 1.5px solid #e5e7eb;
+  padding: 3rem;
+  text-align: center;
+}
+
+.rd-empty p { color: #94a3b8; margin-top: 0.75rem; }
+
+.rd-no-sel {
+  background: #fff;
+  border-radius: 1rem;
+  border: 1.5px solid #e5e7eb;
+  padding: 3rem;
+  text-align: center;
+}
+
+.rd-no-sel p { color: #94a3b8; margin-top: 1rem; }
+
+/* ── Producto seleccionado header ── */
+.rd-producto-sel-header {
+  background: #fff;
+  border-radius: 1rem;
+  border: 1.5px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rd-producto-sel-info { display: flex; align-items: center; gap: 0.75rem; }
+
+.rd-producto-sel-img { width: 40px; height: 40px; border-radius: 0.5rem; object-fit: cover; }
+
+.rd-producto-sel-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rd-producto-sel-nombre { margin: 0; font-weight: 700; color: #0f172a; }
+.rd-producto-sel-precio { margin: 0; font-size: 0.8rem; color: #64748b; }
+
+.rd-btn-nueva {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rd-btn-nueva:hover { background: #2563eb; }
+
+@media (max-width: 768px) { .rd-layout { grid-template-columns: 1fr; } }

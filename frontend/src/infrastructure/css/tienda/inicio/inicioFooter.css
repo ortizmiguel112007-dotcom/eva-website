@@ -1,0 +1,139 @@
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+.ip-footer {
+  background: #020617;
+  color: #e2e8f0;
+  padding: 3rem 3rem 1.5rem;
+  margin-top: 0;
+}
+
+.ip-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.ip-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Playfair Display", serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.85rem;
+}
+
+.ip-footer-brand p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+
+.ip-footer-social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.ip-footer-social a {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  border: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.ip-footer-social a:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.ip-footer-col h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin: 0 0 1rem;
+}
+
+.ip-footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ip-footer-col li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.ip-footer-col li:hover {
+  color: #fff;
+}
+
+.ip-footer-col p {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0 0 0.6rem;
+}
+
+.ip-footer-bottom {
+  max-width: 1100px;
+  margin: 1.5rem auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #475569;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ip-footer-bottom span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+@media (max-width: 900px) {
+  .ip-footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ip-footer-brand {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .ip-footer {
+    padding: 2rem 1.5rem 1rem;
+  }
+  .ip-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .ip-footer-brand {
+    grid-column: span 1;
+  }
+}

@@ -10,11 +10,11 @@ import TiendaAlianza from "./pages/TiendaAlianza"
 
 export const TiendaRoutes = (
   <Route element={<MainLayout />}>
-    <Route path="/"          element={<Inicio />} />
+    <Route path="/" element={<Inicio />} />
     <Route path="/catalogo" element={<Catalogo />} />
-    <Route path="/tiendas"   element={<Tiendas />} />
+    <Route path="/tiendas" element={<Tiendas />} />
     <Route path="/tienda/:id_emprendedora" element={<PerfilTienda />} />
-    <Route path="/producto-detalle/:id" element={<DetalleProducto />} />
+    <Route path="/catalogo/:id" element={<DetalleProducto />} />
     <Route path="/carrito" element={<Carrito />} />
     <Route path="/alianza/:id_alianza" element={<TiendaAlianza />} />
   </Route>

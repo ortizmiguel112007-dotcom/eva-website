@@ -1,0 +1,102 @@
+/* ── MetodosPago (page) ── */
+.mp-page {
+  padding: 2.5rem 2.5rem 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Hero */
+.mp-hero {
+  margin-bottom: 2.5rem;
+}
+
+.mp-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #eef2ff;
+  color: #6366f1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mp-hero-titulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+  line-height: 1.1;
+}
+
+.mp-hero-sub {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0;
+  max-width: 480px;
+}
+
+/* Grid */
+.mp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Info box */
+.mp-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #f8f7ff;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 0.85rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.mp-info-icono {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-info-titulo {
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+  font-size: 0.88rem;
+}
+
+.mp-info-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .mp-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .mp-hero-titulo {
+    font-size: 1.6rem;
+  }
+
+  .mp-grid {
+    grid-template-columns: 1fr;
+  }
+}

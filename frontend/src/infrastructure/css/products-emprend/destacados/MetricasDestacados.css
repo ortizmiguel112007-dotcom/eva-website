@@ -1,0 +1,45 @@
+/* ── MetricasDestacados ── */
+.destacados-metricas {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.destacado-metrica {
+  flex: 1;
+  min-width: 150px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.destacado-metrica h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-text-dark);
+}
+
+.destacado-metrica span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.destacado-metrica.activos {
+  background: #fffdf0;
+  border-color: #fde68a;
+}
+
+.destacado-metrica.activos h3 {
+  color: #d97706;
+}
+.destacado-metrica.activos span {
+  color: #d97706;
+}

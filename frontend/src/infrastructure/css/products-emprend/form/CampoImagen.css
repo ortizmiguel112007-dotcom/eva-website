@@ -1,0 +1,58 @@
+/* ─── Toggle imagen ──────────────────────────────────────── */
+.image-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  background: var(--color-bg-main);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+}
+
+.image-toggle button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .82rem;
+  font-weight: 500;
+  background: transparent;
+  color: #94a3b8;
+  transition: background var(--transition), color var(--transition);
+}
+
+.image-toggle .active {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(59,130,246,.3);
+}
+
+/* ─── Upload box ─────────────────────────────────────────── */
+.upload-box {
+  border: 2px dashed var(--color-primary);
+  padding: 24px 20px;
+  text-align: center;
+  border-radius: var(--radius-md);
+  color: #94a3b8;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  background: #f0f7ff;
+}
+
+.upload-box:hover {
+  background: #e0efff;
+  transform: scale(1.01);
+}
+
+/* ─── Preview imagen ─────────────────────────────────────── */
+.image-preview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+  max-height: 200px;
+  object-fit: cover;
+  border: 1.5px solid var(--color-border);
+}

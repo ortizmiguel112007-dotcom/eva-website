@@ -1,0 +1,64 @@
+/* ═══════════════════════════════════════════════════════
+   UI BASE PARA DIV
+═══════════════════════════════════════════════════════ */
+/* ═══════════════════════ base ═══════════════════════ */
+.ui-base {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 2rem;
+}
+
+/* ══════════════════════ icono ═══════════════════════ */
+.ui-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+/* ════════════════════ contenido ═════════════════════ */
+.ui-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* ═════════════════════ loading ══════════════════════ */
+.ip-loading {
+  color: #64748b;
+}
+
+.ip-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: ipSpin 0.8s linear infinite;
+}
+
+@keyframes ipSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ══════════════════════ empty ═══════════════════════ */
+.ip-empty {
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ip-empty p {
+  font-weight: 600;
+  color: #64748b;
+}

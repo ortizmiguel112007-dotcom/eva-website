@@ -1,0 +1,68 @@
+.dash-estados {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dash-estado-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dash-estado-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.dash-estado-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dash-estado-label {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.dash-estado-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.dash-estado-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.8s ease;
+    min-width: 4px;
+}
+
+.dash-estado-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    min-width: 55px;
+    justify-content: flex-end;
+}
+
+.dash-total-pedidos {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+}

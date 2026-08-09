@@ -1,0 +1,94 @@
+/* ── Contenedor principal ── */
+.comentarios-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--color-bg-main);
+  color: var(--color-text-dark);
+}
+
+/* ── Header ── */
+.comentarios-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.comentarios-header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.comentarios-subtitle {
+  font-size: 0.88rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Lista ── */
+.comentarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Empty ── */
+.comentarios-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+  font-size: 0.95rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+/* ── Toast ── */
+.comentarios-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #059669;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  animation: slideUp 0.3s ease;
+}
+.comentarios-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.comentarios-tabs button {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.comentarios-tabs button.active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .comentarios-container { padding: 1rem; }
+}

@@ -2,63 +2,43 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/core/context/AuthConten"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { FiStar, FiMessageSquare, FiPackage, FiCalendar, FiShoppingBag } from "react-icons/fi"
-import "@/infrastructure/css/MisResenas.css"
+import { FiStar, FiMessageSquare, FiShoppingBag } from "react-icons/fi"
 
-function formatFecha(f) {
-  return new Date(f).toLocaleDateString("es-CO", {
-    day: "2-digit", month: "long", year: "numeric"
-  })
-}
+import { ResenaCard } from "../components/resenas/ResenaCard"
+import { StatsResenas } from "../components/resenas/StatsResenas"
 
-function Estrellas({ valor, size = 14 }) {
-  return (
-    <div className="mr-estrellas">
-      {[1, 2, 3, 4, 5].map(i => (
-        <FiStar key={i} size={size}
-          fill={i <= valor ? "#f59e0b" : "none"}
-          color={i <= valor ? "#f59e0b" : "#d1d5db"} />
-      ))}
-      <span className="mr-estrella-num">{valor}.0</span>
-    </div>
-  )
-}
+import "@/infrastructure/css/usuario/resenas/MisResenas.css"
 
 export default function MisResenas() {
   const { token } = useAuth()
   const navigate  = useNavigate()
+
   const [resenas, setResenas]   = useState([])
   const [cargando, setCargando] = useState(true)
-  const [filtro, setFiltro]     = useState(0) // 0 = todos
+  const [filtro, setFiltro]     = useState(0)
 
   useEffect(() => {
-    const cargar = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/api/cliente/pedidos", {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+    axios.get("http://localhost:3000/api/cliente/pedidos", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
         const coms = []
         res.data.forEach(p => {
           p.comentarios?.forEach(c => coms.push({ ...c, pedido: p }))
         })
         setResenas(coms)
-      } catch { setResenas([]) }
-      finally { setCargando(false) }
-    }
-    cargar()
+      })
+      .catch(() => setResenas([]))
+      .finally(() => setCargando(false))
   }, [token])
 
-  const promedio = resenas.length
+  const promedio  = resenas.length
     ? (resenas.reduce((acc, r) => acc + r.calificacion, 0) / resenas.length).toFixed(1)
     : null
 
   const filtradas = filtro === 0
     ? resenas
     : resenas.filter(r => r.calificacion === filtro)
-
-  const contPorEstrella = [5, 4, 3, 2, 1].map(n => ({
-    n, count: resenas.filter(r => r.calificacion === n).length
-  }))
 
   if (cargando) return (
     <div className="mr-loading">
@@ -69,8 +49,6 @@ export default function MisResenas() {
 
   return (
     <div className="mr-page">
-
-      {/* Header */}
       <div className="mr-header">
         <div className="mr-header-text">
           <h1 className="mr-titulo">Mis Reseñas</h1>
@@ -101,39 +79,8 @@ export default function MisResenas() {
         </div>
       ) : (
         <div className="mr-layout">
+          <StatsResenas resenas={resenas} filtro={filtro} setFiltro={setFiltro} />
 
-          {/* Sidebar stats */}
-          <aside className="mr-sidebar">
-            <div className="mr-stats-card">
-              <p className="mr-stats-titulo">Distribución</p>
-              {contPorEstrella.map(({ n, count }) => (
-                <div key={n} className="mr-bar-row"
-                  onClick={() => setFiltro(filtro === n ? 0 : n)}
-                  style={{ cursor: 'pointer', opacity: filtro !== 0 && filtro !== n ? 0.4 : 1 }}>
-                  <span className="mr-bar-num">{n}</span>
-                  <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
-                  <div className="mr-bar-track">
-                    <div className="mr-bar-fill"
-                      style={{ width: resenas.length ? `${(count / resenas.length) * 100}%` : "0%" }} />
-                  </div>
-                  <span className="mr-bar-count">{count}</span>
-                </div>
-              ))}
-              {filtro !== 0 && (
-                <button className="mr-btn-limpiar" onClick={() => setFiltro(0)}>
-                  Mostrar todas
-                </button>
-              )}
-            </div>
-
-            <div className="mr-total-card">
-              <FiMessageSquare size={20} color="#6366f1" />
-              <strong>{resenas.length}</strong>
-              <span>reseña{resenas.length !== 1 ? "s" : ""} publicada{resenas.length !== 1 ? "s" : ""}</span>
-            </div>
-          </aside>
-
-          {/* Lista reseñas */}
           <div className="mr-lista">
             {filtradas.length === 0 ? (
               <div className="mr-filtro-empty">
@@ -141,38 +88,7 @@ export default function MisResenas() {
                 <p>No hay reseñas de {filtro} estrella{filtro !== 1 ? "s" : ""}</p>
               </div>
             ) : filtradas.map(r => (
-              <div key={r.id_comentario} className="mr-card">
-                {/* Cabecera */}
-                <div className="mr-card-top">
-                  <div className="mr-card-meta">
-                    <div className="mr-card-pedido">
-                      <FiPackage size={12} />
-                      <span>Pedido #{r.pedido?.id_pedido}</span>
-                    </div>
-                    <div className="mr-card-fecha">
-                      <FiCalendar size={12} />
-                      <span>{formatFecha(r.fecha)}</span>
-                    </div>
-                  </div>
-                  <Estrellas valor={r.calificacion} />
-                </div>
-
-                {/* Texto */}
-                <p className="mr-card-texto">"{r.texto}"</p>
-
-                {/* Footer */}
-                <div className="mr-card-footer">
-                  <span className="mr-card-tienda">
-                    {r.pedido?.seccion?.emprendedora?.usuario?.nombre || "EVA"}
-                  </span>
-                  <div className={`mr-card-cal cal-${r.calificacion}`}>
-                    {r.calificacion === 5 ? "Excelente" :
-                     r.calificacion === 4 ? "Muy bueno" :
-                     r.calificacion === 3 ? "Bueno" :
-                     r.calificacion === 2 ? "Regular" : "Malo"}
-                  </div>
-                </div>
-              </div>
+              <ResenaCard key={r.id_comentario} resena={r} />
             ))}
           </div>
         </div>

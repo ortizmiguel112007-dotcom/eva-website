@@ -1,0 +1,132 @@
+/* ── MetodoCard ── */
+.mp-card {
+  border-radius: 1.25rem;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.mp-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.mp-card-bar {
+  height: 4px;
+  background: var(--acento);
+  width: 100%;
+}
+
+.mp-card-inner {
+  padding: 1.5rem;
+}
+
+.mp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.mp-card-icono {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.85rem;
+  background: var(--acento-claro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-card-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.mp-card-titulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+}
+
+.mp-card-desc {
+  font-size: 0.83rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+
+/* Pasos */
+.mp-pasos {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.mp-paso {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mp-paso-num {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-paso-texto {
+  font-size: 0.72rem;
+  color: #374151;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mp-paso-arrow {
+  color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+/* Footer */
+.mp-card-footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.85rem;
+}
+
+.mp-disponible {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.mp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: mp-pulso 2s infinite;
+}
+
+@keyframes mp-pulso {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.3); }
+}

@@ -1,0 +1,251 @@
+/* ── Overlay ── */
+.inv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  padding: 1rem;
+}
+
+/* ── Modal ── */
+.inv-modal {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.inv-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.inv-modal-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.inv-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.inv-modal-header span {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.inv-modal-cerrar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+
+.inv-modal-cerrar:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ── Tabs ── */
+.inv-modal-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.inv-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.inv-tab.activo {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+/* ── Body ── */
+.inv-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inv-stock-actual {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
+}
+
+.inv-stock-actual-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.inv-stock-actual-valor {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* ── Row fix ── */
+.inv-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.inv-modal-row .inv-modal-field {
+  min-width: 0;
+}
+
+/* ── Fields ── */
+.inv-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.inv-modal-field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.inv-modal-field input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.55rem;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  color: #1e293b;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inv-modal-field input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background: #ffffff;
+}
+
+.inv-modal-field input.error {
+  border-color: #ef4444;
+}
+
+.inv-field-error {
+  font-size: 0.72rem;
+  color: #ef4444;
+  margin-top: 0.1rem;
+}
+
+.inv-preview {
+  font-size: 0.78rem;
+  color: #64748b;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.4rem;
+  padding: 0.35rem 0.65rem;
+}
+
+/* ── Footer ── */
+.inv-modal-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+
+.btn-cancelar-inv {
+  padding: 0.55rem 1.25rem;
+  border-radius: 0.55rem;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancelar-inv:hover {
+  background: #f3f4f6;
+}
+
+.btn-guardar-inv {
+  padding: 0.55rem 1.25rem;
+  border-radius: 0.55rem;
+  border: none;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-guardar-inv:hover {
+  background: #2563eb;
+}
+
+.btn-guardar-inv:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Legacy ── */
+.inv-stock-rango {
+  font-size: 0.82rem;
+  color: #6b7280;
+}

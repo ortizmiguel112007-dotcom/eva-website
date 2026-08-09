@@ -1,10 +1,11 @@
 import prisma from "../conexion.js";
+import { aplicarDescuento } from './reglasdescuento.controller.js'
 
 // GET /api/publico/destacados — productos destacados
 export const getDestacados = async (req, res) => {
   try {
     const productos = await prisma.producto.findMany({
-      where: { destacado: true, estado_producto: "activo" },
+      where: { destacado: true, estado_producto: "activo",  visible: true },
       include: {
         seccion: {
           include: {
@@ -32,6 +33,7 @@ export const getCatalogo = async (req, res) => {
     const productos = await prisma.producto.findMany({
       where: {
         estado_producto: "activo",
+          visible: true,
         ...(categoria && { categoria }),
         ...(tipo && { tipo }),
         ...(busqueda && {
@@ -60,7 +62,15 @@ export const getCatalogo = async (req, res) => {
       },
       orderBy: { ultima_modificacion_stock: "desc" },
     });
-    res.json(productos);
+     // Aplicar descuentos
+    const productosConDescuento = await Promise.all(
+      productos.map(async (p) => {
+        const stock = p.inventario?.cantidad ?? 0
+        const descuento = await aplicarDescuento(p.id_producto, p.precio, stock)
+        return { ...p, descuento }
+      })
+    )
+   res.json(productosConDescuento)
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener catálogo" });
@@ -91,3 +101,20 @@ export const getTiendas = async (req, res) => {
     res.status(500).json({ error: "Error al obtener tiendas" });
   }
 };
+
+export const eliminarItem = async (req, res) => {
+  try {
+    const id = Number(req.params.id)
+
+    // Soft delete — cambia estado en vez de borrar
+    await prisma.producto.update({
+      where: { id_producto: id },
+      data: { estado_producto: "inactivo", visible: false }
+    })
+
+    res.json({ message: "Producto eliminado correctamente" })
+  } catch (error) {
+    console.error("ERROR ELIMINANDO:", error)
+    res.status(500).json({ error: error.message })
+  }
+}

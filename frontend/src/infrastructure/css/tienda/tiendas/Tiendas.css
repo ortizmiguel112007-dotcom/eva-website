@@ -1,0 +1,100 @@
+/* ═══════════════════════════════════════════════════════════════
+   TIENDAS — CSS completo
+═══════════════════════════════════════════════════════════════ */
+.ti-page {
+  min-height: 100vh;
+  background: #f8f9fc;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* ══════════════════════════════
+   CONTENIDO
+══════════════════════════════ */
+/* En Tiendas.css — reemplaza ti-contenido */
+.ti-contenido {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;  /* ← era 4rem, ahora 2rem arriba */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-sizing: border-box;
+}
+
+/* Quita el padding-top de alianzas si lo tiene */
+.ti-alianzas-seccion {
+  padding-top: 0;  /* ← era 3.5rem */
+}
+@media (max-width: 640px) {
+  .ti-contenido {
+    padding: 2rem 1rem;
+  }
+}
+
+/* ══════════════════════════════
+   SECCIÓN ALIANZAS
+══════════════════════════════ */
+.ti-alianzas-seccion {
+  padding-top: 3.5rem;
+}
+.ti-seccion { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.ti-seccion-header { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.ti-seccion-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #3b82f6;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 4px 12px;
+  width: fit-content;
+}
+
+.ti-seccion-titulo { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin: 0; }
+.ti-seccion-sub    { font-size: 0.85rem; color: #64748b; margin: 0; }
+
+/* ── Badge campaña ── */
+.ti-card-wrap { position: relative; }
+
+.ti-badge-collab {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.ti-card-alianza { border: 1.5px solid #ddd6fe; }
+.ti-card-alianza:hover { border-color: #7c3aed; }
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 768px) {
+  .ti-hero { padding: 2.5rem 1.5rem 4rem; }
+  .ti-contenido { padding: 0 1rem 2rem; }
+  .ti-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .ti-alianzas-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .ti-grid { grid-template-columns: 1fr; }
+}

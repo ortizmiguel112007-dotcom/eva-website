@@ -1,36 +1,29 @@
-import { useEffect, useState } from "react";
-import { adminService } from "@/features/admin/services/admin.service";
-import "@/infrastructure/css/Auditoria.css";
+import { useEffect, useState } from "react"
+import { adminService } from "@/features/admin/services/admin.service"
+import "@/infrastructure/css/admin/auditoria//Auditoria.css"
 
-function AuditLog() {
-  const [registros, setRegistros]         = useState([]);
-  const [usuariosActivos, setUsuariosActivos] = useState(0);
-  const [cargando, setCargando]           = useState(true);
+export default function AuditLog() {
+  const [registros, setRegistros]             = useState([])
+  const [usuariosActivos, setUsuariosActivos] = useState(0)
+  const [cargando, setCargando]               = useState(true)
 
   useEffect(() => {
-    const cargar = async () => {
-      try {
-        const [auditoria, usuarios] = await Promise.all([
-          adminService.listarAuditoria(),
-          adminService.listarUsuarios(),
-        ]);
-        setRegistros(auditoria);
-        setUsuariosActivos(usuarios.filter((u) => u.activo).length);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setCargando(false);
-      }
-    };
-    cargar();
-  }, []);
+    Promise.all([
+      adminService.listarAuditoria(),
+      adminService.listarUsuarios(),
+    ])
+      .then(([auditoria, usuarios]) => {
+        setRegistros(auditoria)
+        setUsuariosActivos(usuarios.filter(u => u.activo).length)
+      })
+      .catch(console.error)
+      .finally(() => setCargando(false))
+  }, [])
 
-  const hoy = new Date().toLocaleDateString();
-  const accionesHoy = registros.filter((r) =>
-    new Date(r.fecha).toLocaleDateString() === hoy
-  ).length;
+  const hoy         = new Date().toLocaleDateString()
+  const accionesHoy = registros.filter(r => new Date(r.fecha).toLocaleDateString() === hoy).length
 
-  if (cargando) return <p>Cargando auditoría...</p>;
+  if (cargando) return <p>Cargando auditoría...</p>
 
   return (
     <div className="auditoria-container">
@@ -39,7 +32,6 @@ function AuditLog() {
         <p>Historial de actividades del sistema</p>
       </div>
 
-      {/* MÉTRICAS */}
       <div className="metricas">
         <div className="metrica-card">
           <h3>{registros.length}</h3>
@@ -56,11 +48,9 @@ function AuditLog() {
       </div>
 
       <div className="lista-auditoria">
-        {registros.length === 0 && (
-          <p style={{ textAlign: "center" }}>No hay registros todavía.</p>
-        )}
-
-        {registros.map((r) => (
+        {registros.length === 0 ? (
+          <p className="auditoria-empty">No hay registros todavía.</p>
+        ) : registros.map(r => (
           <div key={r.id_auditoria} className="registro">
             <div className="registro-info">
               <h4>{r.accion}</h4>
@@ -74,7 +64,5 @@ function AuditLog() {
         ))}
       </div>
     </div>
-  );
+  )
 }
-
-export default AuditLog;

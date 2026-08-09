@@ -1,0 +1,109 @@
+.carrito-item-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.carrito-item-img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.6rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #f1f5f9;
+}
+
+.carrito-item-placeholder {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.6rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.carrito-item-info { flex: 1; min-width: 0; }
+
+.carrito-item-nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carrito-item-tienda {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.carrito-item-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.carrito-cantidad {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.carrito-cantidad button {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: #f8fafc;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.carrito-cantidad button:hover { background: #eff6ff; color: #3b82f6; }
+
+.carrito-cantidad span {
+  min-width: 2rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #1e293b;
+}
+
+.carrito-item-precio {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #3b82f6;
+  white-space: nowrap;
+}
+
+.btn-quitar-item {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: #fef2f2;
+  color: #ef4444;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-quitar-item:hover { background: #ef4444; color: #fff; }

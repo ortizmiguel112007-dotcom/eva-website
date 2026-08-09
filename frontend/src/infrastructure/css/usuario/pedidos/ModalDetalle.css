@@ -1,0 +1,233 @@
+/* ── ModalDetalle ── */
+.mp-modal-detalle {
+  background: #fff;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.mp-modal-detalle-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mp-modal-detalle-header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.2rem;
+}
+
+.mp-modal-detalle-header p {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.mp-modal-cerrar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.mp-modal-cerrar:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.mp-modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mp-modal-seccion h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.75rem;
+}
+
+/* Producto en modal */
+.mp-modal-producto {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.mp-modal-producto:last-child {
+  margin-bottom: 0;
+}
+
+.mp-modal-producto-img {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.45rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+}
+
+.mp-modal-producto-placeholder {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.45rem;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-modal-producto-info {
+  flex: 1;
+}
+.mp-modal-producto-info p {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.15rem;
+}
+.mp-modal-producto-info span {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: block;
+}
+
+/* Total modal */
+.mp-modal-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.mp-modal-total span:first-child {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+.mp-modal-total span:last-child {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.mp-seguimiento-num {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.4rem;
+  font-family: monospace;
+}
+
+.mp-modal-info-row {
+  font-size: 0.88rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mp-btn-resena-modal {
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 0.55rem;
+  border: 1.5px solid #f59e0b;
+  background: transparent;
+  color: #f59e0b;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.mp-btn-resena-modal:hover {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.mp-btn-factura {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 0.65rem;
+  border: none;
+  background: #1e293b;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.mp-btn-factura:hover {
+  background: #334155;
+}
+.mp-modal-rechazo-nota {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  color: #ef4444;
+}
+
+.mp-btn-comprobante-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 0.55rem;
+  border: 1.5px solid #fde68a;
+  background: #fffbeb;
+  color: #f59e0b;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.mp-btn-comprobante-modal:hover {
+  background: #f59e0b;
+  color: #fff;
+  border-color: #f59e0b;
+}

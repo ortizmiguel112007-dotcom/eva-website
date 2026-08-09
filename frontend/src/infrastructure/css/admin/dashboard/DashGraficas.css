@@ -1,0 +1,103 @@
+.dash-graficas {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dash-graficas--row2 {
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 1.5rem;
+}
+
+.dash-card {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.dash-card--wide {
+    grid-column: span 1;
+}
+
+.dash-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.dash-card-titulo {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.15rem;
+}
+
+.dash-card-sub {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.dash-trend-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.dash-trend-badge.up {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.dash-trend-badge.down {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.dash-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2.5rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.dash-tooltip {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.6rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.dash-tooltip-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin: 0 0 0.3rem;
+    font-weight: 600;
+}
+
+.dash-tooltip-valor {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+@media (max-width: 1024px) {
+
+    .dash-graficas,
+    .dash-graficas--row2 {
+        grid-template-columns: 1fr;
+    }
+}

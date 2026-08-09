@@ -1,0 +1,74 @@
+/* ── FiltrosDestacados ── */
+.destacados-filtros {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.destacados-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.destacados-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.destacados-search {
+  padding: 0.55rem 1rem 0.55rem 2.4rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  color: var(--color-text-dark);
+  font-size: 0.88rem;
+  width: 260px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.destacados-search::placeholder { color: #9ca3af; }
+
+.destacados-search:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Pills */
+.destacados-pill {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.destacados-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: #eff6ff;
+}
+
+.destacados-pill.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .destacados-search {
+    width: 100%;
+  }
+}

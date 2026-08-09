@@ -22,7 +22,10 @@ model User {
   emprendedora Emprendedora?
   auditorias   Auditoria[]
   pedidos      Pedido[]
+  pagos Pago[]
+  pagoLogs PagoLog[]
   productosCreados  Producto[] @relation("ProductoCreador")
+
 
   alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
   alianzasParticipante AlianzaParticipante[]
@@ -30,6 +33,7 @@ model User {
   comentarios          Comentario[]
   notificaciones Notificacion[]
   favoritos Favorito[]
+  movimientos MovimientoInventario[]
   foto_documento       String?
   carrito              Carrito?
 }
@@ -50,6 +54,13 @@ model Emprendedora {
   id_usuario      Int     @unique
   datos_bancarios String?
   estado          Boolean @default(true)
+
+  nequi_numero      String?
+  bancolombia_numero String?
+  liquidaciones Liquidacion[]
+  bancolombia_tipo  String?  // "ahorros" | "corriente"
+  titular_cuenta    String?
+  acepta_contraentrega Boolean @default(false)
 
   usuario   User      @relation(fields: [id_usuario], references: [id])
   secciones Seccion[]
@@ -94,10 +105,13 @@ model Producto {
   detalles    DetallePedido[]
   comentarios Comentario[]
   favoritos Favorito[]
+  movimientos MovimientoInventario[]
 
   destacado    Boolean       @default(false)
   visible      Boolean       @default(true)
   carritoItems CarritoItem[]
+
+  reglas_descuento ReglaDescuento[]
 
   @@map("producto")
 }
@@ -127,22 +141,26 @@ model Auditoria {
 
   @@map("auditoria")
 }
-
 model Pedido {
   id_pedido   Int      @id @default(autoincrement())
   id_cliente  Int
   id_seccion  Int
-  estado      String   @default("en_proceso")
+  id_pago     Int?           // ← nuevo
+  estado      String   @default("pendiente_pago")
   total       Decimal  @db.Decimal(10, 3)
-  metodo_pago String?
   fecha       DateTime @default(now())
   nota        String?
-  pago        Pago?
+
+  liquidacion Liquidacion?
+
+  factura Factura?
 
   cliente     User            @relation(fields: [id_cliente], references: [id])
   seccion     Seccion         @relation(fields: [id_seccion], references: [id_seccion])
+  pago        Pago?           @relation(fields: [id_pago], references: [id_pago])  // ← nuevo
   detalles    DetallePedido[]
   comentarios Comentario[]
+  
 
   @@map("pedidos")
 }
@@ -251,15 +269,18 @@ model CarritoItem {
 
 model Pago {
   id_pago      Int       @id @default(autoincrement())
-  id_pedido    Int       @unique
-  metodo       String // "qr"
-  estado       String    @default("pendiente") // pendiente, verificado, rechazado
-  comprobante  String? // URL de la imagen subida
+  id_cliente   Int
+  monto_total  Decimal   @db.Decimal(10, 3)
+  metodo       String
+  estado       String    @default("pendiente") // pendiente | aprobado | rechazado
+  comprobante  String?
   fecha        DateTime  @default(now())
   fecha_verif  DateTime?
   nota_rechazo String?
 
-  pedido Pedido @relation(fields: [id_pedido], references: [id_pedido])
+  cliente User     @relation(fields: [id_cliente], references: [id])
+  pedidos Pedido[]
+  logs PagoLog[]
 
   @@map("pagos")
 }
@@ -290,4 +311,94 @@ model Favorito {
 
   @@unique([id_usuario, id_producto])
   @@map("favoritos")
+}
+
+model ReglaDescuento {
+  id_regla      Int      @id @default(autoincrement())
+  id_producto   Int
+  nombre        String
+  tipo          String   // "porcentaje" | "valor_fijo"
+  valor         Decimal  @db.Decimal(10, 2)
+  condicion     String   // "stock_bajo" | "stock_menor_a" | "siempre"
+  stock_limite  Int?     // usado cuando condicion = "stock_menor_a"
+  activa        Boolean  @default(true)
+  prioridad     Int      @default(1)
+  fecha_inicio  DateTime @default(now())
+  fecha_fin     DateTime?
+
+  producto Producto @relation(fields: [id_producto], references: [id_producto])
+
+  @@map("reglas_descuento")
+}
+
+model MovimientoInventario {
+  id_movimiento  Int      @id @default(autoincrement())
+  id_producto    Int
+  tipo           String   // "entrada" | "salida" | "ajuste"
+  cantidad_antes Int
+  cantidad_nueva Int
+  motivo         String?
+  fecha          DateTime @default(now())
+  id_usuario     Int
+
+  producto Producto @relation(fields: [id_producto], references: [id_producto])
+  usuario  User     @relation(fields: [id_usuario], references: [id])
+
+  @@map("movimientos_inventario")
+}
+
+model ConfiguracionPago {
+  id                    Int      @id @default(autoincrement())
+  nequi_numero          String?
+  bancolombia_numero    String?
+  bancolombia_tipo      String?
+  titular_cuenta        String?
+  acepta_contraentrega  Boolean  @default(true)
+  actualizado           DateTime @updatedAt
+
+  @@map("configuracion_pago")
+}
+
+model PagoLog {
+  id_log     Int      @id @default(autoincrement())
+  id_pago    Int?
+  id_usuario Int?
+  evento     String   // "creado" | "comprobante_subido" | "error_subida" | "aprobado" | "rechazado" | "error_verificacion"
+  detalle    String?
+  fecha      DateTime @default(now())
+
+  pago    Pago? @relation(fields: [id_pago], references: [id_pago])
+  usuario User? @relation(fields: [id_usuario], references: [id])
+
+  @@map("pago_logs")
+}
+
+model Liquidacion {
+  id_liquidacion  Int      @id @default(autoincrement())
+  id_pedido       Int      @unique
+  id_emprendedora Int
+  monto           Decimal  @db.Decimal(10, 3)
+  estado          String   @default("pendiente") // pendiente | pagado
+  fecha_generada  DateTime @default(now())
+  fecha_pagado    DateTime?
+  nota            String?
+
+  pedido       Pedido       @relation(fields: [id_pedido], references: [id_pedido])
+  emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
+
+  @@map("liquidaciones")
+}
+
+model Factura {
+  id_factura        Int      @id @default(autoincrement())
+  id_pedido         Int      @unique
+  numero            String   @unique
+  url_pdf           String
+  fecha_emision     DateTime @default(now())
+  nota_regeneracion String?
+  activa            Boolean  @default(true)
+
+  pedido Pedido @relation(fields: [id_pedido], references: [id_pedido])
+
+  @@map("facturas")
 }

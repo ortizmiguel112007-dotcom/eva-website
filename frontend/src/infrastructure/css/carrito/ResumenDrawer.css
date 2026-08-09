@@ -1,0 +1,91 @@
+.drawer-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #fff;
+}
+
+.drawer-resumen {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.drawer-resumen-linea {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.drawer-resumen-linea.descuento {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.drawer-envio-gratis {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.drawer-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 2px solid #f1f5f9;
+}
+
+.drawer-total span:first-child {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.drawer-total span:last-child {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.drawer-btn-checkout {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 0.65rem;
+    border: none;
+    background: #1e293b;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+
+.drawer-btn-checkout:hover {
+    background: #334155;
+}
+
+.drawer-btn-vaciar {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid #e5e7eb;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.drawer-btn-vaciar:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fef2f2;
+}

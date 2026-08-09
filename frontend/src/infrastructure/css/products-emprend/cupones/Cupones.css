@@ -1,0 +1,88 @@
+/* ── Contenedor principal ── */
+.cupones-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--color-bg-main, #f8f9fc);
+  color: var(--color-text-dark, #111827);
+}
+
+/* ── Loading ── */
+.cupones-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 5rem 2rem;
+  color: #9ca3af;
+}
+
+/* ── Header ── */
+.cupones-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cupones-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+}
+
+.btn-nuevo-cupon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.35rem;
+  border-radius: 0.6rem;
+  border: none;
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  letter-spacing: 0.01em;
+}
+.btn-nuevo-cupon:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+/* ── Toast ── */
+.cupones-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  animation: slideUp 0.3s ease;
+}
+
+.cupones-toast.success { background: #059669; color: #fff; }
+.cupones-toast.error   { background: #ef4444; color: #fff; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .cupones-container { padding: 1rem; }
+}

@@ -1,0 +1,315 @@
+/* ── ModalComprobante ── */
+.pagos-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  padding: 1rem;
+}
+
+.pagos-modal {
+  background: #fff;
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+  animation: pagos-fadeUp 0.25s ease;
+}
+
+@keyframes pagos-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pagos-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.35rem 1.5rem 1rem;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.pagos-modal-header h3 {
+  font-family: "Syne", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.pagos-modal-cerrar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+
+.pagos-modal-cerrar:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.pagos-modal-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Imagen comprobante */
+.pagos-modal-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pagos-modal-img img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.pagos-modal-img a {
+  font-size: 0.78rem;
+  color: #6366f1;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.pagos-modal-img a:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.pagos-modal-sin-comprobante {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 2.5rem;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  border: 1.5px dashed #e5e7eb;
+  color: #94a3b8;
+}
+
+.pagos-modal-sin-comprobante p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Info filas */
+.pagos-modal-info {
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border: 1px solid #f1f5f9;
+}
+
+.pagos-modal-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.pagos-modal-info-row span:first-child {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.pagos-modal-info-row strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Textarea rechazo */
+.pagos-modal-rechazo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.pagos-modal-rechazo label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pagos-modal-rechazo textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 0.88rem;
+  font-family: "DM Sans", system-ui, sans-serif;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  box-sizing: border-box;
+  color: #0f172a;
+}
+
+.pagos-modal-rechazo textarea:focus {
+  border-color: #f59e0b;
+  background: #fff;
+}
+
+.pagos-modal-rechazo textarea::placeholder {
+  color: #cbd5e1;
+}
+
+/* Botones modal */
+.pagos-modal-btns {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.pago-btn-rechazar-modal {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem;
+  border-radius: 0.65rem;
+  border: 1.5px solid #fecaca;
+  background: #fff;
+  color: #ef4444;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.pago-btn-rechazar-modal:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.pago-btn-rechazar-modal:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pago-btn-verificar-modal {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem;
+  border-radius: 0.65rem;
+  border: none;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: "DM Sans", system-ui, sans-serif;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.3);
+}
+
+.pago-btn-verificar-modal:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
+
+.pago-btn-verificar-modal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Motivo rechazo */
+.pagos-modal-motivo {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: #ef4444;
+  line-height: 1.5;
+}
+
+.pagos-modal-motivo strong {
+  font-weight: 700;
+}
+.pagos-modal-contraentrega {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  background: #f0fdf4;
+  border-radius: 0.75rem;
+  border: 1.5px solid #bbf7d0;
+  text-align: center;
+}
+
+.pagos-modal-contraentrega p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+.pagos-modal-monto {
+  font-size: 0.9rem;
+  color: #1e293b;
+  margin-top: 0.25rem;
+}
+.pagos-modal-historial-toggle {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.pago-btn-historial {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pago-btn-historial:hover {
+  color: #1d4ed8;
+}

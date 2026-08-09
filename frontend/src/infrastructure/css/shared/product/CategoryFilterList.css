@@ -1,0 +1,122 @@
+/* Title */
+.cf-list-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 0.75rem;
+}
+
+/* List */
+.cf-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Item */
+.cf-list-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.82rem;
+  color: #374151;
+}
+
+.cf-list-label:hover {
+  background: #f8fafc;
+}
+
+.cf-list-label.active {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+/* Checkbox */
+/* Contenedor del item (La fila) */
+.cf-list-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  /* Para evitar saltos al activar borde */
+}
+
+/* Efecto Hover en la fila */
+.cf-list-label:hover {
+  background-color: #f8fafc;
+}
+
+/* Estilo cuando está ACTIVO */
+.cf-list-label.active {
+  background-color: #f0f7ff;
+  border: 1px solid #e0e7ff;
+}
+
+/* EL CHECKBOX (Estilo Base) */
+.cf-list-label input {
+  padding: 0.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Estado Marcado (Checked) */
+.cf-list-label input:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* El símbolo del Check (La palomita blanca) */
+.cf-list-label input::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 7px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.2s ease;
+  margin-top: -2px;
+}
+
+.cf-list-label input:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
+/* Text */
+.cf-list-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Counter */
+.cf-list-count {
+  font-size: 0.7rem;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 0 6px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.cf-list-label.active .cf-list-count {
+  background: #dbeafe;
+  color: #3b82f6;
+}

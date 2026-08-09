@@ -1,0 +1,116 @@
+.rd-panel-productos {
+    background: #fff;
+    border-radius: 1rem;
+    border: 1.5px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.rd-panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.rd-panel-label {
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+}
+
+.rd-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid #e5e7eb;
+    transition: border-color 0.15s;
+}
+
+.rd-search:focus-within {
+    border-color: #3b82f6;
+}
+
+.rd-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.85rem;
+    flex: 1;
+    color: #1e293b;
+}
+
+.rd-search-clear {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.rd-productos-lista {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.rd-producto-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+}
+
+.rd-producto-item:hover {
+    background: #f8fafc;
+}
+
+.rd-producto-item.activo {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.rd-producto-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.4rem;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.rd-producto-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.4rem;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rd-producto-nombre {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rd-producto-precio {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .rd-productos-lista {
+        max-height: 200px;
+    }
+}

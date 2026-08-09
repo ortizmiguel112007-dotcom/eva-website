@@ -1,0 +1,88 @@
+/* ── MetricasPedidos ── */
+.mp-metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.mp-metrica {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mp-metrica-left h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 0.3rem;
+}
+
+.mp-metrica-left span {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.mp-metrica-left span.gasto {
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.mp-metrica-icono-right {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-metrica-icono-right.total {
+  background: #f1f5f9;
+  color: #64748b;
+}
+.mp-metrica-icono-right.activos {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+.mp-metrica-icono-right.entregados {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.mp-metrica-icono-right.gasto {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mp-metrica.pendiente {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+.mp-metrica.verificacion {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.mp-metrica-icono-right.pendiente {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+.mp-metrica-icono-right.verificacion {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mp-metricas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

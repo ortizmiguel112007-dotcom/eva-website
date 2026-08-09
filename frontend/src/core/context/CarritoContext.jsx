@@ -12,17 +12,25 @@ export const CarritoProvider = ({ children }) => {
   const getToken = () => localStorage.getItem("token")
   const headers  = () => ({ Authorization: `Bearer ${getToken()}` })
 
-  const normalizar = (item) => ({
-    id_item:         item.id_item,
-    id_producto:     item.id_producto,
-    nombre_producto: item.producto?.nombre_producto,
-    precio:          item.producto?.precio,
-    imagen:          item.producto?.imagen,
-    categoria:       item.producto?.categoria,
-    cantidad:        item.cantidad,
-    stock:           item.producto?.inventario?.cantidad ?? 99,
-    emprendedora:    item.producto?.seccion?.emprendedora?.usuario?.nombre || "EVA",
-  })
+ const normalizar = (item) => {
+  const descuento   = item.producto?.descuento
+  const precioFinal = descuento ? descuento.precio_con_descuento : item.producto?.precio
+
+  return {
+    id_item:          item.id_item,
+    id_producto:      item.id_producto,
+    nombre_producto:  item.producto?.nombre_producto,
+    precio:           precioFinal,
+    precio_original:  item.producto?.precio,
+    descuento:        descuento || null,
+    imagen:           item.producto?.imagen,
+    categoria:        item.producto?.categoria,
+    cantidad:         item.cantidad,
+    stock:            item.producto?.inventario?.cantidad ?? 99,
+    emprendedora:     item.producto?.seccion?.emprendedora?.usuario?.nombre || "EVA",
+    id_emprendedora:  item.producto?.seccion?.emprendedora?.id_emprendedora || null,  
+  }
+}
 
   const cargarCarrito = useCallback(async () => {
     const token = getToken()
@@ -67,8 +75,6 @@ export const CarritoProvider = ({ children }) => {
     setCarritoAbierto(true)
   }
 
-  const agregarAlCarrito = agregar
-
   const quitar = async (id_producto) => {
     const token = getToken()
     if (token) {
@@ -82,8 +88,6 @@ export const CarritoProvider = ({ children }) => {
       setItems(prev => prev.filter(i => i.id_producto !== id_producto))
     }
   }
-
-  const quitarDelCarrito = quitar
 
   const cambiarCantidad = async (id_producto, cantidad) => {
     if (cantidad <= 0) return quitar(id_producto)
@@ -110,16 +114,30 @@ export const CarritoProvider = ({ children }) => {
     localStorage.removeItem("carrito_local")
   }
 
-  const vaciarCarrito = vaciar
+  // 🆕 Limpiar carrito al cerrar sesión
+  const limpiarCarrito = () => {
+    setItems([])
+    localStorage.removeItem("carrito_local")
+  }
+
+  const agregarAlCarrito = agregar
+  const quitarDelCarrito = quitar
+  const vaciarCarrito    = vaciar
   const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0)
   const total      = items.reduce((acc, i) => acc + Number(i.precio) * i.cantidad, 0)
   const totalPrecio = total
 
   return (
     <CarritoContext.Provider value={{
-      items, carrito: items, carritoAbierto, setCarritoAbierto, cargando, cargarCarrito,
-      agregar, agregarAlCarrito, quitar, quitarDelCarrito, cambiarCantidad,
-      vaciar, vaciarCarrito, totalItems, total, totalPrecio,
+      items, carrito: items,
+      carritoAbierto, setCarritoAbierto,
+      cargando, cargarCarrito,
+      agregar, agregarAlCarrito,
+      quitar, quitarDelCarrito,
+      cambiarCantidad,
+      vaciar, vaciarCarrito,
+      limpiarCarrito,  // 🆕
+      totalItems, total, totalPrecio,
     }}>
       {children}
     </CarritoContext.Provider>

@@ -1,0 +1,194 @@
+/* ── Input con icono ── */
+.cupon-input-icon-wrapper {
+  position: relative;
+}
+
+.cupon-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.cupon-input-icon-wrapper input.with-icon {
+  padding-left: 2.2rem;
+}
+
+/* ── Modal overlay ── */
+.cupon-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  animation: fadeOverlay 0.2s ease;
+}
+
+@keyframes fadeOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Modal ── */
+.cupon-modal {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideModal 0.25s ease;
+}
+
+@keyframes slideModal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cupon-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #0f172a;
+  margin-bottom: 0.1rem;
+}
+
+.cupon-modal-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* ── Campos ── */
+.cupon-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cupon-modal-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.cupon-modal-field input,
+.cupon-modal-field select {
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.55rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 0.9rem;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cupon-modal-field input:focus,
+.cupon-modal-field select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  background: #ffffff;
+}
+
+.cupon-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.cupon-modal-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #ef4444;
+}
+
+.cupon-modal-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* ── Botones del modal ── */
+.cupon-modal-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.btn-cancelar-cupon {
+  padding: 0.55rem 1.2rem;
+  border-radius: 0.55rem;
+  border: 1px solid #e5e7eb;
+  background: transparent;
+  color: #374151;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancelar-cupon:hover {
+  background: #f3f4f6;
+}
+
+.btn-crear-cupon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.35rem;
+  border-radius: 0.55rem;
+  border: none;
+  background: #059669;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+.btn-crear-cupon:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+.btn-crear-cupon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .cupon-modal-row {
+    grid-template-columns: 1fr;
+  }
+  .cupon-modal {
+    margin: 1rem;
+  }
+}

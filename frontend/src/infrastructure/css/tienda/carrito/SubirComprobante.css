@@ -1,0 +1,106 @@
+.comprobante-wrap {
+  padding: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.comprobante-titulo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 0.75rem;
+}
+
+.comprobante-bancarios {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.comprobante-bancarios-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin: 0 0 0.35rem;
+}
+
+.comprobante-bancarios-texto {
+  font-size: 0.78rem;
+  color: #374151;
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+.comprobante-dropzone {
+  border: 2px dashed #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.comprobante-dropzone:hover { border-color: #3b82f6; background: #eff6ff; }
+.comprobante-dropzone.has-preview { padding: 0.5rem; border-style: solid; border-color: #3b82f6; }
+
+.comprobante-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.comprobante-error {
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin: 0 0 0.5rem;
+}
+
+.comprobante-btn {
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 0.55rem;
+  border: none;
+  background: #e5e7eb;
+  color: #9ca3af;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.comprobante-btn.active {
+  background: #1e293b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.comprobante-btn.active:hover { background: #334155; }
+
+.comprobante-enviado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  border-radius: 0.65rem;
+  color: #16a34a;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 1rem 1.25rem;
+}

@@ -1,0 +1,54 @@
+/* ── AuditoriaInventario (page) ── */
+.ai-page {
+  padding: 2rem 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui;
+}
+
+/* Loading */
+.ai-loading {
+  padding: 2rem;
+  color: #64748b;
+}
+
+/* Header */
+.ai-header {
+  margin-bottom: 1.5rem;
+}
+
+.ai-titulo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-subtitulo {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Solo lectura badge */
+.ai-readonly-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  margin-left: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-page { padding: 1.25rem; }
+}

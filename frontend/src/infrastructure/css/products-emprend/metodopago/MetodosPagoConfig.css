@@ -1,0 +1,186 @@
+.mpc-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mpc-header h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+.mpc-header p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+.mpc-toast {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.mpc-toast.ok {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.mpc-toast.error {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+.mpc-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mpc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mpc-card-header > div:nth-child(2) {
+  flex: 1;
+}
+.mpc-card-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+.mpc-card-header p {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.mpc-card-icono {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mpc-card-icono.nequi {
+  background: #fdf4ff;
+  color: #7c3aed;
+}
+.mpc-card-icono.bancolombia {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.mpc-card-icono.contraentrega {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.mpc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.mpc-field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.mpc-field input,
+.mpc-field select {
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.55rem;
+  font-size: 0.88rem;
+  color: #1e293b;
+  background: #f9fafb;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.mpc-field input:focus,
+.mpc-field select:focus {
+  border-color: #3b82f6;
+  background: #fff;
+}
+
+/* Toggle switch */
+.mpc-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.mpc-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.mpc-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mpc-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.mpc-toggle input:checked + .mpc-toggle-slider {
+  background: #16a34a;
+}
+.mpc-toggle input:checked + .mpc-toggle-slider::before {
+  transform: translateX(20px);
+}
+
+.mpc-btn-guardar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mpc-btn-guardar:hover {
+  background: #334155;
+}
+.mpc-btn-guardar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

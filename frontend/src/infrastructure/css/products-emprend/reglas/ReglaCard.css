@@ -1,0 +1,111 @@
+.rd-regla-card {
+    background: #fff;
+    border-radius: 1rem;
+    border: 1.5px solid #e5e7eb;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: border-color 0.15s;
+}
+
+.rd-regla-card.activa {
+    border-color: #3b82f6;
+}
+
+.rd-regla-icono {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.6rem;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rd-regla-card.activa .rd-regla-icono {
+    background: #eff6ff;
+}
+
+.rd-regla-info {
+    flex: 1;
+}
+
+.rd-regla-nombre-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rd-regla-nombre {
+    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.rd-regla-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.rd-regla-badge.activa {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.rd-regla-badge.inactiva {
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+
+.rd-regla-detalle {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.rd-regla-acciones {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.rd-btn-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 0.4rem;
+    display: flex;
+    align-items: center;
+    color: #94a3b8;
+    transition: color 0.15s, background 0.15s;
+}
+
+.rd-btn-toggle.activa {
+    color: #3b82f6;
+}
+
+.rd-btn-toggle:hover {
+    background: #f1f5f9;
+}
+
+.rd-btn-eliminar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 0.4rem;
+    display: flex;
+    align-items: center;
+    color: #ef4444;
+    transition: background 0.15s;
+}
+
+.rd-btn-eliminar:hover {
+    background: #fef2f2;
+}

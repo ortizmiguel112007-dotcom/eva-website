@@ -1,0 +1,50 @@
+/* ── Métricas ── */
+.cupones-metricas {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.cupon-metrica {
+  flex: 1;
+  min-width: 130px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.cupon-metrica:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+.cupon-metrica h3 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111827;
+  line-height: 1;
+}
+
+.cupon-metrica span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.cupon-metrica.activos             { background: #f0fdf4; border-color: #bbf7d0; }
+.cupon-metrica.activos h3          { color: #059669; }
+.cupon-metrica.activos span        { color: #059669; }
+
+.cupon-metrica.expirados           { background: #fff1f2; border-color: #fecdd3; }
+.cupon-metrica.expirados h3        { color: #ef4444; }
+.cupon-metrica.expirados span      { color: #ef4444; }

@@ -1,0 +1,172 @@
+.alianzas-container {
+    padding: 2rem;
+    min-height: 100vh;
+    background: var(--color-bg-main);
+    color: var(--color-text-dark);
+}
+
+.alianzas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.alianzas-header h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--color-navbar);
+    letter-spacing: -.3px;
+}
+
+.btn-nueva-alianza {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-nueva-alianza:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* ── Métricas ── */
+.alianzas-metricas {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+}
+
+.alianza-metrica {
+    flex: 1;
+    min-width: 120px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.alianza-metrica h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--color-text-dark);
+}
+
+.alianza-metrica span {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.alianza-metrica.pendientes {
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.alianza-metrica.pendientes h3,
+.alianza-metrica.pendientes span {
+    color: #d97706;
+}
+
+.alianza-metrica.activas {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.alianza-metrica.activas h3,
+.alianza-metrica.activas span {
+    color: #059669;
+}
+
+.alianza-metrica.finalizadas {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.alianza-metrica.finalizadas h3,
+.alianza-metrica.finalizadas span {
+    color: #64748b;
+}
+
+/* ── Grid ── */
+.alianzas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.alianzas-empty {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+    grid-column: 1 / -1;
+}
+
+.alianzas-empty p {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Toast ── */
+.alianzas-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #059669;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .alianzas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .alianzas-container {
+        padding: 1rem;
+    }
+
+    .alianzas-grid {
+        grid-template-columns: 1fr;
+    }
+}

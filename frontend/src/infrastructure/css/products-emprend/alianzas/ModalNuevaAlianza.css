@@ -1,0 +1,119 @@
+.alianza-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+}
+
+.alianza-modal {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.alianza-modal h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-navbar);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.alianza-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.alianza-modal-field label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.alianza-modal-field input,
+.alianza-modal-field select,
+.alianza-modal-field textarea {
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.55rem;
+    border: 1.5px solid var(--color-border);
+    background: #f9fafb;
+    color: var(--color-text-dark);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.alianza-modal-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.alianza-modal-field input:focus,
+.alianza-modal-field select:focus,
+.alianza-modal-field textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    background: #fff;
+}
+
+.alianza-modal-error {
+    font-size: 0.78rem;
+    color: #ef4444;
+}
+
+.alianza-modal-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
+}
+
+.btn-cancelar-alianza {
+    padding: 0.55rem 1.25rem;
+    border-radius: 0.55rem;
+    border: 1.5px solid var(--color-border);
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancelar-alianza:hover {
+    background: #f3f4f6;
+}
+
+.btn-crear-alianza {
+    padding: 0.55rem 1.25rem;
+    border-radius: 0.55rem;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-crear-alianza:hover {
+    opacity: 0.9;
+}
+
+.btn-crear-alianza:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

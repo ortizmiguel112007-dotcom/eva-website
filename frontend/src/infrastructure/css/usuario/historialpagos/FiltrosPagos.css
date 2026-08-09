@@ -1,0 +1,45 @@
+/* ── FiltrosPagos ── */
+.hp-filtros {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.hp-filtro-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.hp-filtro-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.hp-filtro-btn.active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+
+.hp-filtro-count {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.hp-filtro-btn.active .hp-filtro-count {
+  background: rgba(255, 255, 255, 0.2);
+}

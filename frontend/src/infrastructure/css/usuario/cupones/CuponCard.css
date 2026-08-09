@@ -1,0 +1,134 @@
+/* ── CuponCard ── */
+.mc-card {
+  background: var(--col-bg);
+  border: 1.5px solid var(--col-borde);
+  border-radius: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mc-card:not(.vencido):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.mc-card.vencido {
+  opacity: 0.5;
+  filter: grayscale(0.3);
+}
+
+/* Recorte tipo ticket */
+.mc-card-cut {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #f8f9fc;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.mc-card-cut.left  { left: -8px;  border: 1.5px solid var(--col-borde); }
+.mc-card-cut.right { right: -8px; border: 1.5px solid var(--col-borde); }
+
+.mc-card-top {
+  padding: 1.25rem 1.25rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.mc-card-descuento {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  line-height: 1;
+}
+
+.mc-card-valor {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.mc-card-pct {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.mc-card-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mc-card-tag.activo  { color: #fff; }
+.mc-card-tag.vencido { background: #e5e7eb; color: #94a3b8; }
+
+/* Línea punteada */
+.mc-card-divider {
+  margin: 0 1.25rem;
+  border-top: 2px dashed rgba(0, 0, 0, 0.1);
+}
+
+.mc-card-bottom {
+  padding: 0.85rem 1.25rem 1.25rem;
+}
+
+.mc-card-codigo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.mc-card-codigo {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.06em;
+}
+
+.mc-card-copiar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  border-radius: 0.25rem;
+  transition: color 0.18s;
+}
+
+.mc-card-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0 0 0.5rem;
+  line-height: 1.4;
+}
+
+.mc-card-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.mc-card-info span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}

@@ -1,0 +1,179 @@
+/* ── SeguimientoPedidos ── */
+.seg-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.seg-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.seg-card-id    { font-size: 0.95rem; font-weight: 800; color: #1e293b; margin: 0 0 0.2rem; }
+.seg-card-fecha { font-size: 0.75rem; color: #94a3b8; }
+
+/* Progreso */
+.seg-progreso {
+  padding: 1.25rem 1.25rem 0.5rem;
+  position: relative;
+}
+
+.seg-pasos {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+}
+
+.seg-pasos::before {
+  content: '';
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  right: 0.85rem;
+  height: 3px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.seg-linea-activa {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  height: 3px;
+  background: #16a34a;
+  z-index: 1;
+  transition: width 0.4s ease;
+}
+
+.seg-paso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.seg-paso-circulo {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid #e5e7eb;
+  background: #fff;
+  transition: all 0.3s;
+}
+
+.seg-paso-circulo.completado { background: #16a34a; border-color: #16a34a; color: #fff; }
+.seg-paso-circulo.activo     { background: #fff;    border-color: #f59e0b; color: #f59e0b; }
+.seg-paso-circulo.pendiente  { background: #fff;    border-color: #e5e7eb; color: #94a3b8; }
+
+.seg-paso-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.3;
+  max-width: 4.5rem;
+}
+
+.seg-paso-label.completado { color: #16a34a; font-weight: 600; }
+.seg-paso-label.activo     { color: #f59e0b; font-weight: 600; }
+
+/* Productos */
+.seg-productos {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.seg-productos-titulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 0.5rem;
+}
+
+.seg-producto-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #64748b;
+  padding: 0.25rem 0;
+}
+
+.seg-producto-item span:last-child {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Total */
+.seg-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.seg-total span:first-child { font-size: 0.82rem; color: #64748b; }
+.seg-total span:last-child  { font-size: 1rem;    font-weight: 800; color: #1e293b; }
+
+/* Mensaje */
+.seg-mensaje {
+  margin: 0 1.25rem 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.seg-mensaje.enviado   { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.seg-mensaje.entregado { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+.seg-mensaje-texto { line-height: 1.5; }
+.seg-mensaje-texto small {
+  display: block;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 0.15rem;
+}
+
+/* Botón reseña */
+.seg-btn-resena {
+  margin: 0 1.25rem 1rem;
+  width: calc(100% - 2.5rem);
+  padding: 0.55rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #f59e0b;
+  background: transparent;
+  color: #f59e0b;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.seg-btn-resena:hover {
+  background: #f59e0b;
+  color: #fff;
+}

@@ -1,0 +1,197 @@
+.pedido-card {
+  background: #fff;
+  border-radius: 0.65rem;
+  border: 1px solid var(--color-border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.pedido-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.pedido-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pedido-num {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-navbar);
+}
+
+.pedido-fecha {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+.pedido-cliente-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pedido-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.pedido-avatar.en_proceso {
+  background: var(--color-primary);
+}
+
+.pedido-avatar.enviado {
+  background: #7c3aed;
+}
+
+.pedido-avatar.entregado {
+  background: #059669;
+}
+
+.pedido-avatar.cancelado {
+  background: #ef4444;
+}
+
+.pedido-cliente {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.pedido-cliente-email {
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
+.pedido-productos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pedido-producto-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #374151;
+}
+
+.pedido-producto-img {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+}
+
+.pedido-producto-sin-img {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.pedido-producto-nombre {
+  flex: 1;
+  font-weight: 500;
+}
+
+.pedido-producto-cant {
+  font-size: 0.72rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.pedido-total-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pedido-total-label {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.pedido-total {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.3px;
+}
+
+.pedido-metodo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: #059669;
+  color: #fff;
+  width: fit-content;
+}
+.pedido-pago-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
+  margin-bottom: 0.5rem;
+}
+
+.pago-pendiente {
+  background: #fffbeb;
+  color: #f59e0b;
+  border: 1px solid #fde68a;
+}
+.pago-enviado {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+}
+.pago-rechazado {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+.pago-confirmado {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.pedido-metodo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
