@@ -91,7 +91,7 @@
   flex-shrink: 0;
 }
 
-.aside-logo span {
+.aside-logo > span {
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.06em;

@@ -13,6 +13,7 @@ import {
   FiSettings,
   FiCreditCard,
   FiDollarSign,
+  FiTag,
 } from "react-icons/fi";
 import axios from "axios";
 import { MdOutlineReceiptLong } from "react-icons/md";
@@ -172,6 +173,8 @@ function MainLayout() {
   const isAdmin = user?.rol === "admin";
   const isUsuario = user?.rol === "usuario";
 
+  const { limpiarCarrito } = useCarrito();
+
   const [noLeidas, setNoLeidas] = useState(0);
 
   useEffect(() => {
@@ -221,10 +224,10 @@ function MainLayout() {
     .join(" ");
 
   const handleLogout = () => {
+    limpiarCarrito(); // 🆕
     logout();
     navigate("/login");
   };
-
   return (
     <>
       {isMobile && drawerOpen && (
@@ -315,6 +318,30 @@ function MainLayout() {
                     label="Ver todos los pedidos"
                     sidebarClosed={!effectiveOpen}
                   />
+                  <ItemSimple
+                    to="/admin/pagos"
+                    icon={FiDollarSign}
+                    label="Gestión de pagos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/admin/metodos-pago"
+                    icon={FiCreditCard}
+                    label="Métodos de pago"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/admin/liquidaciones"
+                    icon={FiDollarSign}
+                    label="Liquidaciones"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/admin/facturas"
+                    icon={FiFileText}
+                    label="Facturas"
+                    sidebarClosed={!effectiveOpen}
+                  />
 
                   <SectionLabel label="RESEÑAS" sidebarOpen={effectiveOpen} />
                   <ItemSimple
@@ -356,6 +383,19 @@ function MainLayout() {
                     label="Auditoría"
                     sidebarClosed={!effectiveOpen}
                   />
+                  <ItemSimple
+                    to="/admin/inventario"
+                    icon={MdOutlineInventory2}
+                    label="Auditoría de Inventario"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <SectionLabel label="MI CUENTA" sidebarOpen={effectiveOpen} />
+                  <ItemSimple
+                    to="/admin/perfil"
+                    icon={FaRegUserCircle}
+                    label="Mi perfil"
+                    sidebarClosed={!effectiveOpen}
+                  />
                 </>
               ) : /* ── EMPRENDEDORA ── */
               isEmprendedora ? (
@@ -380,9 +420,24 @@ function MainLayout() {
                     sidebarClosed={!effectiveOpen}
                   />
                   <ItemSimple
+                    to="/liquidaciones"
+                    icon={FiDollarSign}
+                    label="Mis liquidaciones"
+                    sidebarClosed={!effectiveOpen}
+                    
+
+                  />
+                  <ItemSimple to="/facturas" icon={FiFileText} label="Facturas" sidebarClosed={!effectiveOpen} />
+                  <ItemSimple
                     to="/inventario"
                     icon={MdOutlineInventory2}
                     label="Stock e Inventario"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/metodos-pago-config"
+                    icon={FiCreditCard}
+                    label="Métodos de pago"
                     sidebarClosed={!effectiveOpen}
                   />
 
@@ -397,6 +452,12 @@ function MainLayout() {
                     to="/cupones"
                     icon={RiCoupon3Line}
                     label="Cupones"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/reglas-descuento"
+                    icon={FiTag}
+                    label="Reglas de descuento"
                     sidebarClosed={!effectiveOpen}
                   />
                   <ItemSimple
@@ -603,15 +664,17 @@ function MainLayout() {
         {/* Botones auth */}
         <AuthButtons className="sidebar-auth" />
 
-        {/* Usuario */}
+        {/* roles */}
         <div
           className="aside-user"
           onClick={() => {
             if (isEmprendedora) navigate("/mi-perfil");
             if (isUsuario) navigate("/perfil");
+            if (isAdmin) navigate("/admin/perfil");
           }}
           style={{
-            cursor: isEmprendedora || isUsuario ? "pointer" : "default",
+            cursor:
+              isEmprendedora || isUsuario || isAdmin ? "pointer" : "default",
           }}
         >
           {user ? (

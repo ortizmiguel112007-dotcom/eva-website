@@ -1,0 +1,24 @@
+/* ─── Fila precio / stock / categoría ───────────────────── */
+.row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.row .form-group {
+  flex: 1;
+  min-width: 120px;
+}
+
+.row input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ─── Preview precio ─────────────────────────────────────── */
+.price-preview {
+  font-size: .78rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-top: 2px;
+}

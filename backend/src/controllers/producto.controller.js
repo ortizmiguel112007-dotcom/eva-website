@@ -1,4 +1,6 @@
 import prisma from "../conexion.js";
+import { aplicarDescuento } from "./reglasdescuento.controller.js";
+import { crearNotificacion } from "./notificacion.controller.js";
 
 export const crearItem = async (req, res) => {
   console.log("=== CREAR ITEM ===");
@@ -16,8 +18,6 @@ export const crearItem = async (req, res) => {
       },
     });
 
-    console.log("EMPRENDEDORA:", emprendedora);
-
     if (!emprendedora)
       return res.status(404).json({ error: "Emprendedora no encontrada" });
     if (!emprendedora.secciones.length)
@@ -26,7 +26,7 @@ export const crearItem = async (req, res) => {
     let id_seccion =
       emprendedora.secciones.find((s) => !s.id_alianza)?.id_seccion ||
       emprendedora.secciones[0].id_seccion;
-    // Si se especificó una sección de alianza, verificar que la emprendedora participa
+
     if (req.body.id_seccion_alianza) {
       const seccionAlianza = await prisma.seccion.findFirst({
         where: { id_seccion: Number(req.body.id_seccion_alianza) },
@@ -39,6 +39,7 @@ export const crearItem = async (req, res) => {
         id_seccion = seccionAlianza.id_seccion;
       }
     }
+
     const {
       nombre_producto,
       descripcion,
@@ -51,11 +52,31 @@ export const crearItem = async (req, res) => {
     } = req.body;
     const imagen = req.file ? req.file.path : null;
 
-    console.log("INTENTANDO CREAR PRODUCTO...");
+    // RN-014: La cantidad inicial no puede ser negativa
+    if ((tipo || "producto") !== "servicio" && Number(cantidad) < 0) {
+      return res.status(400).json({
+        error: "La cantidad inicial no puede ser negativa.",
+      });
+    }
+
+    const productoExistente = await prisma.producto.findFirst({
+      where: {
+        id_creador: id_usuario,
+        nombre_producto,
+        categoria,
+        estado_producto: {
+          not: "inactivo",
+        },
+      },
+    });
+
+    if (productoExistente) {
+      return res.status(409).json({
+        error: "Ya existe un producto con ese nombre en esa categoría.",
+      });
+    }
 
     const resultado = await prisma.$transaction(async (tx) => {
-      console.log("DENTRO DE TRANSACCIÓN");
-
       const producto = await tx.producto.create({
         data: {
           id_seccion,
@@ -68,6 +89,8 @@ export const crearItem = async (req, res) => {
           stock_minimo: Number(stock_minimo) || 0,
           duracion: duracion || null,
           tipo: tipo || "producto",
+          estado_producto: "pendiente",
+          visible: false,
         },
       });
 
@@ -85,7 +108,22 @@ export const crearItem = async (req, res) => {
       return { ...producto, inventario };
     });
 
-    console.log("PRODUCTO CREADO:", resultado);
+    const admins = await prisma.user.findMany({
+      where: { rol: { in: ["admin", "administrador"] } },
+      select: { id: true },
+    });
+    await Promise.all(
+      admins.map((a) =>
+        crearNotificacion(
+          a.id,
+          "solicitud",
+          "Nuevo producto pendiente",
+          `La emprendedora ${req.user.nombre} ha publicado "${nombre_producto}" y está esperando aprobación.`,
+          "/admin/productos",
+        ),
+      ),
+    );
+
     return res.status(201).json(resultado);
   } catch (error) {
     console.error("Error al crear item:", error);
@@ -124,10 +162,10 @@ export const obtenerItemPorId = async (req, res) => {
               include: {
                 participantes: {
                   include: {
-                    usuario: { select: { nombre: true } }
-                  }
-                }
-              }
+                    usuario: { select: { nombre: true } },
+                  },
+                },
+              },
             },
             emprendedora: {
               include: {
@@ -137,36 +175,52 @@ export const obtenerItemPorId = async (req, res) => {
           },
         },
       },
-    })
-    if (!item) return res.status(404).json({ error: "Item no encontrado" })
-    res.json(item)
+    });
+    if (!item) return res.status(404).json({ error: "Item no encontrado" });
+    const stock = item.inventario?.cantidad ?? 0;
+    const descuento = await aplicarDescuento(
+      item.id_producto,
+      item.precio,
+      stock,
+    );
+    res.json({ ...item, descuento });
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener item" })
+    res.status(500).json({ error: "Error al obtener item" });
   }
 };
 
-// GET público — productos visibles de una emprendedora
 export const obtenerProductosPublicos = async (req, res) => {
   try {
     const id_emprendedora = Number(req.params.id_emprendedora);
     const productos = await prisma.producto.findMany({
       where: {
-        seccion: {
-          id_emprendedora,
-          id_alianza: null  // ← AGREGAR: excluir secciones de alianza
-        },
+        seccion: { id_emprendedora, id_alianza: null },
         estado_producto: "activo",
         visible: true,
       },
       orderBy: { nombre_producto: "asc" },
     });
-    res.json(productos);
+    const conDescuento = await Promise.all(
+      productos.map(async (p) => {
+        try {
+          const stock = p.inventario?.cantidad ?? 0;
+          const descuento = await aplicarDescuento(
+            p.id_producto,
+            p.precio,
+            stock,
+          );
+          return { ...p, descuento };
+        } catch {
+          return { ...p, descuento: null };
+        }
+      }),
+    );
+    res.json(conDescuento);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener productos" });
   }
 };
 
-// PATCH — toggle visible
 export const toggleVisible = async (req, res) => {
   try {
     const id_producto = Number(req.params.id);
@@ -187,10 +241,6 @@ export const toggleVisible = async (req, res) => {
 };
 
 export const actualizarItem = async (req, res) => {
-  console.log("=== ACTUALIZAR ITEM ===");
-  console.log("FILE:", req.file);
-  console.log("BODY:", req.body);
-
   try {
     const id_producto = Number(req.params.id);
     const {
@@ -205,7 +255,28 @@ export const actualizarItem = async (req, res) => {
     } = req.body;
     const imagen = req.file ? req.file.path : undefined;
 
-    console.log("ID:", id_producto, "IMAGEN:", imagen);
+    const producto = await prisma.producto.findUnique({
+      where: { id_producto },
+      select: {
+        id_creador: true,
+      },
+    });
+
+    if (!producto) {
+      return res.status(404).json({
+        error: "Producto no encontrado",
+      });
+    }
+
+    if (
+      req.user.rol !== "admin" &&
+      req.user.rol !== "administrador" &&
+      producto.id_creador !== req.user.id
+    ) {
+      return res.status(403).json({
+        error: "No tienes permiso para modificar este producto.",
+      });
+    }
 
     const resultado = await prisma.$transaction(async (tx) => {
       const producto = await tx.producto.update({
@@ -249,34 +320,81 @@ export const actualizarItem = async (req, res) => {
     res.json(resultado);
   } catch (error) {
     console.error("Error al actualizar item:", error.message);
-    console.error("DETALLE:", error);
     res.status(500).json({ error: "Error al actualizar item" });
   }
 };
+
+// ── Deshabilitar (soft delete) ─────────────────────────────────────────────
+// No borra el registro — pone estado_producto = "inactivo" y visible = false
+// Así no hay conflictos de FK en la base de datos.
 export const eliminarItem = async (req, res) => {
   try {
     const id = Number(req.params.id);
+    const motivo = req.body?.motivo?.trim() || null;
 
-    await prisma.$transaction(async (tx) => {
-      // Eliminar relaciones primero
-      await tx.inventario.deleteMany({ where: { id_producto: id } });
-      await tx.comentario.deleteMany({ where: { id_producto: id } });
-      await tx.detallePedido.deleteMany({ where: { id_producto: id } });
-
-      // Luego eliminar el producto
-      await tx.producto.delete({ where: { id_producto: id } });
+    const producto = await prisma.producto.findUnique({
+      where: { id_producto: id },
+      include: {
+        seccion: {
+          include: { emprendedora: { include: { usuario: true } } },
+        },
+      },
     });
 
-    res.json({ message: "Producto eliminado correctamente" });
+    if (!producto)
+      return res.status(404).json({ error: "Producto no encontrado" });
+
+    if (
+      req.user.rol !== "admin" &&
+      req.user.rol !== "administrador" &&
+      producto.id_creador !== req.user.id
+    ) {
+      return res.status(403).json({
+        error: "No tienes permiso para deshabilitar este producto.",
+      });
+    }
+
+    const eraPendiente = producto.estado_producto === "pendiente";
+    const idUsuario = producto.seccion?.emprendedora?.usuario?.id;
+
+    // Soft delete — solo deshabilita, no elimina el registro
+    await prisma.producto.update({
+      where: { id_producto: id },
+      data: { estado_producto: "inactivo", visible: false },
+    });
+
+    // Notificar a la emprendedora con el motivo si se proporcionó
+    if (idUsuario) {
+      const titulo = eraPendiente
+        ? "Producto rechazado"
+        : "Producto deshabilitado";
+      const base = eraPendiente
+        ? `Tu producto "${producto.nombre_producto}" fue rechazado por el administrador.`
+        : `Tu producto "${producto.nombre_producto}" fue deshabilitado por el administrador.`;
+      const mensaje = motivo ? `${base} Motivo: ${motivo}` : base;
+
+      await crearNotificacion(
+        idUsuario,
+        "solicitud",
+        titulo,
+        mensaje,
+        "/dashboard",
+      );
+    }
+
+    res.json({ message: "Producto deshabilitado correctamente" });
   } catch (error) {
-    console.error("ERROR ELIMINANDO:", error);
+    console.error("ERROR DESHABILITANDO:", error);
     res.status(500).json({ error: error.message });
   }
 };
-// GET /api/items/admin/todos — todos los productos (solo admin)
+
 export const listarTodosAdmin = async (req, res) => {
   try {
     const productos = await prisma.producto.findMany({
+      where: {
+        estado_producto: { not: "inactivo" },
+      },
       include: {
         inventario: true,
         seccion: {
@@ -296,41 +414,87 @@ export const listarTodosAdmin = async (req, res) => {
   }
 };
 
-// GET /api/items/mis-items — todos los items de la emprendedora (propios + alianza)
 export const listarMisItems = async (req, res) => {
   try {
-    const id_usuario = req.user.id
+    const id_usuario = req.user.id;
 
     const emprendedora = await prisma.emprendedora.findUnique({
       where: { id_usuario },
-      include: { secciones: true }
-    })
-    if (!emprendedora) return res.status(404).json({ error: 'No encontrada' })
+      include: { secciones: true },
+    });
+    if (!emprendedora) return res.status(404).json({ error: "No encontrada" });
 
-    const idSecciones = emprendedora.secciones.map(s => s.id_seccion)
+    const idSecciones = emprendedora.secciones.map((s) => s.id_seccion);
 
-    // Productos propios + productos creados por esta emprendedora en alianzas
     const items = await prisma.producto.findMany({
       where: {
-        estado_producto: 'activo',
-        OR: [
-          { id_seccion: { in: idSecciones } },
-          { id_creador: id_usuario }
-        ]
+        estado_producto: "activo",
+        OR: [{ id_seccion: { in: idSecciones } }, { id_creador: id_usuario }],
       },
       include: {
         inventario: true,
         seccion: {
           include: {
-            alianza: { select: { nombre: true, id_alianza: true } }
-          }
-        }
+            alianza: { select: { nombre: true, id_alianza: true } },
+          },
+        },
       },
-      orderBy: { nombre_producto: 'asc' }
-    })
-    res.json(items)
+      orderBy: { nombre_producto: "asc" },
+    });
+
+    const itemsConDescuento = await Promise.all(
+      items.map(async (p) => {
+        const stock = p.inventario?.cantidad ?? 0;
+        const descuento = await aplicarDescuento(
+          p.id_producto,
+          p.precio,
+          stock,
+        );
+        return { ...p, descuento };
+      }),
+    );
+    res.json(itemsConDescuento);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Error al obtener items' })
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener items" });
   }
-}
+};
+
+export const aprobarProducto = async (req, res) => {
+  try {
+    const id_producto = Number(req.params.id);
+
+    const producto = await prisma.producto.findUnique({
+      where: { id_producto },
+      include: {
+        seccion: {
+          include: { emprendedora: { include: { usuario: true } } },
+        },
+      },
+    });
+
+    if (!producto)
+      return res.status(404).json({ error: "Producto no encontrado" });
+
+    await prisma.producto.update({
+      where: { id_producto },
+      data: { estado_producto: "activo", visible: true },
+    });
+
+    const idUsuario = producto.seccion?.emprendedora?.usuario?.id;
+    if (idUsuario) {
+      await crearNotificacion(
+        idUsuario,
+        "solicitud",
+        "Producto aprobado",
+        `Tu producto "${producto.nombre_producto}" fue aprobado y ya está visible en el catálogo.`,
+        "/dashboard",
+      );
+    }
+
+    res.json({ message: "Producto aprobado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al aprobar producto" });
+  }
+};

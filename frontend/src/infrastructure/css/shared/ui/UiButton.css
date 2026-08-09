@@ -1,0 +1,101 @@
+/* ═══════════════════════════════════════════════════════
+   BOTONES GLOBALES INICIO
+═══════════════════════════════════════════════════════ */
+/* ══════════════════════ base ════════════════════════ */
+.ip-btn {
+    border-radius: 999px;
+    font-size: 0.9rem;
+    padding: 0.7rem 1.5rem;
+    gap: 0.4rem;
+    align-items: center;
+    display: flex;
+    font-family: "DM Sans", system-ui;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.ip-btn span{
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.ip-btn .uiIcon{
+    width: auto;
+    height: auto;
+}
+
+/* ═════════════════════ primary ══════════════════════ */
+.ip-btn.primary {
+    background: #3b82f6;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+.ip-btn.primary:hover {
+    background: #2563eb;
+}
+
+/* ════════════════════ secondary ═════════════════════ */
+.ip-btn.secondary {
+    background: transparent;
+    color: #3b82f6;
+    font-weight: 600;
+    border: 1.5px solid #3b82f6;
+}
+
+.ip-btn.secondary:hover {
+    color: rgb(255, 255, 255);
+    background: #3b82f6;
+}
+
+/* ═════════════════════ tertiary ═════════════════════ */
+.ip-btn.tertiary {
+    padding: 0.5rem 1.1rem;
+    border: 1.5px solid #3b82f6;
+    background: transparent;
+    color: #3b82f6;
+    font-size: 0.83rem;
+    font-weight: 600;
+}
+
+.ip-btn.tertiary:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* ══════════════════════ Fourth ══════════════════════ */
+.ip-btn.Fourth {
+    display: flex;
+    background: #3b82f6;
+    color: #fff;
+    padding: 0.6rem;
+}
+
+.ip-btn.Fourth:hover {
+    background: #2563eb;
+    transform: scale(1.1);
+}
+
+/* ══════════════════════ Fiveth ══════════════════════ */
+.ip-btn.Fifth {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid #3b82f6;
+    background: transparent;
+    color: #3b82f6;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font-family: "DM Sans", system-ui;
+}
+
+.ip-btn.Fifth:hover {
+    background: #3b82f6;
+    color: #fff;
+}

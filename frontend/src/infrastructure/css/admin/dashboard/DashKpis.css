@@ -1,0 +1,126 @@
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.dash-kpi {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.dash-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.dash-kpi--blue:hover {
+  border-color: #bfdbfe;
+}
+.dash-kpi--green:hover {
+  border-color: #bbf7d0;
+}
+.dash-kpi--orange:hover {
+  border-color: #fed7aa;
+}
+.dash-kpi--purple:hover {
+  border-color: #e9d5ff;
+}
+
+.dash-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dash-kpi-icono {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.dash-kpi-trend.up {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.dash-kpi-trend.down {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.dash-kpi-valor {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.dash-kpi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0.2rem 0 0;
+}
+.dash-kpi-sub {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: 0.1rem;
+}
+
+.dash-kpi-bar {
+  height: 3px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  margin-top: 0.85rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-kpi-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--p, 50%);
+  background: var(--c, #3b82f6);
+  border-radius: 999px;
+  transition: width 1s ease;
+}
+
+@media (max-width: 900px) {
+  .dash-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .dash-kpis {
+    grid-template-columns: 1fr;
+  }
+}

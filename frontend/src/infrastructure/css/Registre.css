@@ -1,16 +1,16 @@
 :root {
-    --bg-dark:       #020618;
-    --bg-mid:        #0F172B;
-    --accent:        #29b1ff;
-    --accent-hover:  #0F172B;
-    --accent-glow:   rgba(36, 79, 128, 0.14);
-    --text:          #F2F2F2;
-    --text-muted:    rgba(242, 242, 242, 0.726);
-    --border:        rgba(242, 242, 242, 0.2);
-    --shadow:        rgba(0, 0, 0, 0.3);
-    --gray-mid:      rgb(150, 150, 150);
-    --gray-light:    rgb(197, 197, 197);
-    --white:         rgb(255, 255, 255);
+    --bg-dark: #020618;
+    --bg-mid: #0F172B;
+    --accent: #29b1ff;
+    --accent-hover: #0F172B;
+    --accent-glow: rgba(36, 79, 128, 0.14);
+    --text: #F2F2F2;
+    --text-muted: rgba(242, 242, 242, 0.726);
+    --border: rgba(242, 242, 242, 0.2);
+    --shadow: rgba(0, 0, 0, 0.3);
+    --gray-mid: rgb(150, 150, 150);
+    --gray-light: rgb(197, 197, 197);
+    --white: rgb(255, 255, 255);
 }
 
 /* ─── Sección principal ─────────────────────────────────── */
@@ -18,12 +18,14 @@
     position: relative;
     width: 100%;
     min-height: 100vh;
-    overflow: hidden;           /* el gato se asoma sin generar scroll */
+    overflow: hidden;
+    /* el gato se asoma sin generar scroll */
 }
 
 /* ─── Fondo con imagen ──────────────────────────────────── */
 .container-img {
-    position: relative;         /* necesario para el gato absoluto */
+    position: relative;
+    /* necesario para el gato absoluto */
     width: 100%;
     min-height: 100vh;
     padding: 2rem;
@@ -31,8 +33,10 @@
     background-size: cover;
     background-position: center;
     display: flex;
-    align-items: center;        /* centra verticalmente el formulario */
-    justify-content: center;    /* centra horizontalmente */
+    align-items: center;
+    /* centra verticalmente el formulario */
+    justify-content: center;
+    /* centra horizontalmente */
 }
 
 /* ─── Tarjeta del formulario ────────────────────────────── */
@@ -42,9 +46,11 @@
     border-radius: 0.75rem;
     background-color: var(--white);
     width: 100%;
-    max-width: 35rem;           /* max-width en lugar de width fija */
+    max-width: 35rem;
+    /* max-width en lugar de width fija */
     box-shadow: 0 8px 32px var(--shadow);
-    overflow: hidden;           /* evita que los hijos rompan el borde */
+    overflow: hidden;
+    /* evita que los hijos rompan el borde */
 }
 
 /* ─── Título ────────────────────────────────────────────── */
@@ -94,11 +100,12 @@
     font-size: 0.875rem;
     color: var(--gray-mid);
     white-space: nowrap;
-    min-width: 5.5rem;          /* alineación consistente */
+    min-width: 5.5rem;
+    /* alineación consistente */
 }
 
 .container-input svg,
-.container-input > *:first-child {
+.container-input>*:first-child {
     flex-shrink: 0;
     color: var(--gray-mid);
     font-size: 1rem;
@@ -106,7 +113,8 @@
 
 /* ─── Inputs ────────────────────────────────────────────── */
 .container-form input {
-    flex: 1;                    /* ocupa el espacio restante */
+    flex: 1;
+    /* ocupa el espacio restante */
     font-weight: 500;
     font-size: 0.875rem;
     padding: 0.45rem 0.6rem;
@@ -114,7 +122,8 @@
     border-radius: 0.35rem;
     outline: none;
     transition: border-color 0.2s ease;
-    min-width: 0;               /* evita overflow en flex */
+    min-width: 0;
+    /* evita overflow en flex */
 }
 
 .container-form input:focus {
@@ -127,6 +136,7 @@
     margin: 0 1.25rem;
     padding: 0.5rem 0.75rem;
     border-radius: 0.35rem;
+    margin-bottom: 0.75rem;
     font-size: 0.85rem;
     color: #c0392b;
     background-color: rgba(192, 57, 43, 0.08);
@@ -203,8 +213,277 @@
     height: auto;
     pointer-events: none;
     z-index: 10;
-    filter: drop-shadow(-4px 0 12px rgba(0,0,0,0.25));
+    filter: drop-shadow(-4px 0 12px rgba(0, 0, 0, 0.25));
 }
+
+/* ── RegistroSelector ── */
+.rs-formulario {
+    max-width: 44rem;
+}
+
+.rs-subtitulo {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.rs-opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.rs-opcion {
+    border: 2px solid rgba(242, 242, 242, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rs-opcion--cliente:hover {
+    border-color: #29b1ff;
+    background: rgba(41, 177, 255, 0.08);
+}
+
+.rs-opcion--emprendedora:hover {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.rs-icono {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rs-icono--cliente {
+    background: rgba(41, 177, 255, 0.15);
+}
+
+.rs-icono--emprendedora {
+    background: rgba(245, 158, 11, 0.15);
+}
+
+.rs-icon {
+    font-size: 1.6rem;
+}
+
+.rs-icono--cliente .rs-icon {
+    color: #29b1ff;
+}
+
+.rs-icono--emprendedora .rs-icon {
+    color: #f59e0b;
+}
+
+.rs-opcion-titulo {
+    color: #857f7f;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.rs-opcion-desc {
+    color: rgba(59, 59, 59, 0.65);
+    font-size: 0.8rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.rs-btn {
+    margin-top: 0.25rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.35rem;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.rs-btn--cliente {
+    background: #29b1ff;
+}
+
+.rs-btn--emprendedora {
+    background: #f59e0b;
+}
+
+.rs-footer {
+    justify-content: center;
+    background: var(--gray-light);
+}
+
+.rs-login-link {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0;
+}
+
+.rs-login-link a {
+    color: #0F172B;
+    font-weight: 700;
+}
+/* ── Registro ── */
+.reg-select {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid rgba(242,242,242,0.4);
+  border-radius: 0.35rem;
+  outline: none;
+  font-size: 0.875rem;
+  background: transparent;
+}
+
+.reg-doc-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0.1rem;
+}
+
+.reg-doc-hint {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.reg-doc-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  border: 1.5px dashed rgba(41,177,255,0.5);
+  color: #29b1ff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  gap: 0.4rem;
+}
+
+.reg-doc-preview {
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(242,242,242,0.2);
+}
+
+.reg-paso3-info       { margin-top: 0.75rem; }
+.reg-paso3-aprobacion { margin-top: 0.75rem; color: #059669; }
+
+/* ── RegistroEmprendedora ── */
+.re-aviso {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  color: #92400e;
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+}
+
+.input-error { border-color: #ef4444 !important; }
+
+.re-campo-error {
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin-top: -0.5rem;
+}
+
+.re-pass-wrapper {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.re-pass-input {
+  width: 100%;
+  padding-right: 2.2rem;
+  box-sizing: border-box;
+}
+
+.re-pass-toggle {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.re-doc-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.re-doc-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.re-doc-icon       { color: var(--gray-mid); flex-shrink: 0; }
+.re-doc-label-title { color: var(--gray-mid); font-size: 0.875rem; }
+
+.re-doc-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--gray-mid);
+  font-size: 0.82rem;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.re-doc-label.cargado {
+  border-color: rgba(5,150,105,0.5);
+  background: rgba(5,150,105,0.08);
+  color: #059669;
+}
+
+.re-doc-preview {
+  width: 100%;
+  max-height: 110px;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+}
+
+.re-codigo-input {
+  text-align: center;
+  letter-spacing: 0.25em;
+  font-size: 1rem;
+}
+
+.re-exito           { text-align: center; gap: 1rem; }
+.re-exito-emoji     { font-size: 2.5rem; }
+.re-exito-titulo    { font-weight: 700; color: #1e293b; font-size: 1rem; }
+.re-exito-verde     { color: #059669; font-weight: 600; }
 
 /* ─── Responsive ────────────────────────────────────────── */
 

@@ -24,6 +24,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
+    "pdfkit": "^0.19.1",
     "pg": "^8.20.0"
   }
 }

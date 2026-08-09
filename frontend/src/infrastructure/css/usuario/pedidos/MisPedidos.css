@@ -1,0 +1,151 @@
+/* ── MisPedidos (page) ── */
+.mp-page {
+  padding: 2rem 2.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  min-height: 100vh;
+  background: #f8f9fc;
+}
+
+/* Header */
+.mp-page-header {
+  margin-bottom: 1.5rem;
+}
+
+.mp-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.2rem;
+}
+
+.mp-page-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Tabs */
+.mp-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  background: #f1f5f9;
+  padding: 0.3rem;
+  border-radius: 0.6rem;
+  width: fit-content;
+}
+
+.mp-tab {
+  padding: 0.4rem 1rem;
+  border-radius: 0.4rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.mp-tab.active {
+  background: #fff;
+  color: #1e293b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Lista */
+.mp-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Overlay compartido (usado por ModalDetalle y ModalComentario) */
+.mp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  padding: 1rem;
+}
+
+/* Empty */
+.mp-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+  background: #fff;
+  border-radius: 0.85rem;
+  border: 1px solid #e5e7eb;
+}
+
+.mp-empty p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 1rem 0;
+}
+
+.mp-empty button {
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Loading */
+.mp-loading {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+/* Sección título */
+.mp-seccion-titulo {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  margin: 0 0 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Toast */
+.mp-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #16a34a;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  animation: mp-slideUp 0.3s ease;
+}
+
+@keyframes mp-slideUp {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mp-page {
+    padding: 1rem;
+  }
+}

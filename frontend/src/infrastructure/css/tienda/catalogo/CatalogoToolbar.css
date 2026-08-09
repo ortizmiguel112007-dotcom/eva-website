@@ -1,0 +1,132 @@
+/* ══════════════════════════════
+   SIDEBAR
+══════════════════════════════ */
+.cat-sidebar-seccion {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.cats-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1.1rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  position: sticky;
+  top: 1rem;
+  transition: width 0.25s, opacity 0.25s;
+}
+
+.cats-sidebar.closed {
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+}
+
+.cat-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.cat-sidebar-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cat-filtros-badge {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-btn-limpiar {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3b82f6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.18s;
+  font-family: 'DM Sans', system-ui;
+}
+
+.cat-btn-limpiar:hover { color: #1d4ed8; }
+
+/* Slider precio */
+.cat-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  border: none;
+}
+
+.cat-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 2px;
+  background: #e2e8f0;
+  border: none;
+}
+
+.cat-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: -8px; 
+  transition: transform 0.1s ease-in-out;
+  cursor: grab;
+}
+
+.cat-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+  cursor: grabbing;
+}
+
+.cat-slider::-moz-range-track {
+  width: 100%;
+  height: 2px;
+  background: #e2e8f0;
+}
+
+.cat-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cat-precio-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.cat-precio-val { color: #3b82f6; font-weight: 700; }

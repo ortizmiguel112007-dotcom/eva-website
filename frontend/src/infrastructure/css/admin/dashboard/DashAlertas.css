@@ -1,0 +1,121 @@
+.dash-alertas-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+.dash-alertas-header h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+}
+
+.dash-alertas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dash-alerta {
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.dash-alerta.amarillo {
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+.dash-alerta.azul {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+.dash-alerta.rojo {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.dash-alerta-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dash-alerta-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-alerta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.dash-alerta-top span:first-child {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-alerta-desc {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.dash-alerta-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.dash-alerta-badge.amarillo {
+  background: #fde68a;
+  color: #92400e;
+}
+.dash-alerta-badge.azul {
+  background: #bfdbfe;
+  color: #1e40af;
+}
+.dash-alerta-badge.rojo {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.dash-alerta-btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dash-alerta-btn:hover {
+  background: #fff;
+}
+
+@media (max-width: 900px) {
+  .dash-alertas {
+    grid-template-columns: 1fr;
+  }
+}

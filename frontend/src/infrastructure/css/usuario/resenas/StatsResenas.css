@@ -1,0 +1,111 @@
+/* ── Layout ── */
+.mr-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.mr-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.mr-stats-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.mr-stats-titulo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.85rem;
+}
+
+.mr-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+  transition: opacity 0.2s;
+}
+
+.mr-bar-num {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  width: 0.6rem;
+  flex-shrink: 0;
+}
+
+.mr-bar-track {
+  flex: 1;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mr-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.mr-bar-count {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+  width: 1rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.mr-btn-limpiar {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 0.45rem;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #3b82f6;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.mr-btn-limpiar:hover { background: #eff6ff; }
+
+.mr-total-card {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 1rem;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+}
+
+.mr-total-card strong {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mr-total-card span { font-size: 0.78rem; opacity: 0.85; }

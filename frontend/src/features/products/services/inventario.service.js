@@ -15,5 +15,13 @@ export const inventarioService = {
   async actualizarStock(id, data) {
     const res = await axios.put(`${BASE_URL}/${id}`, data, { headers: getHeaders() })
     return res.data
-  }
+  },
+  
+  async listarHistorial(id_producto) {
+  const res = await axios.get(
+    `http://localhost:3000/api/movimientos/${id_producto}`,
+    { headers: getHeaders() }
+  )
+  return res.data
+}
 }

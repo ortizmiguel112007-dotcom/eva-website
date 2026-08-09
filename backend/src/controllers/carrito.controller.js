@@ -1,4 +1,5 @@
 import prisma from "../conexion.js";
+import { aplicarDescuento } from './reglasdescuento.controller.js'
 
 // Obtener o crear carrito del usuario
 const getOCrearCarrito = async (id_usuario) => {
@@ -54,14 +55,34 @@ const getOCrearCarrito = async (id_usuario) => {
 // GET /api/carrito — obtener carrito del usuario
 export const getCarrito = async (req, res) => {
   try {
-    const carrito = await getOCrearCarrito(req.user.id);
-    res.json(carrito);
+    const carrito = await getOCrearCarrito(req.user.id)
+
+    // Aplicar descuentos a cada item
+    const itemsConDescuento = await Promise.all(
+      carrito.items.map(async (item) => {
+        try {
+          const stock = item.producto?.inventario?.cantidad ?? 0
+          const descuento = await aplicarDescuento(
+            item.id_producto,
+            item.producto?.precio,
+            stock
+          )
+          return {
+            ...item,
+            producto: { ...item.producto, descuento }
+          }
+        } catch {
+          return item
+        }
+      })
+    )
+
+    res.json({ ...carrito, items: itemsConDescuento })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener el carrito" });
+    console.error(error)
+    res.status(500).json({ error: "Error al obtener el carrito" })
   }
 };
-
 // POST /api/carrito/items — agregar producto al carrito
 export const agregarItem = async (req, res) => {
   try {

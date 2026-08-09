@@ -1,0 +1,187 @@
+.ap-table-wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+}
+
+.ap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ap-table thead tr {
+  background: #1e293b;
+}
+
+.ap-table thead th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ap-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 180ms ease;
+}
+.ap-table tbody tr:hover {
+  background: #f8fafc;
+}
+.ap-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ap-table td {
+  padding: 0.85rem 1rem;
+  color: #64748b;
+  vertical-align: middle;
+}
+
+/* ── Celda producto ── */
+.ap-producto-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ap-producto-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ap-producto-placeholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.4rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ap-producto-nombre {
+  font-weight: 600;
+  color: #1e293b;
+}
+.ap-precio {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ── Badges ── */
+.ap-stock-badge,
+.ap-estado-badge {
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ap-stock-badge.disponible {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.ap-stock-badge.agotado {
+  background: #fef2f2;
+  color: #ef4444;
+}
+.ap-estado-badge.visible {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.ap-estado-badge.oculto {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+/* ── Acciones ── */
+.ap-acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ap-btn-accion {
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.4rem;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  font-family: "DM Sans", system-ui;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.ap-btn-accion:hover {
+  background: #f1f5f9;
+}
+.ap-btn-accion.destacado {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #f59e0b;
+}
+.ap-btn-accion.destacado:hover {
+  background: #fef3c7;
+}
+
+.ap-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+}
+
+.ap-estado-badge.pendiente {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+.ap-btn--aprobar {
+  color: #16a34a;
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+.ap-btn--aprobar:hover {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+}
+.ap-btn--rechazar {
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+.ap-btn--rechazar:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+.ap-btn--eliminar {
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+.ap-btn--eliminar:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .ap-table-wrapper {
+    overflow-x: auto;
+  }
+}

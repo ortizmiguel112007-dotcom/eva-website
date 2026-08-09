@@ -1,0 +1,37 @@
+:root {
+  --color-navbar:        #0f1f3a;
+  --color-primary:       #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-text-light:    #ffffff;
+  --color-text-dark:     #374151;
+  --color-bg-main:       #f8f9fc;
+  --color-border:        #e5e7eb;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--color-bg-main);
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 2.5rem;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .main-content { padding: 1rem; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+}

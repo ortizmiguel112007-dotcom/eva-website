@@ -1,0 +1,84 @@
+.pt-list-item {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: all 0.2s;
+  animation: ptFadeUp 0.35s ease both;
+}
+
+.pt-list-item:hover {
+  border-color: #bfdbfe;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.08);
+  transform: translateX(3px);
+}
+
+.pt-list-img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.pt-list-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.pt-list-no-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pt-list-info { flex: 1; min-width: 0; }
+
+.pt-list-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.pt-list-cat { font-size: 0.72rem; color: #94a3b8; font-weight: 500; }
+
+.pt-list-nombre {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pt-list-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pt-list-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pt-list-precio {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}

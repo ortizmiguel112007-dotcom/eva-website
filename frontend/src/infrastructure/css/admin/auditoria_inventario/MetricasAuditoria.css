@@ -1,0 +1,40 @@
+/* ── MetricasAuditoria ── */
+.ai-metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-metrica {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ai-metrica-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ai-metrica-valor {
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: block;
+}
+
+.ai-metrica.total   .ai-metrica-valor { color: #1e293b; }
+.ai-metrica.ok      .ai-metrica-valor { color: #16a34a; }
+.ai-metrica.bajo    .ai-metrica-valor { color: #f59e0b; }
+.ai-metrica.agotado .ai-metrica-valor { color: #ef4444; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-metricas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

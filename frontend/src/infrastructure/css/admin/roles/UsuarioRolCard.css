@@ -1,0 +1,89 @@
+.usuario-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fc;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid transparent;
+  margin-bottom: 0.625rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.usuario-card:hover       { background: #eff6ff; border-color: #bfdbfe; }
+.usuario-card:last-child  { margin-bottom: 0; }
+
+.usuario-info { display: flex; align-items: center; gap: 0.75rem; flex: 1; }
+
+.usuario-avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.usuario-info h4   { font-size: 0.9rem; font-weight: 700; color: #0f1f3a; margin: 0 0 0.1rem; }
+.usuario-info span { font-size: 0.75rem; color: #94a3b8; display: block; }
+
+.usuario-rol-badge {
+  display: inline-block;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  /* colores vía style inline — dependen del rol */
+}
+
+.rol-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+
+.select-rol {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.83rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.45rem;
+  border: 1.5px solid;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 180ms ease;
+  /* background, color, borderColor vía style inline — dependen del rol */
+}
+
+.select-rol:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+.btn-guardar {
+  padding: 0.45rem 1rem;
+  border-radius: 0.45rem;
+  border: 1.5px solid #e5e7eb;
+  background: #f1f5f9;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-guardar-activo {
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
+  cursor: pointer;
+}
+
+.btn-guardar-activo:hover { background: #334155; }
+
+@media (max-width: 600px) {
+  .usuario-card { flex-direction: column; align-items: flex-start; }
+  .rol-actions  { width: 100%; }
+}

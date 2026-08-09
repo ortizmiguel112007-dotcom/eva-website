@@ -17,6 +17,12 @@ import carritoRouter from './routes/carrito.route.js'
 import pagoRouter from './routes/pago.route.js'
 import notificacionRoutes from './routes/notificacion.routes.js'
 import favoritoRoutes from './routes/favorito.routes.js'
+import reglaDescuentoRouter from './routes/regladescuento.route.js'
+import movimientoRouter from './routes/movimientoInventario.route.js'
+import metodosPagoRouter from "./routes/metodosPago.route.js"
+import liquidacionRoutes from './routes/liquidacion.route.js'
+import facturaRoutes from './routes/factura.route.js'
+import reporteRoutes from './routes/reporte.route.js'
 import prisma from './conexion.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -61,6 +67,14 @@ app.use(carritoRouter)         // /api/carrito, /api/carrito/agregar, /api/carri
 app.use(pagoRouter)
 app.use(notificacionRoutes)   // /api/notificaciones, /api/notificaciones/leer-todas, /api/notificaciones/:id/leer
 app.use(favoritoRoutes)       // /api/favoritos, /api/favoritos/:id_producto, /api/favoritos/tienda
+app.use(reglaDescuentoRouter) // /api/reglas-descuento
+app.use(movimientoRouter)     // /api/movimientos-inventario
+app.use(metodosPagoRouter)    // /api/emprendedora/metodos-pago, /api/tienda/:id_emprendedora/metodos-pago
+app.use(liquidacionRoutes)
+app.use(facturaRoutes)
+
+app.use(reporteRoutes)
+
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')
 }).on('error', (err) => {

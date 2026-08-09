@@ -1,0 +1,101 @@
+.pedido-cambiar-wrapper {
+  position: relative;
+}
+
+.pedido-cambiar-btn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: opacity 0.2s;
+}
+
+.pedido-cambiar-btn:hover {
+  opacity: 0.88;
+}
+
+.pedido-cambiar-btn.en_proceso {
+  background: var(--color-primary);
+}
+
+.pedido-cambiar-btn.enviado {
+  background: #7c3aed;
+}
+
+.pedido-cambiar-btn.entregado {
+  background: #059669;
+}
+
+.pedido-cambiar-btn.cancelado {
+  background: #ef4444;
+}
+
+.pedido-cambiar-dropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.pedido-cambiar-option {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pedido-cambiar-option:hover {
+  background: #f8fafc;
+}
+
+.pedido-cambiar-option.en_proceso {
+  color: var(--color-primary);
+}
+
+.pedido-cambiar-option.enviado {
+  color: #7c3aed;
+}
+
+.pedido-cambiar-option.entregado {
+  color: #059669;
+}
+
+.pedido-cambiar-option.cancelado {
+  color: #ef4444;
+}
+
+.pedido-cambiar-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pedido-cambiar-option.pago_enviado {
+  color: #3b82f6;
+}
+.pedido-cambiar-option.pago_rechazado {
+  color: #ef4444;
+}
+.pedido-cambiar-option.pendiente_pago {
+  color: #f59e0b;
+}
+.pedido-cambiar-option.en_proceso {
+  color: #8b5cf6;
+}
+.pedido-cambiar-option.cancelado {
+  color: #ef4444;
+}

@@ -1,0 +1,150 @@
+/* ── TablaAuditoria ── */
+.ai-table-wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow-x: auto;
+}
+
+.ai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.ai-table thead tr {
+  background: #1e293b;
+}
+
+.ai-table thead th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.ai-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 180ms;
+}
+
+.ai-table tbody tr:hover      { background: #f8fafc; }
+.ai-table tbody tr:last-child { border-bottom: none; }
+
+.ai-table td {
+  padding: 0.85rem 1rem;
+  color: #64748b;
+  vertical-align: middle;
+}
+
+/* Producto cell */
+.ai-producto-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ai-producto-img {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.4rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ai-producto-placeholder {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.4rem;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-producto-nombre {
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Badges */
+.ai-badge-estado {
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.ai-badge-estado.ok      { background: #f0fdf4; color: #16a34a; }
+.ai-badge-estado.bajo    { background: #fffbeb; color: #f59e0b; }
+.ai-badge-estado.agotado { background: #fef2f2; color: #ef4444; }
+
+.ai-badge-tipo {
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ai-badge-tipo.producto { background: #eff6ff; color: #3b82f6; }
+.ai-badge-tipo.servicio { background: #f5f3ff; color: #7c3aed; }
+
+/* Barra de progreso */
+.ai-progreso-wrapper {
+  min-width: 100px;
+}
+
+.ai-progreso-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: #94a3b8;
+  margin-bottom: 0.2rem;
+}
+
+.ai-progreso-bar {
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ai-progreso-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.ai-progreso-fill.ok      { background: #16a34a; }
+.ai-progreso-fill.bajo    { background: #f59e0b; }
+.ai-progreso-fill.agotado { background: #ef4444; }
+
+/* Cantidad */
+.ai-cantidad {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ai-cantidad.ok      { color: #16a34a; }
+.ai-cantidad.bajo    { color: #f59e0b; }
+.ai-cantidad.agotado { color: #ef4444; }
+
+/* Empty */
+.ai-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+}

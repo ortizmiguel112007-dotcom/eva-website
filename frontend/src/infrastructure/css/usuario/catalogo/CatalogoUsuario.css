@@ -1,0 +1,23 @@
+.cu-page {
+  min-height: 100vh;
+  background: #f8f9fc;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.cu-body {
+  display: flex;
+  max-width: 1300px;
+  margin: -3rem auto 0;
+  padding: 0 2rem 3rem;
+  gap: 1.5rem;
+  align-items: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.cu-main { flex: 1; min-width: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .cu-body { padding: 0 1rem 2rem; }
+}

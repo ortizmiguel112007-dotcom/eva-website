@@ -1,0 +1,77 @@
+.roles-container {
+  padding: 2rem 2.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'DM Sans', sans-serif;
+  background: #f8f9fc;
+  min-height: 100vh;
+}
+
+.roles-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(15,31,58,0.10);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.roles-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(15,31,58,0.14); }
+
+.roles-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f1f3a;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.2px;
+}
+
+.roles-card p { color: #94a3b8; font-size: 0.85rem; margin: 0 0 1.25rem; }
+
+.roles-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0.85rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.roles-search:focus-within { border-color: #3b82f6; }
+
+.roles-search-input {
+  border: none;
+  outline: none;
+  font-size: 0.88rem;
+  flex: 1;
+  color: #1e293b;
+  background: transparent;
+}
+
+.toast-notificacion {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: #0f1f3a;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 32px rgba(15,31,58,0.14);
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 999;
+  animation: slideIn 0.3s ease both;
+}
+
+.toast-error { background: #ef4444 !important; }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@media (max-width: 600px) { .roles-container { padding: 1rem; } }

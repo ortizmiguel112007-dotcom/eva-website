@@ -1,0 +1,231 @@
+/* ═══════════════════════════════════════════════════════
+   CONTENEDOR GENERAL
+═══════════════════════════════════════════════════════ */
+
+/* ═════════════════════ Container ═════════════════════ */
+.ip-container {
+  width: 100%;
+  background: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECCIONES
+═══════════════════════════════════════════════════════ */
+
+/* ═════════════════════ Sección base ═════════════════ */
+.ip-seccion {
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto;
+  padding: 4rem 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ════════════════════ Sección alterna ═══════════════ */
+.ip-seccion-alt {
+  width: 100%;
+
+  background: #f0f4ff;
+
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+
+  padding: 4rem 2rem;
+}
+
+/* ═══════════════════ Contenido interno ══════════════ */
+.ip-seccion-alt > * {
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HEADERS DE SECCIÓN
+═══════════════════════════════════════════════════════ */
+
+/* ═════════════════════ Header base ══════════════════ */
+.ip-seccion-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 1.5rem;
+}
+
+/* ════════════════════ Header centrado ═══════════════ */
+.ip-seccion-header.ip-centrado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+/* ═════════════════════ Tag sección ══════════════════ */
+.ip-seccion-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  margin-bottom: 0.5rem;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  color: #3b82f6;
+}
+
+/* ══════════════════════ Título ══════════════════════ */
+.ip-seccion-header h2 {
+  margin: 0 0 0.35rem;
+
+  color: #1e293b;
+
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* ═══════════════════ Descripción ════════════════════ */
+.ip-seccion-header p {
+  margin: 0;
+
+  max-width: 38rem;
+
+  color: #64748b;
+
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GRIDS RESPONSIVOS
+═══════════════════════════════════════════════════════ */
+
+/* ══════════════════════ Grid 3 ══════════════════════ */
+.ip-grid-3 {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 1.5rem;
+}
+
+/* ══════════════════════ Grid 4 ══════════════════════ */
+.ip-grid-4 {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(240px, 1fr));
+
+  gap: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE LARGE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+
+  /* ═════════════ Ajuste de padding ═════════════ */
+  .ip-seccion,
+  .ip-seccion-alt {
+    padding: 3.5rem 2rem;
+  }
+
+  /* ═══════════════ Grid 4 tablet ═══════════════ */
+  .ip-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE TABLET
+═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* ═══════════════ Grids tablet ════════════════ */
+  .ip-grid-3,
+  .ip-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ═════════════ Header responsive ═════════════ */
+  .ip-seccion-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE MOBILE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ═══════════════ Padding mobile ══════════════ */
+  .ip-seccion,
+  .ip-seccion-alt {
+    padding: 3rem 1.5rem;
+  }
+
+  /* ════════════════ Grids mobile ═══════════════ */
+  .ip-grid-3,
+  .ip-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* ═══════════════ Gap secciones ═══════════════ */
+  .ip-seccion {
+    gap: 2rem;
+  }
+
+  /* ═══════════════ Header spacing ══════════════ */
+  .ip-seccion-header {
+    gap: 1rem;
+  }
+
+  /* ════════════════ Título mobile ══════════════ */
+  .ip-seccion-header h2 {
+    font-size: 1.8rem;
+  }
+
+  /* ═════════════ Descripción mobile ════════════ */
+  .ip-seccion-header p {
+    font-size: 0.88rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE MOBILE PEQUEÑO
+═══════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  /* ═══════════════ Padding pequeño ═════════════ */
+  .ip-seccion,
+  .ip-seccion-alt {
+    padding: 2.5rem 1rem;
+  }
+
+  /* ════════════════ Título pequeño ═════════════ */
+  .ip-seccion-header h2 {
+    font-size: 1.6rem;
+  }
+
+  /* ═════════════════ Gap pequeño ═══════════════ */
+  .ip-grid-3,
+  .ip-grid-4 {
+    gap: 1rem;
+  }
+}

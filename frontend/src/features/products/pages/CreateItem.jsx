@@ -1,55 +1,82 @@
-import { useNavigate } from "react-router-dom";
-import { FiBox, FiBriefcase } from "react-icons/fi";
+import { useNavigate } from "react-router-dom"
+import { FiPackage, FiBriefcase, FiArrowRight, FiPlus, FiUsers, FiStar, FiTag, FiBarChart2 } from "react-icons/fi"
+import "@/infrastructure/css/products-emprend/form/CreateItemPage.css"
 
-// import { useAuth } from "../context/AuthContext";
+export default function CreateItem() {
+  const navigate = useNavigate()
 
-const CreateItem = () => {
-  // const { user } = useAuth();
-  // if (!user || user.role !== "emprendedora") {
-  //   return (
-  //     <div className="no-permission">
-  //       No tienes permisos para crear productos o servicios.
-  //     </div>
-  //   );
-  // }
+  const opciones = [
+    {
+      tipo:    "producto",
+      ruta:    "/crear-producto",
+      titulo:  "Producto físico",
+      desc:    "Artículos con stock, variantes e inventario",
+      icon:    <FiPackage size={22} />,
+      cls:     "ci-icon--producto",
+    },
+    {
+      tipo:    "servicio",
+      ruta:    "/crear-servicio",
+      titulo:  "Servicio",
+      desc:    "Consultoría, diseño, asesoría con precio y duración",
+      icon:    <FiBriefcase size={22} />,
+      cls:     "ci-icon--servicio",
+    },
+  ]
 
-  const navigate = useNavigate();
+  const tags = [
+    { icon: <FiUsers size={12} />,    label: "Alianzas"   },
+    { icon: <FiStar size={12} />,     label: "Destacados" },
+    { icon: <FiTag size={12} />,      label: "Cupones"    },
+    { icon: <FiBarChart2 size={12} />,label: "Métricas"   },
+  ]
 
   return (
-    <div className="create-container">
-      <div className="card">
-        <h1>¿Qué deseas crear?</h1>
+    <div className="ci-wrap">
+      <div className="ci-card">
 
-        <p className="subtitle">
-          Selecciona el tipo de publicación que quieres agregar
+        <div className="ci-eyebrow">
+          <FiPlus size={12} />
+          Nueva publicación
+        </div>
+
+        <h1 className="ci-title">¿Qué deseas crear?</h1>
+        <p className="ci-sub">
+          Selecciona el tipo de publicación que quieres agregar a tu tienda.
         </p>
 
-        <div className="option-grid">
-          <div
-            className="option-card"
-            onClick={() => navigate("/crear-producto")}
-          >
-            <div className="icon product">
-              <FiBox size={34} />
+        <div className="ci-options">
+          {opciones.map((op, i) => (
+            <div
+              key={op.tipo}
+              className="ci-option"
+              onClick={() => navigate(op.ruta)}
+              style={{ animationDelay: `${0.08 + i * 0.06}s` }}
+            >
+              <div className={`ci-icon ${op.cls}`}>
+                {op.icon}
+              </div>
+              <div className="ci-text">
+                <p className="ci-opt-title">{op.titulo}</p>
+                <p className="ci-opt-desc">{op.desc}</p>
+              </div>
+              <FiArrowRight className="ci-arrow" size={16} />
             </div>
-            <h3>Producto</h3>
-            <p>Vende artículos físicos con stock disponible</p>
-          </div>
-
-          <div
-            className="option-card"
-            onClick={() => navigate("/crear-servicio")}
-          >
-            <div className="icon service">
-              <FiBriefcase size={34} />
-            </div>
-            <h3>Servicio</h3>
-            <p>Ofrece servicios con duración y precio</p>
-          </div>
+          ))}
         </div>
+
+        <div className="ci-divider">disponible en ambos</div>
+
+        <div className="ci-tag-row">
+          {tags.map(t => (
+            <span key={t.label} className="ci-tag">
+              {t.icon}
+              {t.label}
+            </span>
+          ))}
+        </div>
+
       </div>
     </div>
-  );
-};
-
-export default CreateItem;
+  )
+}
