@@ -1,105 +1,126 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { FiSearch, FiX, FiUsers } from "react-icons/fi"
+import { useAuth } from "@/core/context/AuthConten"
+import { FiUsers, FiDownload, FiX } from "react-icons/fi"
 
-import { AlianzaAdminCard } from "../components/alianzas/AlianzaAdminCard"
-import { getHeaders }       from "@/features/admin/utils/utils"
+import { AlianzaCard } from "@/features/products/components/alianzas/AlianzaCard"
+import { HistorialAlianza } from "../components/alianzas/HistorialAlianza"
 
-import "@/infrastructure/css/admin/alianzas/AdminAlianzas.css"
+import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
 const BASE = "http://localhost:3000"
 
 export default function AdminAlianzas() {
-  const [alianzas, setAlianzas]   = useState([])
-  const [cargando, setCargando]   = useState(true)
-  const [busqueda, setBusqueda]   = useState("")
-  const [filtro, setFiltro]       = useState("todos")
-  const [expandido, setExpandido] = useState(null)
+  const { token, user } = useAuth()
+  const headers = { Authorization: `Bearer ${token}` }
 
-  useEffect(() => {
-    axios.get(`${BASE}/api/admin/alianzas`, { headers: getHeaders() })
-      .then(res => setAlianzas(Array.isArray(res.data) ? res.data : []))
-      .catch(console.error)
-      .finally(() => setCargando(false))
-  }, [])
+  const [alianzas, setAlianzas] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [historialAlianza, setHistorialAlianza] = useState(null)
+  const [toast, setToast] = useState(null)
 
-  const handleToggle = id => setExpandido(prev => prev === id ? null : id)
+  const cargar = async () => {
+    setCargando(true)
+    try {
+      const res = await axios.get(`${BASE}/api/admin/alianzas`, { headers })
+      setAlianzas(res.data)
+    } catch (err) { console.error(err) }
+    finally { setCargando(false) }
+  }
 
-  const filtrados = alianzas.filter(a => {
-    const matchB =
-      a.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      a.creador?.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      a.participantes?.some(p => p.usuario?.nombre?.toLowerCase().includes(busqueda.toLowerCase()))
-    const matchF = filtro === "todos" || a.estado === filtro
-    return matchB && matchF
-  })
+  useEffect(() => { cargar() }, [])
 
-  const metricas = [
-    { label: "Total",       valor: alianzas.length,                                       color: "#3b82f6" },
-    { label: "Activas",     valor: alianzas.filter(a => a.estado === "activa").length,    color: "#16a34a" },
-    { label: "Pendientes",  valor: alianzas.filter(a => a.estado === "pendiente").length, color: "#f97316" },
-    { label: "Finalizadas", valor: alianzas.filter(a => a.estado === "finalizada").length,color: "#64748b" },
-  ]
+  const mostrarToast = (msg, tipo = "ok") => {
+    setToast({ msg, tipo })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const handleAprobar = async (alianza) => {
+    try {
+      await axios.put(`${BASE}/api/admin/alianzas/${alianza.id_alianza}/aprobar`, {}, { headers })
+      mostrarToast("Alianza aprobada")
+      cargar()
+    } catch (err) { mostrarToast(err.response?.data?.error || "Error", "error") }
+  }
+
+  const handleRechazar = async (alianza) => {
+    const motivo = window.prompt("Motivo del rechazo:")
+    if (!motivo) return
+    try {
+      await axios.put(`${BASE}/api/admin/alianzas/${alianza.id_alianza}/rechazar`, { motivo }, { headers })
+      mostrarToast("Alianza rechazada")
+      cargar()
+    } catch (err) { mostrarToast(err.response?.data?.error || "Error", "error") }
+  }
+
+  const handleDesactivar = async (alianza) => {
+    const motivo = window.prompt("Motivo de la desactivación (opcional):") || null
+    try {
+      await axios.put(`${BASE}/api/admin/alianzas/${alianza.id_alianza}/desactivar`, { motivo }, { headers })
+      mostrarToast("Alianza desactivada")
+      cargar()
+    } catch (err) { mostrarToast(err.response?.data?.error || "Error", "error") }
+  }
+
+  const handleExportar = (formato) => {
+    window.open(`${BASE}/api/admin/alianzas/metricas/export?formato=${formato}&token=${token}`, "_blank")
+  }
+
+  if (cargando) return <div className="pagos-loading">Cargando alianzas...</div>
 
   return (
-    <div className="aa-page">
-      <div className="aa-header">
-        <div>
-          <h1 className="aa-titulo">Alianzas Promocionales</h1>
-          <p className="aa-sub">Supervisa las promociones colaborativas entre emprendedoras</p>
-        </div>
+    <div className="pagos-page">
+      <div className="pagos-header">
+        <h1>Alianzas Promocionales</h1>
+        <p>Supervisa, aprueba y modera las alianzas de la plataforma (RF-092)</p>
       </div>
 
-      <div className="aa-metricas">
-        {metricas.map(m => (
-          <div key={m.label} className="aa-metrica" style={{ borderTop: `3px solid ${m.color}` }}>
-            <p className="aa-metrica-label">{m.label}</p>
-            <strong className="aa-metrica-valor" style={{ color: m.color }}>{m.valor}</strong>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+        <button className="dc-btn dc-btn--historial" onClick={() => handleExportar("pdf")}>
+          <FiDownload size={13} /> Exportar PDF
+        </button>
+        <button className="dc-btn dc-btn--historial" onClick={() => handleExportar("excel")}>
+          <FiDownload size={13} /> Exportar Excel
+        </button>
       </div>
 
-      <div className="aa-filtros">
-        <div className="aa-search">
-          <FiSearch size={14} color="#94a3b8" />
-          <input className="aa-search-input" value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-            placeholder="Buscar alianza o emprendedora..." />
-          {busqueda && (
-            <button className="aa-search-clear" onClick={() => setBusqueda("")}>
-              <FiX size={13} />
-            </button>
-          )}
-        </div>
-        <select className="aa-select" value={filtro} onChange={e => setFiltro(e.target.value)}>
-          <option value="todos">Todos</option>
-          <option value="activa">Activas</option>
-          <option value="pendiente">Pendientes</option>
-          <option value="finalizada">Finalizadas</option>
-        </select>
-      </div>
-
-      <p className="aa-contador">Mostrando {filtrados.length} de {alianzas.length} alianzas</p>
-
-      {cargando ? (
-        <p className="aa-cargando">Cargando alianzas...</p>
-      ) : filtrados.length === 0 ? (
-        <div className="aa-empty">
-          <FiUsers size={40} color="#e5e7eb" />
-          <p>No hay alianzas</p>
+      {alianzas.length === 0 ? (
+        <div className="pagos-empty">
+          <FiUsers size={40} color="#cbd5e1" />
+          <p>No hay alianzas registradas todavía</p>
         </div>
       ) : (
-        <div className="aa-lista">
-          {filtrados.map(a => (
-            <AlianzaAdminCard
+        <div className="pagos-lista">
+          {alianzas.map((a) => (
+            <AlianzaCard
               key={a.id_alianza}
               alianza={a}
-              expandido={expandido}
-              onToggle={handleToggle}
+              usuarioActualId={user?.id}
+              contexto="admin"
+              onAprobar={handleAprobar}
+              onRechazar={handleRechazar}
+              onDesactivar={handleDesactivar}
+              onVerHistorial={setHistorialAlianza}
             />
           ))}
         </div>
       )}
+
+      {historialAlianza && (
+        <div className="pagos-modal-overlay" onClick={() => setHistorialAlianza(null)}>
+          <div className="pagos-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pagos-modal-header">
+              <h3>Historial — {historialAlianza.nombre}</h3>
+              <button className="pagos-modal-cerrar" onClick={() => setHistorialAlianza(null)}><FiX size={18} /></button>
+            </div>
+            <div className="pagos-modal-body">
+              <HistorialAlianza id_alianza={historialAlianza.id_alianza} token={token} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && <div className={`pagos-toast ${toast.tipo}`}>{toast.msg}</div>}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 /* ── MetricasDestacados ── */
-.destacados-metricas {
+/* .destacados-metricas {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.75rem;
@@ -42,4 +42,34 @@
 }
 .destacado-metrica.activos span {
   color: #d97706;
+} */
+/* MetricasDestacados.css */
+.md-tabla-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.1rem;
+}
+.md-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.md-tabla th {
+  text-align: left;
+  color: #94a3b8;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.md-tabla td {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+.md-vacio {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem 0;
 }

@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useCarrito } from "@/core/context/CarritoContext"
 import { FiX, FiShoppingCart } from "react-icons/fi"
@@ -22,8 +21,6 @@ export default function CarritoDrawer() {
     setCarritoAbierto,
   } = useCarrito()
 
-  const [cupon, setCupon] = useState(null)
-
   if (!carritoAbierto) return null
 
   const handleCheckout = () => { setCarritoAbierto(false); navigate("/carrito") }
@@ -33,7 +30,6 @@ export default function CarritoDrawer() {
       <div className="drawer-overlay" onClick={() => setCarritoAbierto(false)} />
 
       <div className="drawer-panel">
-        {/* ── Header ── */}
         <div className="drawer-header">
           <h3 className="drawer-titulo">
             <FiShoppingCart />
@@ -45,7 +41,6 @@ export default function CarritoDrawer() {
           </button>
         </div>
 
-        {/* ── Body ── */}
         <div className="drawer-body">
           {items.length === 0 ? (
             <div className="drawer-vacio">
@@ -62,13 +57,11 @@ export default function CarritoDrawer() {
           ))}
         </div>
 
-        {/* ── Footer ── */}
         {items.length > 0 && (
           <>
-            <CuponDrawer onCuponAplicado={setCupon} />
+            <CuponDrawer />
             <ResumenDrawer
               total={total}
-              cupon={cupon}
               onCheckout={handleCheckout}
               onVaciar={vaciar}
             />

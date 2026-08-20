@@ -132,3 +132,13 @@
   align-items: center;
   gap: 0.3rem;
 }
+.mc-card-tienda {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--col-acento);
+  margin-top: 0.35rem;
+  margin-left: 1.2rem;
+}

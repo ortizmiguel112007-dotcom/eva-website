@@ -2,21 +2,26 @@ import { useState, useEffect } from "react"
 import { FiPlus, FiGift, FiCheckCircle, FiXCircle } from "react-icons/fi"
 import { cuponService } from "@/features/products/services/cupon.service"
 
-import { MetricasCupones }  from "../components/cupones/MetricasCupones"
-import { TablaCupones }     from "../components/cupones/TablaCupones"
-import { ModalNuevoCupon }  from "../components/cupones/ModalNuevoCupon"
+import { MetricasCupones }      from "../components/cupones/MetricasCupones"
+import { TablaCupones }         from "../components/cupones/TablaCupones"
+import { ModalNuevoCupon }      from "../components/cupones/ModalNuevoCupon"
+import { ModalMetricasCupon }   from "../components/cupones/ModalMetricasCupon"
 
 import "@/infrastructure/css/products-emprend/cupones/Cupones.css"
 
 const FORM_INICIAL = {
   codigo: "", tipo: "porcentaje", valor: "",
-  descripcion: "", fecha_fin: "", limite_usos: "",
+  descripcion: "", fecha_inicio: "", fecha_fin: "", limite_usos: "",
 }
 
+// RN-084: un cupón con fecha_inicio futura nace "programado" (activo:false en backend,
+// pero no es lo mismo que uno que la emprendedora apagó a mano)
 const getEstado = cupon => {
-  if (cupon.fecha_fin && new Date() > new Date(cupon.fecha_fin)) return "expirado"
-  if (cupon.limite_usos && cupon.usos >= cupon.limite_usos)       return "agotado"
-  if (!cupon.activo)                                               return "inactivo"
+  const ahora = new Date()
+  if (cupon.fecha_fin && ahora > new Date(cupon.fecha_fin)) return "expirado"
+  if (cupon.limite_usos && cupon.usos >= cupon.limite_usos) return "agotado"
+  if (cupon.fecha_inicio && ahora < new Date(cupon.fecha_inicio)) return "programado"
+  if (!cupon.activo) return "inactivo"
   return "activo"
 }
 
@@ -28,6 +33,7 @@ export default function Cupones() {
   const [formErrors, setFormErrors] = useState({})
   const [guardando, setGuardando]   = useState(false)
   const [toast, setToast]           = useState(null)
+  const [cuponMetricas, setCuponMetricas] = useState(null) // RF-098
 
   useEffect(() => {
     cuponService.listar()
@@ -47,6 +53,8 @@ export default function Cupones() {
     if (!form.valor)         errors.valor  = "El valor es obligatorio"
     if (form.tipo === "porcentaje" && (Number(form.valor) < 1 || Number(form.valor) > 100))
       errors.valor = "El porcentaje debe estar entre 1 y 100"
+    if (form.fecha_inicio && form.fecha_fin && new Date(form.fecha_fin) <= new Date(form.fecha_inicio))
+      errors.fecha_fin = "Debe ser posterior a la fecha de inicio"
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -56,12 +64,13 @@ export default function Cupones() {
     setGuardando(true)
     try {
       await cuponService.crear({
-        codigo:      form.codigo.toUpperCase(),
-        tipo:        form.tipo,
-        valor:       Number(form.valor),
-        descripcion: form.descripcion || null,
-        fecha_fin:   form.fecha_fin   || null,
-        limite_usos: form.limite_usos ? Number(form.limite_usos) : null,
+        codigo:       form.codigo.toUpperCase(),
+        tipo:         form.tipo,
+        valor:        Number(form.valor),
+        descripcion:  form.descripcion  || null,
+        fecha_inicio: form.fecha_inicio || null,
+        fecha_fin:    form.fecha_fin    || null,
+        limite_usos:  form.limite_usos ? Number(form.limite_usos) : null,
       })
       setCupones(await cuponService.listar())
       setModal(false)
@@ -93,14 +102,17 @@ export default function Cupones() {
 
   if (cargando) return (
     <div className="cupones-container">
-      <div className="cupones-loading"><FiGift size={28} /><span>Cargando cupones...</span></div>
+      <div className="cupones-loading">
+        <div className="cupones-spinner" />
+        <span>Cargando cupones...</span>
+      </div>
     </div>
   )
 
   return (
     <div className="cupones-container">
       <div className="cupones-header">
-        <h1>Cupones de Descuento</h1>
+        <h1><FiGift size={22} /> Cupones de Descuento</h1>
         <button className="btn-nuevo-cupon" onClick={() => setModal(true)}>
           <FiPlus size={16} /> Nuevo Cupón
         </button>
@@ -114,6 +126,7 @@ export default function Cupones() {
           getEstado={getEstado}
           onToggle={handleToggle}
           onEliminar={handleEliminar}
+          onVerMetricas={setCuponMetricas}
           onNuevo={() => setModal(true)}
         />
       </div>
@@ -125,7 +138,14 @@ export default function Cupones() {
           formErrors={formErrors}
           guardando={guardando}
           onCrear={handleCrear}
-          onCerrar={() => { setModal(false); setForm(FORM_INICIAL) }}
+          onCerrar={() => { setModal(false); setForm(FORM_INICIAL); setFormErrors({}) }}
+        />
+      )}
+
+      {cuponMetricas && (
+        <ModalMetricasCupon
+          cupon={cuponMetricas}
+          onCerrar={() => setCuponMetricas(null)}
         />
       )}
 

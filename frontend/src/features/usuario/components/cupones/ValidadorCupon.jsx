@@ -1,4 +1,4 @@
-import { FiZap, FiTag, FiCheck, FiAlertCircle } from "react-icons/fi"
+import { FiZap, FiTag, FiCheck, FiAlertCircle, FiShoppingBag } from "react-icons/fi"
 import { formatPrecio } from "@/features/tienda/utils/utils"
 import "@/infrastructure/css/usuario/cupones/ValidadorCupon.css"
 
@@ -45,6 +45,11 @@ export function ValidadorCupon({ codigo, setCodigo, resultado, error, validando,
                 </strong>
                 {resultado.descripcion && ` — ${resultado.descripcion}`}
               </p>
+              {resultado.tienda && (
+                <p className="mc-resultado-tienda">
+                  <FiShoppingBag size={12} /> Válido para productos de <strong>{resultado.tienda}</strong>
+                </p>
+              )}
             </div>
           </div>
         )}

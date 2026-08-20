@@ -28,19 +28,19 @@ export default function MisCupones() {
   }, [token])
 
   const handleValidar = async () => {
-    if (!codigo.trim()) return
-    setError(""); setResultado(null); setValidando(true)
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/api/cupones/validar",
-        { codigo },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setResultado(res.data.cupon)
-    } catch (err) {
-      setError(err.response?.data?.error || "Cupón inválido o expirado")
-    } finally { setValidando(false) }
-  }
+  if (!codigo.trim()) return
+  setError(""); setResultado(null); setValidando(true)
+  try {
+    const res = await axios.post(
+      "http://localhost:3000/api/cupones/validar",
+      { codigo },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    setResultado(res.data)   // 🆕 antes: res.data.cupon
+  } catch (err) {
+    setError(err.response?.data?.error || "Cupón inválido o expirado")
+  } finally { setValidando(false) }
+}
 
   const handleCopiar = (cod) => {
     navigator.clipboard.writeText(cod)

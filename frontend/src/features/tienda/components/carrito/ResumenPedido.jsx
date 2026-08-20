@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { FiTag, FiCheck, FiShoppingCart, FiTruck } from "react-icons/fi"
 import { MdOutlineQrCode2 } from "react-icons/md"
 import { formatPrecio } from "@/features/tienda/utils/utils"
@@ -25,27 +24,39 @@ const METODOS = [
   },
 ]
 
-const COSTOS_ADICIONALES = [
-  { label: "Envío",     valor: 0, tipo: "gratis"   },
-  { label: "Impuestos", valor: 0, tipo: "incluido" },
-]
-
 export function ResumenPedido({
   gruposEmprendedora, total, cupon, cuponError,
   codigoCupon, setCodigoCupon, onAplicarCupon,
   nota, setNota, confirmando, token,
   onConfirmar, onVaciar,
   metodoPago, setMetodoPago,
-  metodosDisponibles, cargandoMetodos,  // 🆕
+  metodosDisponibles, cargandoMetodos,
 }) {
-  const totalConDescuento = () => {
-    if (!cupon) return total
-    if (cupon.tipo === "porcentaje") return total * (1 - cupon.valor / 100)
-    if (cupon.tipo === "valor_fijo") return Math.max(0, total - cupon.valor)
-    return total
+  // 🆕 descuento calculado por grupo (id_seccion), no sobre el total global
+  const idsSeccionCupon = cupon?.secciones_aplicables || []
+
+  const calcularTotales = () => {
+    let totalFinal = 0
+    let descuentoTotal = 0
+
+    gruposEmprendedora.forEach((grupo) => {
+      let sub = grupo.subtotal
+      if (cupon && idsSeccionCupon.includes(grupo.id_seccion)) {
+        const desc = cupon.tipo === "porcentaje"
+          ? sub * (Number(cupon.valor) / 100)
+          : Math.min(Number(cupon.valor), sub) // no puede descontar más que el subtotal de esa tienda
+        descuentoTotal += desc
+        sub -= desc
+      }
+      totalFinal += sub
+    })
+
+    return { totalFinal, descuentoTotal }
   }
 
-  // 🆕 Filtra métodos según disponibilidad
+  const { totalFinal, descuentoTotal } = calcularTotales()
+  const cuponAplica = descuentoTotal > 0
+
   const metodosFiltrados = metodosDisponibles
     ? METODOS.filter(m => metodosDisponibles[m.id])
     : METODOS
@@ -55,24 +66,11 @@ export function ResumenPedido({
       <h3 className="resumen-titulo">Resumen del pedido</h3>
 
       {gruposEmprendedora.map(grupo => (
-        <div key={grupo.nombre} className="resumen-linea">
+        <div key={grupo.id_seccion ?? grupo.nombre} className="resumen-linea">
           <span>{grupo.nombre} ({grupo.items.length} item{grupo.items.length !== 1 ? "s" : ""})</span>
           <span>{formatPrecio(grupo.subtotal)}</span>
         </div>
       ))}
-
-      <hr className="resumen-divider" />
-
-      {/* <div className="resumen-costos">
-        {COSTOS_ADICIONALES.map(costo => (
-          <div key={costo.label} className="resumen-linea resumen-costo-adicional">
-            <span>{costo.label}</span>
-            <span className={`resumen-costo-valor ${costo.tipo}`}>
-              {costo.tipo === "gratis" ? "Gratis" : costo.tipo === "incluido" ? "Incluido" : formatPrecio(costo.valor)}
-            </span>
-          </div>
-        ))}
-      </div> */}
 
       <hr className="resumen-divider" />
 
@@ -86,26 +84,28 @@ export function ResumenPedido({
           <FiTag size={12} /> Aplicar
         </button>
       </div>
+
       {cupon && (
         <div className="cupon-ok">
-          <FiCheck size={12} /> -{cupon.tipo === "porcentaje" ? `${cupon.valor}%` : formatPrecio(cupon.valor)}
+          <FiCheck size={12} /> Cupón {cupon.codigo} —{" "}
+          {cupon.tipo === "porcentaje" ? `${cupon.valor}%` : formatPrecio(cupon.valor)}
         </div>
       )}
       {cuponError && <div className="cupon-error">{cuponError}</div>}
 
-      {cupon && (
+      {cuponAplica && (
         <>
           <div className="resumen-linea"><span>Subtotal</span><span>{formatPrecio(total)}</span></div>
           <div className="resumen-linea descuento">
             <span>Descuento</span>
-            <span>-{formatPrecio(total - totalConDescuento())}</span>
+            <span>-{formatPrecio(descuentoTotal)}</span>
           </div>
         </>
       )}
 
       <div className="resumen-linea total">
         <span>Total</span>
-        <span>{formatPrecio(totalConDescuento())}</span>
+        <span>{formatPrecio(totalFinal)}</span>
       </div>
 
       {/* ── Método de pago ── */}
@@ -156,7 +156,7 @@ export function ResumenPedido({
           : cargandoMetodos ? "Cargando..."
           : confirmando ? "Confirmando..."
           : !metodoPago ? "Selecciona un método de pago"
-          : `Confirmar ${gruposEmprendedora.length > 1 ? `${gruposEmprendedora.length} pedidos` : "pedido"} — ${formatPrecio(totalConDescuento())}`}
+          : `Confirmar ${gruposEmprendedora.length > 1 ? `${gruposEmprendedora.length} pedidos` : "pedido"} — ${formatPrecio(totalFinal)}`}
       </button>
 
       <button className="btn-vaciar-carrito" onClick={onVaciar}>Vaciar carrito</button>

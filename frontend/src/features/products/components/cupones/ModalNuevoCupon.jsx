@@ -3,7 +3,6 @@ import {
   FiCalendar, FiAlertCircle, FiClock, FiPlus
 } from "react-icons/fi"
 
-
 import "@/infrastructure/css/products-emprend/cupones/ModalNuevoCupon.css"
 
 export function ModalNuevoCupon({ form, setForm, formErrors, guardando, onCrear, onCerrar }) {
@@ -11,7 +10,7 @@ export function ModalNuevoCupon({ form, setForm, formErrors, guardando, onCrear,
     <div className="cupon-modal-overlay" onClick={onCerrar}>
       <div className="cupon-modal" onClick={e => e.stopPropagation()}>
         <div className="cupon-modal-header">
-          <FiGift size={20} />
+          <div className="cupon-modal-header-icon"><FiGift size={18} /></div>
           <h3>Nuevo Cupón</h3>
         </div>
 
@@ -67,6 +66,16 @@ export function ModalNuevoCupon({ form, setForm, formErrors, guardando, onCrear,
 
         <div className="cupon-modal-row">
           <div className="cupon-modal-field">
+            <label>Fecha de inicio <span className="cupon-modal-hint">(opcional)</span></label>
+            <div className="cupon-input-icon-wrapper">
+              <FiCalendar size={14} className="cupon-input-icon" />
+              <input type="date" value={form.fecha_inicio} className="with-icon"
+                onChange={e => setForm(prev => ({ ...prev, fecha_inicio: e.target.value }))}
+              />
+            </div>
+            <span className="cupon-modal-hint-text">Si la dejas vacía, arranca de inmediato</span>
+          </div>
+          <div className="cupon-modal-field">
             <label>Fecha de vencimiento <span className="cupon-modal-hint">(opcional)</span></label>
             <div className="cupon-input-icon-wrapper">
               <FiCalendar size={14} className="cupon-input-icon" />
@@ -74,21 +83,25 @@ export function ModalNuevoCupon({ form, setForm, formErrors, guardando, onCrear,
                 onChange={e => setForm(prev => ({ ...prev, fecha_fin: e.target.value }))}
               />
             </div>
+            {formErrors.fecha_fin && (
+              <span className="cupon-modal-error"><FiAlertCircle size={11} /> {formErrors.fecha_fin}</span>
+            )}
           </div>
-          <div className="cupon-modal-field">
-            <label>Límite de usos <span className="cupon-modal-hint">(opcional)</span></label>
-            <input type="number" min="1" value={form.limite_usos}
-              onChange={e => setForm(prev => ({ ...prev, limite_usos: e.target.value }))}
-              placeholder="Sin límite"
-            />
-          </div>
+        </div>
+
+        <div className="cupon-modal-field">
+          <label>Límite de usos <span className="cupon-modal-hint">(opcional)</span></label>
+          <input type="number" min="1" value={form.limite_usos}
+            onChange={e => setForm(prev => ({ ...prev, limite_usos: e.target.value }))}
+            placeholder="Sin límite"
+          />
         </div>
 
         <div className="cupon-modal-buttons">
           <button className="btn-cancelar-cupon" onClick={onCerrar}>Cancelar</button>
           <button className="btn-crear-cupon" onClick={onCrear} disabled={guardando}>
             {guardando
-              ? <><FiClock size={14} /> Creando...</>
+              ? <><FiClock size={14} className="spin" /> Creando...</>
               : <><FiPlus  size={14} /> Crear cupón</>
             }
           </button>

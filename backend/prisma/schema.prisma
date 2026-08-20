@@ -24,6 +24,7 @@ model User {
   pedidos      Pedido[]
   pagos Pago[]
   pagoLogs PagoLog[]
+  destacadoLogs DestacadoLog[]
   productosCreados  Producto[] @relation("ProductoCreador")
 
 
@@ -34,6 +35,8 @@ model User {
   notificaciones Notificacion[]
   favoritos Favorito[]
   movimientos MovimientoInventario[]
+  alianzaLogs AlianzaLog[]
+  cuponUsos CuponUso[]
   foto_documento       String?
   carrito              Carrito?
 }
@@ -98,6 +101,10 @@ model Producto {
   tamano_imagen             Int?
   stock_minimo              Int      @default(0)
   ultima_modificacion_stock DateTime @default(now()) @updatedAt
+  solicitud_pendiente Boolean   @default(false)   // emprendedora solicitó, esperando decisión
+  categoria_destacado String?                     // "nuevos" | "mas_vendidos" | "en_oferta" | null (manual)
+  fecha_solicitud     DateTime?                   
+  fecha_decision      DateTime? 
 
   seccion     Seccion         @relation(fields: [id_seccion], references: [id_seccion])
   creador    User?       @relation("ProductoCreador", fields: [id_creador], references: [id])
@@ -112,6 +119,8 @@ model Producto {
   carritoItems CarritoItem[]
 
   reglas_descuento ReglaDescuento[]
+  destacadoLogs    DestacadoLog[]     // relación inversa
+  destacadoEventos DestacadoEvento[]
 
   @@map("producto")
 }
@@ -150,6 +159,10 @@ model Pedido {
   total       Decimal  @db.Decimal(10, 3)
   fecha       DateTime @default(now())
   nota        String?
+  id_cupon        Int?
+  descuento_cupon Decimal? @db.Decimal(10, 3)
+
+  cuponUso CuponUso? 
 
   liquidacion Liquidacion?
 
@@ -190,6 +203,8 @@ model Alianza {
   creador       User                  @relation("AlianzaCreador", fields: [creada_por], references: [id])
   participantes AlianzaParticipante[]
   secciones     Seccion[]
+  logs    AlianzaLog[]     
+  eventos AlianzaEvento[] 
 
   @@map("alianzas")
 }
@@ -222,8 +237,23 @@ model Cupon {
   usos         Int       @default(0)
 
   usuario User @relation(fields: [id_usuario], references: [id])
+  usosLog CuponUso[]
 
   @@map("cupones")
+}
+model CuponUso {
+  id_uso          Int      @id @default(autoincrement())
+  id_cupon        Int
+  id_cliente      Int
+  id_pedido       Int      @unique
+  monto_descuento Decimal  @db.Decimal(10, 3)
+  fecha           DateTime @default(now())
+
+  cupon   Cupon  @relation(fields: [id_cupon], references: [id_cupon])
+  cliente User   @relation(fields: [id_cliente], references: [id])
+  pedido  Pedido @relation(fields: [id_pedido], references: [id_pedido])
+
+  @@map("cupon_usos")
 }
 
 model Comentario {
@@ -401,4 +431,63 @@ model Factura {
   pedido Pedido @relation(fields: [id_pedido], references: [id_pedido])
 
   @@map("facturas")
+}
+
+model ConfiguracionDestacados {
+  id               Int      @id @default(autoincrement())
+  dias_nuevo       Int      @default(7)   // RN-065: umbral configurable por admin
+  top_mas_vendidos Int      @default(10)
+  actualizado      DateTime @updatedAt
+
+  @@map("configuracion_destacados")
+}
+
+model DestacadoLog {
+  id_log      Int      @id @default(autoincrement())
+  id_producto Int
+  id_usuario  Int?
+  evento      String   // "solicitado" | "aprobado" | "rechazado" | "desactivado"
+  detalle     String?
+  fecha       DateTime @default(now())
+
+  producto Producto @relation(fields: [id_producto], references: [id_producto])
+  usuario  User?    @relation(fields: [id_usuario], references: [id])
+
+  @@map("destacado_logs")
+}
+
+model DestacadoEvento {
+  id_evento   Int      @id @default(autoincrement())
+  id_producto Int
+  tipo        String   // "visita" | "clic"
+  fecha       DateTime @default(now())
+
+  producto Producto @relation(fields: [id_producto], references: [id_producto])
+
+  @@map("destacado_eventos")
+}
+
+model AlianzaLog {
+  id_log      Int      @id @default(autoincrement())
+  id_alianza  Int
+  id_usuario  Int?
+  evento      String   // "creada" | "autorizada" | "pendiente_aprobacion" | "aprobada" | "rechazada" | "desactivada" | "finalizada" | "vencida"
+  detalle     String?
+  fecha       DateTime @default(now())
+
+  alianza Alianza @relation(fields: [id_alianza], references: [id_alianza])
+  usuario User?   @relation(fields: [id_usuario], references: [id])
+
+  @@map("alianza_logs")
+}
+
+model AlianzaEvento {
+  id_evento  Int      @id @default(autoincrement())
+  id_alianza Int
+  tipo       String   // "visita" | "clic"
+  fecha      DateTime @default(now())
+
+  alianza Alianza @relation(fields: [id_alianza], references: [id_alianza])
+
+  @@map("alianza_eventos")
 }

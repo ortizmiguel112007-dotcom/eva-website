@@ -49,7 +49,7 @@ export function SeccionComentarios({
       await onSubmitComentario({ calificacion: calForm, texto: textoForm })
       setTextoForm(""); setCalForm(0); setMostrarForm(false)
     } catch (err) {
-      setErrorCom(err.message || "Error al enviar")
+      setErrorCom(err.response?.data?.error || err.message || "Error al enviar")
     } finally { setEnviandoCom(false) }
   }
 
