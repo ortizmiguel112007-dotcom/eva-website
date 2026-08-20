@@ -1,79 +1,90 @@
-import { FiCalendar, FiUserCheck, FiFlag, FiUsers } from "react-icons/fi"
-import { formatFecha } from "@/features/tienda/utils/utils"
-import { getAvatarGradient, getInitials } from "@/features/tienda/utils/avatar"
+import { FiUsers, FiClock, FiCheck, FiX, FiTrash2, FiClipboard, FiBarChart2 } from "react-icons/fi"
 import "@/infrastructure/css/products-emprend/alianzas/AlianzaCard.css"
 
-export function AlianzaCard({ alianza, userId, onAutorizar, onFinalizar, onVerTienda }) {
-  const miParticipacion = alianza.participantes.find(p => p.id_usuario === userId)
-  const puedoAutorizar  = miParticipacion && !miParticipacion.autorizado
-  const puedoFinalizar  = alianza.creada_por === userId && alianza.estado !== "finalizada"
-  const esActiva        = alianza.estado === "activa"
+const ESTADO_INFO = {
+  pendiente:            { label: "Esperando autorización", color: "#f59e0b", bg: "#fffbeb" },
+  pendiente_aprobacion: { label: "Esperando aprobación admin", color: "#7c3aed", bg: "#f5f3ff" },
+  activa:               { label: "Activa", color: "#16a34a", bg: "#f0fdf4" },
+  rechazada:            { label: "Rechazada", color: "#ef4444", bg: "#fef2f2" },
+  desactivada:          { label: "Desactivada", color: "#ef4444", bg: "#fef2f2" },
+  finalizada:           { label: "Finalizada", color: "#64748b", bg: "#f8fafc" },
+}
+
+export function AlianzaCard({
+  alianza,
+  usuarioActualId,
+  contexto = "emprendedora", // "emprendedora" | "admin"
+  onAutorizar,
+  onFinalizar,
+  onAprobar,
+  onRechazar,
+  onDesactivar,
+  onVerHistorial,
+  onVerMetricas,
+}) {
+  const estado = ESTADO_INFO[alianza.estado] || { label: alianza.estado, color: "#64748b", bg: "#f8fafc" }
+  const miParticipacion = alianza.participantes?.find(p => p.id_usuario === usuarioActualId)
+  const esCreador = alianza.creada_por === usuarioActualId
+  const yaAutorice = miParticipacion?.autorizado
 
   return (
-    <div className={`alianza-card ${alianza.estado}`}>
-      <div className="alianza-card-header">
+    <div className="ac-card">
+      <div className="ac-card-header">
         <div>
-          <h3 className="alianza-nombre">{alianza.nombre}</h3>
-          {alianza.descripcion && (
-            <p className="alianza-descripcion">{alianza.descripcion}</p>
-          )}
-        </div>
-        <span className={`alianza-badge ${alianza.estado}`}>
-          {alianza.estado === "pendiente" ? "Pendiente"
-           : alianza.estado === "activa"  ? "Activa" : "Finalizada"}
-        </span>
-      </div>
-
-      <div className="alianza-participantes">
-        <span className="alianza-participantes-title">
-          Participantes ({alianza.participantes.length})
-        </span>
-        {alianza.participantes.map(p => {
-          const [c1, c2] = getAvatarGradient(p.usuario.nombre)
-          return (
-            <div key={p.id_usuario} className="alianza-participante">
-              <div className="alianza-participante-left">
-                <div className="alianza-avatar"
-                  style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                  {getInitials(p.usuario.nombre)}
-                </div>
-                <span className="alianza-participante-nombre">{p.usuario.nombre}</span>
-              </div>
-              <span className={`alianza-participante-estado ${p.autorizado ? "ok" : "pendiente"}`}>
-                {p.autorizado ? "✓ Autorizado" : "⏳ Pendiente"}
-              </span>
-            </div>
-          )
-        })}
-      </div>
-
-      <div className="alianza-fechas">
-        <div className="alianza-fecha-item">
-          <FiCalendar size={12} />
-          <span>Inicio: {formatFecha(alianza.fecha_inicio)}</span>
-        </div>
-        {alianza.fecha_fin && (
-          <div className="alianza-fecha-item">
-            <FiCalendar size={12} />
-            <span>Fin: {formatFecha(alianza.fecha_fin)}</span>
+          <div className="ac-card-titulo-row">
+            <FiUsers size={15} color="#7c3aed" />
+            <strong>{alianza.nombre}</strong>
           </div>
-        )}
+          {alianza.descripcion && <p className="ac-card-desc">{alianza.descripcion}</p>}
+        </div>
+        <span className="ac-badge" style={{ color: estado.color, background: estado.bg }}>
+          {estado.label}
+        </span>
       </div>
 
-      <div className="alianza-card-actions">
-        {puedoAutorizar && (
-          <button className="btn-autorizar" onClick={() => onAutorizar(alianza.id_alianza)}>
-            <FiUserCheck size={13} /> Autorizar participación
+      <div className="ac-card-participantes">
+        {alianza.participantes?.map(p => (
+          <span key={p.id_usuario} className={`ac-participante ${p.autorizado ? "ac-participante--ok" : ""}`}>
+            {p.usuario?.nombre} {p.autorizado ? <FiCheck size={11} /> : <FiClock size={11} />}
+          </span>
+        ))}
+      </div>
+
+      <div className="ac-card-acciones">
+        {contexto === "emprendedora" && alianza.estado === "pendiente" && !yaAutorice && (
+          <button className="ac-btn ac-btn--ok" onClick={() => onAutorizar(alianza)}>
+            <FiCheck size={13} /> Autorizar participación
           </button>
         )}
-        {puedoFinalizar && (
-          <button className="btn-finalizar" onClick={() => onFinalizar(alianza.id_alianza)}>
-            <FiFlag size={13} /> Finalizar
+        {contexto === "emprendedora" && alianza.estado === "activa" && esCreador && (
+          <button className="ac-btn ac-btn--danger" onClick={() => onFinalizar(alianza)}>
+            <FiTrash2 size={13} /> Finalizar alianza
           </button>
         )}
-        {esActiva && (
-          <button className="btn-ver-tienda-conjunta" onClick={() => onVerTienda(alianza.id_alianza)}>
-            <FiUsers size={13} /> Ver tienda conjunta
+        {contexto === "emprendedora" && alianza.estado === "activa" && (
+          <button className="ac-btn ac-btn--ghost" onClick={() => onVerMetricas(alianza)}>
+            <FiBarChart2 size={13} /> Ver métricas
+          </button>
+        )}
+
+        {contexto === "admin" && alianza.estado === "pendiente_aprobacion" && (
+          <>
+            <button className="ac-btn ac-btn--ok" onClick={() => onAprobar(alianza)}>
+              <FiCheck size={13} /> Aprobar
+            </button>
+            <button className="ac-btn ac-btn--danger" onClick={() => onRechazar(alianza)}>
+              <FiX size={13} /> Rechazar
+            </button>
+          </>
+        )}
+        {contexto === "admin" && alianza.estado === "activa" && (
+          <button className="ac-btn ac-btn--danger" onClick={() => onDesactivar(alianza)}>
+            <FiTrash2 size={13} /> Desactivar
+          </button>
+        )}
+        {contexto === "admin" && (
+          <button className="ac-btn ac-btn--ghost" onClick={() => onVerHistorial(alianza)}>
+            <FiClipboard size={13} /> Historial
           </button>
         )}
       </div>

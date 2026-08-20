@@ -1,146 +1,118 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import axios from "axios"
 import { useAuth } from "@/core/context/AuthConten"
-import { alianzaService } from "@/features/products/services/alianza.service"
+import { FiUsers, FiPlus, FiX } from "react-icons/fi"
 
-import { MetricasAlianzas } from "../components/alianzas/MetricasAlianzas"
-import { AlianzaCard }      from "../components/alianzas/AlianzaCard"
+import { AlianzaCard } from "../components/alianzas/AlianzaCard"
 import { ModalNuevaAlianza } from "../components/alianzas/ModalNuevaAlianza"
+import { MetricasAlianzas } from "../components/alianzas/MetricasAlianzas"
 
-import "@/infrastructure/css/products-emprend/alianzas/Alianzas.css"
+import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const FORM_INICIAL = { nombre: "", descripcion: "", fecha_fin: "", id_invitada: "" }
+const BASE = "http://localhost:3000"
 
 export default function Alianzas() {
-  const { user }  = useAuth()
-  const navigate  = useNavigate()
+  const { token, user } = useAuth()
+  const headers = { Authorization: `Bearer ${token}` }
 
-  const [alianzas, setAlianzas]           = useState([])
-  const [emprendedoras, setEmprendedoras] = useState([])
-  const [cargando, setCargando]           = useState(true)
-  const [modal, setModal]                 = useState(false)
-  const [guardando, setGuardando]         = useState(false)
-  const [toast, setToast]                 = useState(null)
-  const [form, setForm]                   = useState(FORM_INICIAL)
-  const [formErrors, setFormErrors]       = useState({})
+  const [alianzas, setAlianzas] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [metricasAlianza, setMetricasAlianza] = useState(null)
+  const [toast, setToast] = useState(null)
 
-  useEffect(() => {
-    Promise.all([alianzaService.listar(), alianzaService.listarEmprendedoras()])
-      .then(([dataAlianzas, dataEmprendedoras]) => {
-        setAlianzas(dataAlianzas)
-        setEmprendedoras(dataEmprendedoras)
-      })
-      .catch(console.error)
-      .finally(() => setCargando(false))
-  }, [])
+  const cargar = async () => {
+    setCargando(true)
+    try {
+      const res = await axios.get(`${BASE}/api/alianzas`, { headers })
+      setAlianzas(res.data)
+    } catch (err) { console.error(err) }
+    finally { setCargando(false) }
+  }
 
-  const mostrarToast = msg => {
-    setToast(msg)
+  useEffect(() => { cargar() }, [])
+
+  const mostrarToast = (msg, tipo = "ok") => {
+    setToast({ msg, tipo })
     setTimeout(() => setToast(null), 3000)
   }
 
-  const validar = () => {
-    const errors = {}
-    if (!form.nombre.trim())  errors.nombre     = "El nombre es obligatorio"
-    if (!form.id_invitada)    errors.id_invitada = "Debes seleccionar una emprendedora"
-    setFormErrors(errors)
-    return Object.keys(errors).length === 0
+  const handleAutorizar = async (alianza) => {
+    try {
+      await axios.put(`${BASE}/api/alianzas/${alianza.id_alianza}/autorizar`, {}, { headers })
+      mostrarToast("Autorización registrada")
+      cargar()
+    } catch (err) { mostrarToast(err.response?.data?.error || "Error", "error") }
   }
 
-  const handleCrear = async () => {
-    if (!validar()) return
-    setGuardando(true)
+  const handleFinalizar = async (alianza) => {
+    if (!window.confirm(`¿Finalizar la alianza "${alianza.nombre}"?`)) return
     try {
-      await alianzaService.crear({
-        nombre:      form.nombre,
-        descripcion: form.descripcion,
-        fecha_fin:   form.fecha_fin || null,
-        id_invitada: Number(form.id_invitada),
-      })
-      setAlianzas(await alianzaService.listar())
-      setModal(false)
-      setForm(FORM_INICIAL)
-      mostrarToast("Alianza creada correctamente")
-    } catch (err) {
-      mostrarToast(err.response?.data?.error || "Error al crear alianza")
-    } finally { setGuardando(false) }
-  }
-
-  const handleAutorizar = async (id_alianza) => {
-    try {
-      const res = await alianzaService.autorizar(id_alianza)
-      setAlianzas(prev => prev.map(a =>
-        a.id_alianza === id_alianza
-          ? { ...a, estado: res.activa ? "activa" : a.estado,
-              participantes: a.participantes.map(p =>
-                p.id_usuario === user.id ? { ...p, autorizado: true } : p
-              )}
-          : a
-      ))
-      mostrarToast(res.activa ? "¡Alianza activada!" : "Autorización registrada")
-    } catch (err) {
-      mostrarToast(err.response?.data?.error || "Error al autorizar")
-    }
-  }
-
-  const handleFinalizar = async (id_alianza) => {
-    try {
-      await alianzaService.finalizar(id_alianza)
-      setAlianzas(prev => prev.map(a =>
-        a.id_alianza === id_alianza ? { ...a, estado: "finalizada" } : a
-      ))
+      await axios.put(`${BASE}/api/alianzas/${alianza.id_alianza}/finalizar`, {}, { headers })
       mostrarToast("Alianza finalizada")
-    } catch (err) {
-      mostrarToast(err.response?.data?.error || "Error al finalizar")
-    }
+      cargar()
+    } catch (err) { mostrarToast(err.response?.data?.error || "Error", "error") }
   }
 
-  if (cargando) return <div className="alianzas-container"><p>Cargando alianzas...</p></div>
+  const handleVerMetricas = async (alianza) => {
+    try {
+      const res = await axios.get(`${BASE}/api/alianzas/${alianza.id_alianza}/metricas`, { headers })
+      setMetricasAlianza({ nombre: alianza.nombre, datos: res.data })
+    } catch (err) { mostrarToast("Error al obtener métricas", "error") }
+  }
+
+  if (cargando) return <div className="pagos-loading">Cargando alianzas...</div>
 
   return (
-    <div className="alianzas-container">
-      <div className="alianzas-header">
-        <h1>Alianzas Promocionales</h1>
-        <button className="btn-nueva-alianza" onClick={() => setModal(true)}>
-          + Nueva Alianza
+    <div className="pagos-page">
+      <div className="pagos-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1>Alianzas Promocionales</h1>
+          <p>Colabora con otras emprendedoras en campañas cruzadas</p>
+        </div>
+        <button className="dc-btn dc-btn--solicitar" onClick={() => setModalAbierto(true)}>
+          <FiPlus size={13} /> Nueva alianza
         </button>
       </div>
 
-      <MetricasAlianzas alianzas={alianzas} />
-
-      <div className="alianzas-grid">
-        {alianzas.length === 0 ? (
-          <div className="alianzas-empty">
-            <p>No tienes alianzas todavía</p>
-            <button className="btn-nueva-alianza" onClick={() => setModal(true)}>
-              Crear primera alianza
-            </button>
-          </div>
-        ) : alianzas.map(alianza => (
-          <AlianzaCard
-            key={alianza.id_alianza}
-            alianza={alianza}
-            userId={user.id}
-            onAutorizar={handleAutorizar}
-            onFinalizar={handleFinalizar}
-            onVerTienda={id => navigate(`/alianza/${id}`)}
-          />
-        ))}
-      </div>
-
-      {modal && (
-        <ModalNuevaAlianza
-          form={form}
-          setForm={setForm}
-          formErrors={formErrors}
-          emprendedoras={emprendedoras}
-          guardando={guardando}
-          onCrear={handleCrear}
-          onCerrar={() => setModal(false)}
-        />
+      {alianzas.length === 0 ? (
+        <div className="pagos-empty">
+          <FiUsers size={40} color="#cbd5e1" />
+          <p>Aún no tienes alianzas — crea una para empezar a colaborar</p>
+        </div>
+      ) : (
+        <div className="pagos-lista">
+          {alianzas.map((a) => (
+            <AlianzaCard
+              key={a.id_alianza}
+              alianza={a}
+              usuarioActualId={user?.id}
+              contexto="emprendedora"
+              onAutorizar={handleAutorizar}
+              onFinalizar={handleFinalizar}
+              onVerMetricas={handleVerMetricas}
+            />
+          ))}
+        </div>
       )}
 
-      {toast && <div className="alianzas-toast">{toast}</div>}
+      <ModalNuevaAlianza abierto={modalAbierto} onCerrar={() => setModalAbierto(false)} onCreada={cargar} token={token} />
+
+      {metricasAlianza && (
+        <div className="pagos-modal-overlay" onClick={() => setMetricasAlianza(null)}>
+          <div className="pagos-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pagos-modal-header">
+              <h3>Métricas — {metricasAlianza.nombre}</h3>
+              <button className="pagos-modal-cerrar" onClick={() => setMetricasAlianza(null)}><FiX size={18} /></button>
+            </div>
+            <div className="pagos-modal-body">
+              <MetricasAlianzas metricas={metricasAlianza.datos} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && <div className={`pagos-toast ${toast.tipo}`}>{toast.msg}</div>}
     </div>
   )
 }

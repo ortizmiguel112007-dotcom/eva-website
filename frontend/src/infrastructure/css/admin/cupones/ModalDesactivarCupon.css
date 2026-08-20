@@ -1,0 +1,136 @@
+.acd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: acd-fade 0.2s ease;
+}
+
+@keyframes acd-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.acd-modal {
+  background: #fff;
+  border-radius: 1.1rem;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  animation: acd-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  text-align: center;
+}
+
+@keyframes acd-pop {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.acd-icon {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acd-modal h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+}
+
+.acd-modal p {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 1.25rem;
+}
+.acd-modal p strong { color: #0f172a; }
+
+.acd-field {
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.acd-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.acd-hint {
+  font-weight: 500;
+  color: #94a3b8;
+  font-size: 0.72rem;
+}
+
+.acd-field textarea {
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #0f172a;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.acd-field textarea:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.acd-buttons {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.acd-btn-cancelar,
+.acd-btn-confirmar {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.acd-btn-cancelar {
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #64748b;
+}
+.acd-btn-cancelar:hover:not(:disabled) { background: #f8fafc; }
+
+.acd-btn-confirmar {
+  border: none;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+}
+.acd-btn-confirmar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+.acd-btn-cancelar:disabled,
+.acd-btn-confirmar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

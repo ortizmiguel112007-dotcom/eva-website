@@ -23,11 +23,12 @@ export default function Carrito() {
     total,
     totalItems,
     cargarCarrito,
+    cupon,      
+   setCupon,
   } = useCarrito();
 
   const [nota, setNota] = useState("");
   const [codigoCupon, setCodigoCupon] = useState("");
-  const [cupon, setCupon] = useState(null);
   const [cuponError, setCuponError] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const [pedidosExito, setPedidosExito] = useState(null);
@@ -35,19 +36,22 @@ export default function Carrito() {
   const [toast, setToast] = useState(null);
   const [metodoPago, setMetodoPago] = useState("");
 
-
   const mostrarToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   };
 
+  // 🆕 agrupado por id_seccion (no por nombre) — así coincide 1:1 con
+  // secciones_aplicables que devuelve el backend y con cómo pedido.controller
+  // parte el carrito en pedidos separados
   const gruposEmprendedora = useMemo(() => {
     const grupos = {};
     items.forEach((item) => {
-      const key = item.emprendedora || "EVA";
+      const key = item.id_seccion ?? item.emprendedora ?? "EVA";
       if (!grupos[key])
         grupos[key] = {
-          nombre: key,
+          nombre: item.emprendedora || "EVA",
+          id_seccion: item.id_seccion,
           id_emprendedora: item.id_emprendedora,
           items: [],
           subtotal: 0,
@@ -58,10 +62,10 @@ export default function Carrito() {
     return Object.values(grupos);
   }, [items]);
 
-  // Ahora sí, después del useMemo:
   const { metodosDisponibles, cargando: cargandoMetodos } =
-  useMetodosDisponibles(token);
+    useMetodosDisponibles(token);
 
+  // 🆕 valida contra secciones_aplicables antes de aceptar el cupón
   const handleAplicarCupon = async () => {
     if (!codigoCupon.trim()) return;
     setCuponError("");
@@ -72,7 +76,19 @@ export default function Carrito() {
         { codigo: codigoCupon },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setCupon(res.data.cupon);
+      const data = res.data;
+
+      const idsSeccionCarrito = gruposEmprendedora.map((g) => g.id_seccion);
+      const aplica = data.secciones_aplicables?.some((id) =>
+        idsSeccionCarrito.includes(id),
+      );
+
+      if (!aplica) {
+        setCuponError("Este cupón no aplica a los productos de tu carrito");
+        return;
+      }
+
+      setCupon(data);
     } catch (err) {
       setCuponError(err.response?.data?.error || "Cupón inválido");
     }
@@ -106,7 +122,7 @@ export default function Carrito() {
       );
       await vaciar();
       await cargarCarrito();
-      setPagoExito(res.data.pago);      
+      setPagoExito(res.data.pago);
       setPedidosExito(res.data.pedidos);
     } catch (err) {
       mostrarToast(err.response?.data?.error || "Error al confirmar pedido");
@@ -121,7 +137,7 @@ export default function Carrito() {
         pedidos={pedidosExito}
         pago={pagoExito}
         token={token}
-        metodoPago={metodoPago} // para mostrar instrucciones
+        metodoPago={metodoPago}
       />
     );
 
@@ -152,7 +168,7 @@ export default function Carrito() {
             <div className="carrito-items">
               {gruposEmprendedora.map((grupo) => (
                 <CarritoGrupo
-                  key={grupo.nombre}
+                  key={grupo.id_seccion ?? grupo.nombre}
                   grupo={grupo}
                   onCambiarCantidad={cambiarCantidad}
                   onQuitar={quitar}

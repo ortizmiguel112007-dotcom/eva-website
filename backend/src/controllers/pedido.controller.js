@@ -139,7 +139,7 @@ export const obtenerPedido = async (req, res) => {
 export const crearPedido = async (req, res) => {
   try {
     const id_cliente = req.user.id;
-    const { items, metodo_pago, nota } = req.body;
+    const { items, metodo_pago, nota,id_cupon} = req.body;
 
     if (!items || items.length === 0)
       return res.status(400).json({ error: "El carrito está vacío" });
@@ -168,6 +168,28 @@ export const crearPedido = async (req, res) => {
         return res.status(400).json({ error: `Stock insuficiente para "${prod.nombre_producto}"` });
     }
 
+    // RF-097/RN-085: validar el cupón ANTES de la transacción, con reglas de negocio completas
+    let cuponValidado = null
+    let idsSeccionCupon = []
+    if (id_cupon) {
+      const cupon = await prisma.cupon.findUnique({ where: { id_cupon: Number(id_cupon) } })
+      if (!cupon) return res.status(404).json({ error: "Cupón no encontrado" })
+      if (!cupon.activo) return res.status(400).json({ error: "Cupón inactivo" })
+      if (cupon.fecha_inicio && new Date() < cupon.fecha_inicio)
+        return res.status(400).json({ error: "Este cupón aún no está vigente" })
+      if (cupon.fecha_fin && new Date() > cupon.fecha_fin)
+        return res.status(400).json({ error: "Cupón expirado" })
+      if (cupon.limite_usos && cupon.usos >= cupon.limite_usos)
+        return res.status(400).json({ error: "Cupón agotado" })
+
+      const emprendedoraCupon = await prisma.emprendedora.findUnique({
+        where: { id_usuario: cupon.id_usuario },
+        include: { secciones: { select: { id_seccion: true } } },
+      })
+      idsSeccionCupon = emprendedoraCupon?.secciones.map((s) => s.id_seccion) || []
+      cuponValidado = cupon
+    }
+
     const grupos = {};
     for (const item of items) {
       const prod = productos.find((p) => p.id_producto === item.id_producto);
@@ -182,28 +204,40 @@ export const crearPedido = async (req, res) => {
       grupos[id_seccion].items.push({ ...item, producto: prod });
     }
 
-    const resultado = await prisma.$transaction(async (tx) => {
-      // 1. Calculamos totales (con descuentos aplicados) antes de crear nada
+     // RN-085 (aclaración de scope): si el cliente aplicó un cupón pero ningún
+    // producto del carrito pertenece a la tienda que lo emitió, se rechaza —
+    // evita que el cliente "aproveche" un cupón que no le corresponde a esa compra.
+    if (cuponValidado && !Object.keys(grupos).some((idSeccion) => idsSeccionCupon.includes(Number(idSeccion)))) {
+      return res.status(400).json({ error: "Este cupón no aplica a los productos de tu carrito" })
+    }
+
+   const resultado = await prisma.$transaction(async (tx) => {
       let montoTotal = 0;
+      let descuentoCuponTotal = 0;
+      let idPedidoConCupon = null; // se asigna al grupo que recibe el descuento
       const datosGrupos = [];
 
       for (const grupo of Object.values(grupos)) {
         const itemsConPrecioFinal = await Promise.all(
           grupo.items.map(async (i) => {
-            const descuento = await aplicarDescuento(
-              i.id_producto,
-              i.producto.precio,
-              i.producto.inventario?.cantidad ?? 0,
-            );
-            return {
-              ...i,
-              precioFinal: descuento ? descuento.precio_con_descuento : Number(i.producto.precio),
-            };
+            const descuento = await aplicarDescuento(i.id_producto, i.producto.precio, i.producto.inventario?.cantidad ?? 0);
+            return { ...i, precioFinal: descuento ? descuento.precio_con_descuento : Number(i.producto.precio) };
           }),
         );
-        const total = itemsConPrecioFinal.reduce((acc, i) => acc + i.precioFinal * i.cantidad, 0);
+        let total = itemsConPrecioFinal.reduce((acc, i) => acc + i.precioFinal * i.cantidad, 0);
+
+         // Aplica el cupón SOLO al grupo (tienda) que corresponde
+        let descuentoCupon = 0
+        if (cuponValidado && idsSeccionCupon.includes(grupo.id_seccion)) {
+          descuentoCupon = cuponValidado.tipo === "porcentaje"
+            ? total * (Number(cuponValidado.valor) / 100)
+            : Math.min(Number(cuponValidado.valor), total) // no puede descontar más que el total del grupo
+          total = Math.max(0, total - descuentoCupon)
+          descuentoCuponTotal += descuentoCupon
+        }
+
         montoTotal += total;
-        datosGrupos.push({ ...grupo, itemsConPrecioFinal, total });
+        datosGrupos.push({ ...grupo, itemsConPrecioFinal, total, descuentoCupon });
       }
 
       // 2. RN-026 / RN-053: un solo Pago para toda la compra.
@@ -225,29 +259,24 @@ export const crearPedido = async (req, res) => {
       for (const grupo of datosGrupos) {
         const nuevoPedido = await tx.pedido.create({
           data: {
-            id_cliente,
-            id_seccion: grupo.id_seccion,
-            id_pago: pago.id_pago,
-            nota: nota || null,
-            total: grupo.total,
+            id_cliente, id_seccion: grupo.id_seccion, id_pago: pago.id_pago,
+            nota: nota || null, total: grupo.total,
             estado: esContraentrega ? "en_proceso" : "pendiente_pago",
+            id_cupon: grupo.descuentoCupon > 0 ? cuponValidado.id_cupon : null,
+            descuento_cupon: grupo.descuentoCupon > 0 ? grupo.descuentoCupon : null,
             detalles: {
               create: grupo.itemsConPrecioFinal.map((i) => ({
-                id_producto: i.id_producto,
-                cantidad: i.cantidad,
-                precio_unit: i.precioFinal,
+                id_producto: i.id_producto, cantidad: i.cantidad, precio_unit: i.precioFinal,
               })),
             },
           },
           include: {
-            detalles: {
-              include: { producto: { select: { nombre_producto: true, imagen: true, precio: true } } },
-            },
-            seccion: {
-              include: { emprendedora: { include: { usuario: { select: { nombre: true } } } } },
-            },
+            detalles: { include: { producto: { select: { nombre_producto: true, imagen: true, precio: true } } } },
+            seccion: { include: { emprendedora: { include: { usuario: { select: { nombre: true } } } } } },
           },
         });
+
+        if (grupo.descuentoCupon > 0) idPedidoConCupon = nuevoPedido.id_pedido
 
         for (const item of grupo.items) {
           await tx.inventario.updateMany({
@@ -257,6 +286,16 @@ export const crearPedido = async (req, res) => {
         }
 
         pedidosCreados.push(nuevoPedido);
+      }
+      // RF-097/RN-085: registrar el uso real del cupón, solo si efectivamente se aplicó
+      if (cuponValidado && idPedidoConCupon && descuentoCuponTotal > 0) {
+        await tx.cupon.update({ where: { id_cupon: cuponValidado.id_cupon }, data: { usos: { increment: 1 } } })
+        await tx.cuponUso.create({
+          data: {
+            id_cupon: cuponValidado.id_cupon, id_cliente,
+            id_pedido: idPedidoConCupon, monto_descuento: descuentoCuponTotal,
+          },
+        })
       }
 
       return { pago, pedidosCreados };

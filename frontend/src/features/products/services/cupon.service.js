@@ -30,5 +30,11 @@ export const cuponService = {
   async validar(codigo) {
     const res = await axios.post(`${BASE_URL}/validar`, { codigo }, { headers: getHeaders() })
     return res.data
-  }
+  },
+
+  // RF-098: métricas e historial de uso de un cupón propio
+  async metricas(id) {
+    const res = await axios.get(`${BASE_URL}/${id}/metricas`, { headers: getHeaders() })
+    return res.data
+  },
 }

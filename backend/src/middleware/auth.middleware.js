@@ -1,9 +1,11 @@
-
 import jwt from 'jsonwebtoken'
 
 export const verificarToken = (req, res, next) => {
   const authHeader = req.headers['authorization']
-  const token = authHeader?.split(' ')[1]  // Bearer <token>
+  const tokenHeader = authHeader?.split(' ')[1]  // Bearer <token>
+  const tokenQuery = req.query.token             // fallback para links de descarga directa (ej. exportar PDF/Excel)
+
+  const token = tokenHeader || tokenQuery
 
   if (!token) {
     return res.status(401).json({ error: 'Token requerido' })

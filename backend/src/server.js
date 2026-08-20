@@ -23,7 +23,10 @@ import metodosPagoRouter from "./routes/metodosPago.route.js"
 import liquidacionRoutes from './routes/liquidacion.route.js'
 import facturaRoutes from './routes/factura.route.js'
 import reporteRoutes from './routes/reporte.route.js'
+import { actualizarCategoriasAutomaticas } from './controllers/destacado.controller.js'
+import { vencerAlianzasExpiradas } from './controllers/alianza.controller.js'
 import prisma from './conexion.js'
+import { actualizarEstadoCupones } from './controllers/cupon.controller.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = dirname(__filename)
@@ -73,7 +76,15 @@ app.use(metodosPagoRouter)    // /api/emprendedora/metodos-pago, /api/tienda/:id
 app.use(liquidacionRoutes)
 app.use(facturaRoutes)
 
+setInterval(vencerAlianzasExpiradas, 30 * 60 * 1000)
+vencerAlianzasExpiradas()
+
 app.use(reporteRoutes)
+// RF-078/RN-066: recalcula categorías automáticas (ej. "más vendidos") cada 30 min
+setInterval(actualizarCategoriasAutomaticas, 30 * 60 * 1000)
+actualizarCategoriasAutomaticas() // corre una vez al iniciar el servidor también
+setInterval(actualizarEstadoCupones, 15 * 60 * 1000)
+actualizarEstadoCupones()
 
 app.listen(3000, () => {
   console.log('Servidor corriendo en http://localhost:3000')

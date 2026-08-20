@@ -1,5 +1,134 @@
+.dc-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.dc-card-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f8fafc;
+}
+.dc-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dc-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dc-card-info {
+  flex: 1;
+}
+.dc-card-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: #1e293b;
+}
+
+.dc-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+.dc-badge--destacado {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.dc-badge--pendiente {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.dc-card-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+}
+.dc-categoria-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.dc-card-emprendedora {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+
+.dc-card-acciones {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.dc-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.dc-btn--solicitar {
+  background: #0f172a;
+  color: #fff;
+}
+.dc-btn--aprobar {
+  background: #16a34a;
+  color: #fff;
+}
+.dc-btn--rechazar {
+  background: #fff;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+.dc-btn--historial {
+  background: #fff;
+  color: #475569;
+  border-color: #e5e7eb;
+}
+
+.dc-hint {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+.dc-hint--ok {
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 /* ── DestacadoCard ── */
-.destacado-card {
+/* .destacado-card {
   background: #ffffff;
   border: 2px solid var(--color-border);
   border-radius: 0.85rem;
@@ -19,10 +148,10 @@
 .destacado-card.es-destacado {
   border-color: #fbbf24;
   box-shadow: 0 4px 16px rgba(251, 191, 36, 0.25);
-}
+} */
 
 /* Imagen */
-.product-card-img-wrapper {
+/* .product-card-img-wrapper {
   position: relative;
   width: 100%;
   height: 190px;
@@ -48,10 +177,10 @@
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
-}
+} */
 
 /* Badge tipo */
-.destacado-tipo-badge {
+/* .destacado-tipo-badge {
   position: absolute;
   top: 12px;
   left: 12px;
@@ -65,11 +194,17 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.destacado-tipo-badge.producto { background: var(--color-primary); color: #ffffff; }
-.destacado-tipo-badge.servicio { background: #16a34a;              color: #ffffff; }
+.destacado-tipo-badge.producto {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+.destacado-tipo-badge.servicio {
+  background: #16a34a;
+  color: #ffffff;
+} */
 
 /* Estrella */
-.destacado-star {
+/* .destacado-star {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -82,7 +217,9 @@
   font-size: 1.1rem;
   cursor: pointer;
   border: none;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   z-index: 2;
 }
 
@@ -98,10 +235,12 @@
   border: 1px solid #e5e7eb;
 }
 
-.destacado-star:hover { transform: scale(1.18); }
+.destacado-star:hover {
+  transform: scale(1.18);
+} */
 
 /* Body */
-.destacado-body {
+/* .destacado-body {
   padding: 1rem 1.1rem 1.1rem;
   display: flex;
   flex-direction: column;
@@ -127,10 +266,10 @@
   color: var(--color-primary);
   margin-top: 0.35rem;
   letter-spacing: -0.2px;
-}
+} */
 
 /* Badge destacado */
-.destacado-label {
+/* .destacado-label {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -143,4 +282,4 @@
   border-radius: 999px;
   width: fit-content;
   margin-top: 0.35rem;
-}
+} */

@@ -1,27 +1,26 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
-import { FiSearch, FiX, FiTag, FiPlus } from "react-icons/fi"
+import { FiSearch, FiX, FiTag, FiDownload } from "react-icons/fi"
 
 import { CuponAdminCard }       from "../components/cupones/CuponAdminCard"
-import { ModalNuevoCuponAdmin } from "../components/cupones/ModalNuevoCuponAdmin"
+import { ModalDesactivarCupon } from "../components/cupones/ModalDesactivarCupon"
 import { getHeaders }           from "@/features/admin/utils/utils"
 
 import "@/infrastructure/css/admin/cupones/AdminCupones.css"
 
-const BASE        = "http://localhost:3000"
-const FORM_INICIAL = { codigo: "", tipo: "porcentaje", valor: "", descripcion: "", fecha_fin: "", limite_usos: "" }
+const BASE = "http://localhost:3000"
 
 export default function AdminCupones() {
-  const [cupones, setCupones]     = useState([])
-  const [cargando, setCargando]   = useState(true)
-  const [busqueda, setBusqueda]   = useState("")
-  const [filtro, setFiltro]       = useState("todos")
-  const [toast, setToast]         = useState(null)
-  const [modal, setModal]         = useState(false)
-  const [form, setForm]           = useState(FORM_INICIAL)
-  const [guardando, setGuardando] = useState(false)
+  const [cupones, setCupones]                   = useState([])
+  const [cargando, setCargando]                 = useState(true)
+  const [busqueda, setBusqueda]                 = useState("")
+  const [filtro, setFiltro]                     = useState("todos")
+  const [toast, setToast]                       = useState(null)
+  const [cuponADesactivar, setCuponADesactivar] = useState(null) // RF-101/RN-089
+  const [exportando, setExportando]             = useState(false)
 
   const cargar = () => {
+    setCargando(true)
     axios.get(`${BASE}/api/admin/cupones`, { headers: getHeaders() })
       .then(res => setCupones(Array.isArray(res.data) ? res.data : []))
       .catch(console.error)
@@ -35,40 +34,45 @@ export default function AdminCupones() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  const toggleCupon = async (id, activo) => {
+  // RF-101/RN-089: el admin SOLO puede desactivar cupones ajenos (nunca crear,
+  // editar, reactivar ni eliminar — eso rompería RN-083/RN-088). Usa el
+  // endpoint exclusivo de admin, que además notifica a la emprendedora dueña.
+  const confirmarDesactivar = async (motivo) => {
+    const id = cuponADesactivar.id_cupon
     try {
-      await axios.put(`${BASE}/api/cupones/${id}/toggle`, {}, { headers: getHeaders() })
-      setCupones(prev => prev.map(c => c.id_cupon === id ? { ...c, activo: !activo } : c))
-      mostrarToast(activo ? "Cupón desactivado" : "Cupón activado")
-    } catch { mostrarToast("Error al cambiar estado", "error") }
-  }
-
-  const eliminar = async id => {
-    if (!confirm("¿Eliminar este cupón?")) return
-    try {
-      await axios.delete(`${BASE}/api/cupones/${id}`, { headers: getHeaders() })
-      setCupones(prev => prev.filter(c => c.id_cupon !== id))
-      mostrarToast("Cupón eliminado")
-    } catch { mostrarToast("Error al eliminar", "error") }
-  }
-
-  const crearCupon = async () => {
-    if (!form.codigo || !form.valor) return mostrarToast("Código y valor son obligatorios", "error")
-    setGuardando(true)
-    try {
-      await axios.post(`${BASE}/api/cupones`, {
-        ...form,
-        valor:       Number(form.valor),
-        limite_usos: form.limite_usos ? Number(form.limite_usos) : null,
-        fecha_fin:   form.fecha_fin || null,
-      }, { headers: getHeaders() })
-      mostrarToast("Cupón creado")
-      setModal(false)
-      setForm(FORM_INICIAL)
-      cargar()
+      await axios.put(`${BASE}/api/admin/cupones/${id}/desactivar`, { motivo }, { headers: getHeaders() })
+      setCupones(prev => prev.map(c => c.id_cupon === id ? { ...c, activo: false } : c))
+      mostrarToast("Cupón desactivado y emprendedora notificada")
     } catch (err) {
-      mostrarToast(err.response?.data?.error || "Error al crear", "error")
-    } finally { setGuardando(false) }
+      mostrarToast(err.response?.data?.error || "Error al desactivar", "error")
+    } finally {
+      setCuponADesactivar(null)
+    }
+  }
+
+  // RF-101/RN-086: reportes exportables de todos los cupones de la plataforma
+  const exportar = async (formato) => {
+    setExportando(true)
+    try {
+      const res = await axios.get(`${BASE}/api/admin/cupones/metricas/export`, {
+        params: { formato },
+        responseType: "blob",
+        headers: getHeaders(),
+      })
+      const ext = formato === "excel" ? "xlsx" : "pdf"
+      const url = window.URL.createObjectURL(new Blob([res.data]))
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `metricas_cupones.${ext}`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch {
+      mostrarToast("Error al exportar", "error")
+    } finally {
+      setExportando(false)
+    }
   }
 
   const filtrados = cupones.filter(c => {
@@ -87,11 +91,16 @@ export default function AdminCupones() {
       <div className="ac-header">
         <div>
           <h1 className="ac-titulo">Cupones</h1>
-          <p className="ac-sub">Gestiona todos los cupones de descuento de la plataforma</p>
+          <p className="ac-sub">Supervisa y audita los cupones de descuento de la plataforma</p>
         </div>
-        <button className="ac-btn-nuevo" onClick={() => setModal(true)}>
-          <FiPlus size={15} /> Nuevo cupón
-        </button>
+        <div className="ac-header-acciones">
+          <button className="ac-btn-exportar" disabled={exportando} onClick={() => exportar("pdf")}>
+            <FiDownload size={14} /> Exportar PDF
+          </button>
+          <button className="ac-btn-exportar" disabled={exportando} onClick={() => exportar("excel")}>
+            <FiDownload size={14} /> Exportar Excel
+          </button>
+        </div>
       </div>
 
       <div className="ac-metricas">
@@ -113,7 +122,7 @@ export default function AdminCupones() {
         <div className="ac-search">
           <FiSearch size={14} color="#94a3b8" />
           <input className="ac-search-input" value={busqueda}
-            onChange={e => setBusqueda(e.target.value)} placeholder="Buscar cupón..." />
+            onChange={e => setBusqueda(e.target.value)} placeholder="Buscar por código, emprendedora o descripción..." />
           {busqueda && (
             <button className="ac-search-clear" onClick={() => setBusqueda("")}>
               <FiX size={13} />
@@ -142,20 +151,17 @@ export default function AdminCupones() {
             <CuponAdminCard
               key={c.id_cupon}
               cupon={c}
-              onToggle={toggleCupon}
-              onEliminar={eliminar}
+              onDesactivar={() => setCuponADesactivar(c)}
             />
           ))}
         </div>
       )}
 
-      {modal && (
-        <ModalNuevoCuponAdmin
-          form={form}
-          setForm={setForm}
-          guardando={guardando}
-          onCrear={crearCupon}
-          onCerrar={() => { setModal(false); setForm(FORM_INICIAL) }}
+      {cuponADesactivar && (
+        <ModalDesactivarCupon
+          cupon={cuponADesactivar}
+          onConfirmar={confirmarDesactivar}
+          onCerrar={() => setCuponADesactivar(null)}
         />
       )}
     </div>

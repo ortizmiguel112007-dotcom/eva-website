@@ -40,22 +40,37 @@
 .ac-titulo { font-family: 'Syne', sans-serif; font-size: 1.75rem; font-weight: 800; color: #1e293b; margin: 0 0 0.25rem; }
 .ac-sub    { font-size: 0.85rem; color: #64748b; margin: 0; }
 
-.ac-btn-nuevo {
+/* ── Acciones del header (export) ── */
+.ac-header-acciones {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ac-btn-exportar {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: #1e293b;
-  color: #fff;
-  border: none;
+  background: #fff;
+  color: #334155;
+  border: 1.5px solid #e5e7eb;
   border-radius: 0.65rem;
-  padding: 0.65rem 1.25rem;
+  padding: 0.6rem 1.1rem;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   cursor: pointer;
   font-family: 'DM Sans', system-ui;
-  transition: background 0.2s;
+  transition: all 0.18s ease;
 }
-.ac-btn-nuevo:hover { background: #334155; }
+.ac-btn-exportar:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+.ac-btn-exportar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* ── Métricas ── */
 .ac-metricas {
@@ -160,4 +175,6 @@
 @media (max-width: 768px) {
   .ac-page { padding: 1.5rem 1rem; }
   .ac-metricas { grid-template-columns: 1fr; }
+  .ac-header-acciones { width: 100%; }
+  .ac-btn-exportar { flex: 1; justify-content: center; }
 }

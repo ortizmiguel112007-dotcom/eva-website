@@ -1,34 +1,57 @@
-/* ── Métricas ── */
 .cupones-metricas {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
   margin-bottom: 1.75rem;
-  flex-wrap: wrap;
 }
 
 .cupon-metrica {
-  flex: 1;
-  min-width: 130px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.85rem;
-  padding: 1rem 1.25rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s, transform 0.2s;
+  align-items: center;
+  gap: 0.8rem;
+  background: #fff;
+  border: 1px solid #eef0f4;
+  border-radius: 1rem;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: cupon-card-fade 0.35s ease both;
 }
+
+.cupones-metricas .cupon-metrica:nth-child(1) { animation-delay: 0s; }
+.cupones-metricas .cupon-metrica:nth-child(2) { animation-delay: 0.05s; }
+.cupones-metricas .cupon-metrica:nth-child(3) { animation-delay: 0.1s; }
+.cupones-metricas .cupon-metrica:nth-child(4) { animation-delay: 0.15s; }
+.cupones-metricas .cupon-metrica:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes cupon-card-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
 .cupon-metrica:hover {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.cupon-metrica-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .cupon-metrica h3 {
-  font-size: 1.9rem;
-  font-weight: 700;
+  font-family: "Syne", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
   margin: 0;
-  color: #111827;
+  color: #0f172a;
   line-height: 1;
 }
 
@@ -36,15 +59,18 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-top: 0.2rem;
 }
 
-.cupon-metrica.activos             { background: #f0fdf4; border-color: #bbf7d0; }
-.cupon-metrica.activos h3          { color: #059669; }
-.cupon-metrica.activos span        { color: #059669; }
+.cupon-metrica.total .cupon-metrica-icon     { background: #f1f5f9; color: #475569; }
+.cupon-metrica.activos .cupon-metrica-icon   { background: #d1fae5; color: #059669; }
+.cupon-metrica.programados .cupon-metrica-icon { background: #e0e7ff; color: #4f46e5; }
+.cupon-metrica.expirados .cupon-metrica-icon { background: #fee2e2; color: #dc2626; }
+.cupon-metrica.usos .cupon-metrica-icon      { background: #ede9fe; color: #7c3aed; }
 
-.cupon-metrica.expirados           { background: #fff1f2; border-color: #fecdd3; }
-.cupon-metrica.expirados h3        { color: #ef4444; }
-.cupon-metrica.expirados span      { color: #ef4444; }
+@media (max-width: 640px) {
+  .cupones-metricas { grid-template-columns: repeat(2, 1fr); }
+}

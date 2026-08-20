@@ -1,4 +1,4 @@
-import { FiTag, FiPercent, FiCalendar, FiUser, FiToggleLeft, FiToggleRight, FiTrash2 } from "react-icons/fi"
+import { FiTag, FiPercent, FiCalendar, FiUser, FiSlash, FiCheckCircle } from "react-icons/fi"
 import { formatFecha } from "@/features/admin/utils/utils"
 
 import "@/infrastructure/css/admin/cupones/CuponAdminCard.css"
@@ -8,22 +8,24 @@ function fmtValor(tipo, valor) {
 }
 
 function getBadgeEstado(c) {
-  const isVencido = c.fecha_fin && new Date() > new Date(c.fecha_fin)
-  const isAgotado = c.limite_usos && c.usos >= c.limite_usos
-  if (isVencido) return { cls: "ac-badge--vencido",  label: "Vencido"  }
-  if (isAgotado) return { cls: "ac-badge--agotado",  label: "Agotado"  }
-  if (c.activo)  return { cls: "ac-badge--activo",   label: "Activo"   }
-  return               { cls: "ac-badge--inactivo", label: "Inactivo" }
+  const ahora         = new Date()
+  const isVencido      = c.fecha_fin && ahora > new Date(c.fecha_fin)
+  const isAgotado      = c.limite_usos && c.usos >= c.limite_usos
+  const isProgramado   = c.fecha_inicio && ahora < new Date(c.fecha_inicio)
+  if (isVencido)    return { cls: "ac-badge--vencido",    label: "Vencido"    }
+  if (isAgotado)    return { cls: "ac-badge--agotado",    label: "Agotado"    }
+  if (isProgramado) return { cls: "ac-badge--programado", label: "Programado" }
+  if (c.activo)     return { cls: "ac-badge--activo",     label: "Activo"     }
+  return              { cls: "ac-badge--inactivo",        label: "Inactivo"   }
 }
 
-export function CuponAdminCard({ cupon: c, onToggle, onEliminar }) {
-  const badge    = getBadgeEstado(c)
-  const isVencido = c.fecha_fin && new Date() > new Date(c.fecha_fin)
-  const isAgotado = c.limite_usos && c.usos >= c.limite_usos
-  const esActivo  = c.activo && !isVencido && !isAgotado
+// RF-101/RN-089: el admin audita y puede desactivar cualquier cupón,
+// pero NO crea, edita, reactiva ni elimina cupones ajenos (RN-083/RN-088).
+export function CuponAdminCard({ cupon: c, onDesactivar }) {
+  const badge = getBadgeEstado(c)
 
   return (
-    <div className={`ac-card ${esActivo ? "ac-card--activo" : "ac-card--inactivo-borde"} ${!c.activo ? "ac-card--inactivo" : ""}`}>
+    <div className={`ac-card ${c.activo ? "ac-card--activo" : "ac-card--inactivo"}`}>
       <div className={`ac-card-icono ac-card-icono--${c.tipo === "porcentaje" ? "porcentaje" : "fijo"}`}>
         {c.tipo === "porcentaje"
           ? <FiPercent size={16} color="#3b82f6" />
@@ -48,17 +50,15 @@ export function CuponAdminCard({ cupon: c, onToggle, onEliminar }) {
       </div>
 
       <div className="ac-card-acciones">
-        <button className="ac-btn-toggle"
-          onClick={() => onToggle(c.id_cupon, c.activo)}
-          title={c.activo ? "Desactivar" : "Activar"}>
-          {c.activo
-            ? <FiToggleRight size={22} color="#16a34a" />
-            : <FiToggleLeft  size={22} color="#94a3b8" />
-          }
-        </button>
-        <button className="ac-btn-eliminar" onClick={() => onEliminar(c.id_cupon)}>
-          <FiTrash2 size={13} /> Eliminar
-        </button>
+        {c.activo ? (
+          <button className="ac-btn-desactivar" onClick={onDesactivar} title="Desactivar por uso indebido">
+            <FiSlash size={13} /> Desactivar
+          </button>
+        ) : (
+          <span className="ac-ya-inactivo">
+            <FiCheckCircle size={13} /> Ya inactivo
+          </span>
+        )}
       </div>
     </div>
   )

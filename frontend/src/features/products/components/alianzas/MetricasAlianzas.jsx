@@ -1,22 +1,24 @@
-export function MetricasAlianzas({ alianzas }) {
+import { formatPrecio } from "@/features/tienda/utils/utils"
+import "@/infrastructure/css/products-emprend/alianzas/MetricasAlianzas.css"
+
+export function MetricasAlianzas({ metricas }) {
+  if (!metricas) return <p className="ma-vacio">Cargando métricas...</p>
+
+  const items = [
+    { label: "Visitas", valor: metricas.visitas },
+    { label: "Clics", valor: metricas.clics },
+    { label: "Ventas totales", valor: metricas.total_ventas },
+    { label: "Ingresos generados", valor: formatPrecio(metricas.ingreso_total) },
+  ]
+
   return (
-    <div className="alianzas-metricas">
-      <div className="alianza-metrica">
-        <h3>{alianzas.length}</h3>
-        <span>Total Alianzas</span>
-      </div>
-      <div className="alianza-metrica pendientes">
-        <h3>{alianzas.filter(a => a.estado === "pendiente").length}</h3>
-        <span>Pendientes</span>
-      </div>
-      <div className="alianza-metrica activas">
-        <h3>{alianzas.filter(a => a.estado === "activa").length}</h3>
-        <span>Activas</span>
-      </div>
-      <div className="alianza-metrica finalizadas">
-        <h3>{alianzas.filter(a => a.estado === "finalizada").length}</h3>
-        <span>Finalizadas</span>
-      </div>
+    <div className="ma-grid">
+      {items.map((i) => (
+        <div key={i.label} className="ma-item">
+          <strong>{i.valor}</strong>
+          <span>{i.label}</span>
+        </div>
+      ))}
     </div>
   )
 }

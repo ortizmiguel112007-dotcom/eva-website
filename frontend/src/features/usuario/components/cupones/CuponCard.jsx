@@ -1,4 +1,4 @@
-import { FiClock, FiCheck, FiCopy } from "react-icons/fi"
+import { FiClock, FiCheck, FiCopy, FiShoppingBag } from "react-icons/fi"
 import { formatPrecio, formatFecha } from "@/features/tienda/utils/utils"
 import "@/infrastructure/css/usuario/cupones/CuponCard.css"
 
@@ -34,6 +34,13 @@ export function CuponCard({ cupon: c, idx, copiado, onCopiar }) {
           : <span className="mc-card-tag activo" style={{ background: col.acento }}>Activo</span>
         }
       </div>
+
+      {c.usuario?.nombre && (
+        <div className="mc-card-tienda">
+          <FiShoppingBag size={11} />
+          <span>{c.usuario.nombre}</span>
+        </div>
+      )}
 
       <div className="mc-card-divider" />
 

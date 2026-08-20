@@ -1,25 +1,53 @@
-import { FiCheckCircle, FiAlertCircle } from "react-icons/fi"
+import { FiGift, FiCheckCircle, FiCalendar, FiAlertCircle, FiTrendingUp } from "react-icons/fi"
 
 import "@/infrastructure/css/products-emprend/cupones/MetricasCupones.css"
 
 export function MetricasCupones({ cupones, getEstado }) {
+  const activos     = cupones.filter(c => getEstado(c) === "activo").length
+  const programados = cupones.filter(c => getEstado(c) === "programado").length
+  const expirados   = cupones.filter(c => getEstado(c) === "expirado" || getEstado(c) === "agotado").length
+  const usosTotales = cupones.reduce((acc, c) => acc + c.usos, 0)
+
   return (
     <div className="cupones-metricas">
-      <div className="cupon-metrica">
-        <h3>{cupones.length}</h3>
-        <span>Total cupones</span>
+      <div className="cupon-metrica total">
+        <div className="cupon-metrica-icon"><FiGift size={16} /></div>
+        <div>
+          <h3>{cupones.length}</h3>
+          <span>Total cupones</span>
+        </div>
       </div>
+
       <div className="cupon-metrica activos">
-        <h3>{cupones.filter(c => getEstado(c) === "activo").length}</h3>
-        <span><FiCheckCircle size={11} /> Activos</span>
+        <div className="cupon-metrica-icon"><FiCheckCircle size={16} /></div>
+        <div>
+          <h3>{activos}</h3>
+          <span>Activos</span>
+        </div>
       </div>
+
+      <div className="cupon-metrica programados">
+        <div className="cupon-metrica-icon"><FiCalendar size={16} /></div>
+        <div>
+          <h3>{programados}</h3>
+          <span>Programados</span>
+        </div>
+      </div>
+
       <div className="cupon-metrica expirados">
-        <h3>{cupones.filter(c => getEstado(c) === "expirado").length}</h3>
-        <span><FiAlertCircle size={11} /> Expirados</span>
+        <div className="cupon-metrica-icon"><FiAlertCircle size={16} /></div>
+        <div>
+          <h3>{expirados}</h3>
+          <span>Vencidos / agotados</span>
+        </div>
       </div>
-      <div className="cupon-metrica">
-        <h3>{cupones.reduce((acc, c) => acc + c.usos, 0)}</h3>
-        <span>Usos totales</span>
+
+      <div className="cupon-metrica usos">
+        <div className="cupon-metrica-icon"><FiTrendingUp size={16} /></div>
+        <div>
+          <h3>{usosTotales}</h3>
+          <span>Usos totales</span>
+        </div>
       </div>
     </div>
   )

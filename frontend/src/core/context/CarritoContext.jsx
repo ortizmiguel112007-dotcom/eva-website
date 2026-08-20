@@ -8,29 +8,31 @@ export const CarritoProvider = ({ children }) => {
   const [items, setItems]               = useState([])
   const [carritoAbierto, setCarritoAbierto] = useState(false)
   const [cargando, setCargando]         = useState(false)
+  const [cupon, setCupon]               = useState(null) // 🆕 cupón aplicado, compartido entre drawer y /carrito
 
   const getToken = () => localStorage.getItem("token")
   const headers  = () => ({ Authorization: `Bearer ${getToken()}` })
 
- const normalizar = (item) => {
-  const descuento   = item.producto?.descuento
-  const precioFinal = descuento ? descuento.precio_con_descuento : item.producto?.precio
+  const normalizar = (item) => {
+    const descuento   = item.producto?.descuento
+    const precioFinal = descuento ? descuento.precio_con_descuento : item.producto?.precio
 
-  return {
-    id_item:          item.id_item,
-    id_producto:      item.id_producto,
-    nombre_producto:  item.producto?.nombre_producto,
-    precio:           precioFinal,
-    precio_original:  item.producto?.precio,
-    descuento:        descuento || null,
-    imagen:           item.producto?.imagen,
-    categoria:        item.producto?.categoria,
-    cantidad:         item.cantidad,
-    stock:            item.producto?.inventario?.cantidad ?? 99,
-    emprendedora:     item.producto?.seccion?.emprendedora?.usuario?.nombre || "EVA",
-    id_emprendedora:  item.producto?.seccion?.emprendedora?.id_emprendedora || null,  
+    return {
+      id_item:          item.id_item,
+      id_producto:      item.id_producto,
+      nombre_producto:  item.producto?.nombre_producto,
+      precio:           precioFinal,
+      precio_original:  item.producto?.precio,
+      descuento:        descuento || null,
+      imagen:           item.producto?.imagen,
+      categoria:        item.producto?.categoria,
+      cantidad:         item.cantidad,
+      stock:            item.producto?.inventario?.cantidad ?? 99,
+      emprendedora:     item.producto?.seccion?.emprendedora?.usuario?.nombre || "EVA",
+      id_emprendedora:  item.producto?.seccion?.emprendedora?.id_emprendedora || null,
+      id_seccion:       item.producto?.id_seccion ?? null,
+    }
   }
-}
 
   const cargarCarrito = useCallback(async () => {
     const token = getToken()
@@ -111,12 +113,13 @@ export const CarritoProvider = ({ children }) => {
       catch (err) { console.error("Error al vaciar:", err) }
     }
     setItems([])
+    setCupon(null) // 🆕
     localStorage.removeItem("carrito_local")
   }
 
-  // 🆕 Limpiar carrito al cerrar sesión
   const limpiarCarrito = () => {
     setItems([])
+    setCupon(null) // 🆕
     localStorage.removeItem("carrito_local")
   }
 
@@ -136,7 +139,8 @@ export const CarritoProvider = ({ children }) => {
       quitar, quitarDelCarrito,
       cambiarCantidad,
       vaciar, vaciarCarrito,
-      limpiarCarrito,  // 🆕
+      limpiarCarrito,
+      cupon, setCupon, // 🆕
       totalItems, total, totalPrecio,
     }}>
       {children}
