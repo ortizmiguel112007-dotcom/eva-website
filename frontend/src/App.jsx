@@ -9,7 +9,7 @@
 
 // Importaciones
 import { BrowserRouter } from "react-router-dom";
-import AppRouter from "@/routes/Index";
+import AppRouter from "@/routes/index";
 import "@/infrastructure/css/App.css";
 import { AuthProvider } from "@/core/context/AuthConten";
 import { CarritoProvider } from "@/core/context/CarritoContext";
