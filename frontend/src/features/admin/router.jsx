@@ -7,10 +7,10 @@ import AdministradorDash from "./pages/AdministradorDash";
 import AuditLog from "./pages/AuditLog";
 import Adminproductos from "./pages/Adminproductos";
 import Adminpedidos from "./pages/Adminpedidos";
-import Adminresenas from "./pages/AdminResenas";
-import Admindestacados from "./pages/AdminDestacados";
-import Admincupones from "./pages/AdminCupones";
-import Adminalianzas from "./pages/AdminAlianzas";
+import Adminresenas from "./pages/Adminresenas";
+import Admindestacados from "./pages/Admindestacados";
+import Admincupones from "./pages/Admincupones";
+import Adminalianzas from "./pages/Adminalianzas";
 import AuditoriaInventario from "@/features/admin/pages/AuditoriaInventario"
 import Notificaciones from "@/features/usuario/pages/Notificaciones"
 import PerfilForm from "@/features/shared/components/PerfilForm"
