@@ -6,7 +6,7 @@ import RoleAssignment from "./pages/RoleAssignment";
 import AdministradorDash from "./pages/AdministradorDash";
 import AuditLog from "./pages/AuditLog";
 import Adminproductos from "./pages/Adminproductos";
-import Adminpedidos from "./pages/AdminPedidos";
+import Adminpedidos from "./pages/Adminpedidos";
 import Adminresenas from "./pages/AdminResenas";
 import Admindestacados from "./pages/AdminDestacados";
 import Admincupones from "./pages/AdminCupones";
