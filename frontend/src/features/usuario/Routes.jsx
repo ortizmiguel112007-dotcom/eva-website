@@ -22,7 +22,7 @@ function DetalleUsuario() {
   const { token } = useAuth()
   return <DetalleProducto token={token} rutaCatalogo="/productos" />
 }
-
+//  s
 export const UsuarioRoutes = (
   <Route element={<MainLayout />}>
     <Route element={<PrivateRoute rolRequerido="usuario" />}>
