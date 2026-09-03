@@ -6,7 +6,7 @@ import {
 
 import { UiButton } from "@/shared/ui/UiButton";
 
-import "@/infrastructure/css/shared/store/storeCard.css"
+import "@/infrastructure/css/shared/store/StoreCard.css"
 
 // ══ Data ═════════════
 import { Avatar_colors } from "@/data/avatarColors"
