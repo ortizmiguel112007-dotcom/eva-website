@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode"
 import axios from "axios"
 
 const AuthContext = createContext()
+const API_URL = import.meta.env.VITE_API_URL
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("token"))
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       const decoded = jwtDecode(t)
       if (decoded.rol !== "emprendedora") return
       const res = await axios.get(
-        "http://localhost:3000/api/emprendedora/mi-seccion",
+        `${API_URL}/api/emprendedora/mi-seccion`,
         { headers: { Authorization: `Bearer ${t}` } }
       )
       const { id_seccion, id_emprendedora } = res.data
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/perfil", {
+      const res = await axios.get(`${API_URL}/api/perfil`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setUser(prev => ({ ...prev, nombre: res.data.nombre?.trim() || prev.nombre }))  // ✅

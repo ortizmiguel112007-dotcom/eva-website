@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import axios from "axios"
 
+const API_URL = import.meta.env.VITE_API_URL
 const CarritoContext = createContext()
-const BASE = "http://localhost:3000/api/carrito"
+const BASE = `${API_URL}/api/carrito`
 
 export const CarritoProvider = ({ children }) => {
   const [items, setItems]               = useState([])

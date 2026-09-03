@@ -5,6 +5,8 @@ import { useCarrito } from "@/core/context/CarritoContext"
 import { FiTag, FiCheck } from "react-icons/fi"
 import { formatPrecio } from "@/features/tienda/utils/utils"
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export function CuponDrawer() {
   const { token } = useAuth()
   const { carrito: items, cupon, setCupon } = useCarrito()
@@ -18,7 +20,7 @@ export function CuponDrawer() {
     setError(""); setCargando(true)
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/cupones/validar",
+        `${API_URL}/api/cupones/validar`,
         { codigo: codigo.toUpperCase() },
         { headers: { Authorization: `Bearer ${token}` } }
       )

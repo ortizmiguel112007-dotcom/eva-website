@@ -6,7 +6,10 @@ import { FacturaCard } from "@/features/products/components/facturas/FacturaCard
 import { ModalMotivoRegeneracion } from "../components/facturas/ModalMotivoRegeneracion"
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const BASE = "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL
+const PORT = import.meta.env.PORT
+
+const BASE = `${API_URL}:${PORT}`
 
 export default function AdminFacturas() {
   const { token } = useAuth()

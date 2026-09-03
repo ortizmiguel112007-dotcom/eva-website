@@ -159,6 +159,8 @@ const UserAvatar = ({ nombre }) => {
 /* ─────────────────────────────────────────────
    LAYOUT PRINCIPAL
 ───────────────────────────────────────────── */
+const API_URL = import.meta.env.VITE_API_URL
+
 function MainLayout() {
   const isMobile = useIsMobile(768);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -180,7 +182,7 @@ function MainLayout() {
   useEffect(() => {
     if (!token || (!isUsuario && !isEmprendedora && !isAdmin)) return;
     axios
-      .get("http://localhost:3000/api/notificaciones", {
+      .get(`${API_URL}/api/notificaciones`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
