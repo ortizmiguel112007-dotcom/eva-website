@@ -18,7 +18,7 @@ import MetodosPagoAdmin from "./pages/MetodosPagoAdmin"
 import AdminPagos from "./pages/AdminPagos"
 import AdminLiquidaciones from "./pages/AdminLiquidaciones"
 import AdminFacturas from "./pages/AdminFacturas"
-
+// Cambio
 export const AdminRoutes = (
   <Route element={<MainLayout />}>
     <Route element={<ProtectedAdmin />}>
