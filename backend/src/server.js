@@ -41,13 +41,21 @@ setInterval(async () => {
 
 const app = express()
 
+// Configuración de CORS dinámica (Local + Producción)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.FRONTEND_URL
+].filter(Boolean) // Elimina valores undefined si no está definida la variable
+
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`)
   next()
 })
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174']
+  origin: allowedOrigins,
+  credentials: true
 }))
 
 app.use(express.json())
@@ -86,8 +94,11 @@ actualizarCategoriasAutomaticas() // corre una vez al iniciar el servidor tambi�
 setInterval(actualizarEstadoCupones, 15 * 60 * 1000)
 actualizarEstadoCupones()
 
-app.listen(3000, () => {
-  console.log('Servidor corriendo en http://localhost:3000')
+// Puerto dinámico para la nube o 3000 por defecto en local
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`)
 }).on('error', (err) => {
   console.error('Error al iniciar servidor:', err)
 })

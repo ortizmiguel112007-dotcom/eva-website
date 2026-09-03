@@ -9,7 +9,10 @@ import { HistorialDestacado } from "../components/destacados/HistorialDestacado"
 
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const BASE = "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL
+const PORT = import.meta.env.PORT
+
+const BASE = `${API_URL}:${PORT}`
 
 export default function AdminDestacados() {
   const { token } = useAuth()

@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:3000/api/pedidos'
+// Usa la variable de entorno de Vite o un fallback a localhost para desarrollo
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const BASE_URL = `${API_URL}/api/pedidos`
 
 const getHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`

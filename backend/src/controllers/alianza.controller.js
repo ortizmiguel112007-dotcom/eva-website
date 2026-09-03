@@ -1,4 +1,5 @@
 import prisma from "../conexion.js";
+
 import { crearNotificacion } from './notificacion.controller.js'
 
 const registrarLog = async (id_alianza, evento, id_usuario = null, detalle = null) => {
