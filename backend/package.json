@@ -4,11 +4,11 @@
   "type": "module",
   "private": true,
   "main": "src/server.js",
-"scripts": {
+  "scripts": {
     "dev": "nodemon src/server.js",
     "db:migrate": "npx prisma@7.4.2 migrate dev",
     "db:studio": "npx prisma@7.4.2 studio",
-    "db:generate": "npx prisma@7.4.2 generate"
+    "db:generate": "npm install && npx prisma@7.4.2 generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.1",
