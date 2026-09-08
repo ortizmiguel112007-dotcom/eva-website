@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/core/context/AuthConten"
-import axios from "axios"
 import { FiMapPin, FiPackage } from "react-icons/fi"
 
 import { useApiData } from "@/features/usuario/hooks/useApiData"

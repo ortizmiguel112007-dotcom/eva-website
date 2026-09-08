@@ -9,7 +9,7 @@ import { FiltrosNotificaciones } from "../components/notificaciones/FiltrosNotif
 
 import "@/infrastructure/css/usuario/notificaciones/Notificaciones.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const hdrs = token => ({ Authorization: `Bearer ${token}` })
 
 export default function Notificaciones() {

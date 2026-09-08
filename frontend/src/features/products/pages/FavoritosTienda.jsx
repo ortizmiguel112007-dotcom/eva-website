@@ -9,7 +9,7 @@ import { FavoritoTiendaCard }   from "../components/favoritos/FavoritoTiendaCard
 
 import "@/infrastructure/css/products-emprend/favoritos_tiendas/FavoritosTienda.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function FavoritosTienda() {
   const { token } = useAuth()

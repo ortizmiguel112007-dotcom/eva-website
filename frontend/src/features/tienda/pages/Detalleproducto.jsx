@@ -22,6 +22,8 @@ import { StockBadge } from "../components/detalle/StockBadge";
 import { RatingEstrellas } from "../components/shared/RatingEstrellas";
 import { BtnAgregar } from "../components/shared/BtnAgregar";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 import "@/infrastructure/css/tienda/detalle/DetalleProducto.css";
 
 export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
@@ -47,7 +49,7 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
   useEffect(() => {
     if (token) {
       axios
-        .get(`http://localhost:3000/api/favoritos/check/${id}`, {
+        .get(`${API_URL}/api/favoritos/check/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => setFavorito(res.data.favorito))
@@ -82,7 +84,7 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
         if (token) {
           try {
             const res = await axios.get(
-              "http://localhost:3000/api/cliente/pedidos",
+              `${API_URL}/api/cliente/pedidos`,
               {
                 headers: { Authorization: `Bearer ${token}` },
               },
@@ -131,7 +133,7 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
     if (token) {
       try {
         const res = await axios.post(
-          `http://localhost:3000/api/favoritos/${id}`,
+          `${API_URL}/api/favoritos/${id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -300,7 +302,7 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
           token
             ? async ({ calificacion, texto }) => {
                 await axios.post(
-                  "http://localhost:3000/api/comentarios",
+                  `${API_URL}/api/comentarios`,
                   {
                     id_producto: Number(id),
                     id_pedido: pedido.id_pedido,

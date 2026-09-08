@@ -11,7 +11,7 @@ import {
 import { formatPrecio } from "@/features/tienda/utils/utils"
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function AdminLiquidaciones() {
   const { token } = useAuth()

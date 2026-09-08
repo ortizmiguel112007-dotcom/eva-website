@@ -9,6 +9,8 @@ import { PasoVerificacion } from "../components/registro/PasoVerificacion"
 
 import "@/infrastructure/css/Registre.css"
 
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
+
 const FORM_INICIAL = {
   nombre: "", email: "", password: "", confirmar: "", telefono: "",
   esMayorEdad: false,
@@ -56,7 +58,7 @@ export default function RegistroCliente() {
     if (Object.keys(e_).length) { setErrores(e_); return }
     setCargando(true)
     try {
-      await axios.post("http://localhost:3000/registro", {
+      await axios.post(`${BASE}/registro`, {
         nombre: form.nombre.trim(), email: form.email,
         password: form.password, telefono: form.telefono, rol: "usuario",
         es_mayor_edad: form.esMayorEdad,
@@ -70,7 +72,7 @@ export default function RegistroCliente() {
     e.preventDefault()
     setCargando(true)
     try {
-      const res = await axios.post("http://localhost:3000/verificar", { email: form.email, codigo })
+      const res = await axios.post(`${BASE}/verificar`, { email: form.email, codigo })
       login(res.data.token)
       navigate("/")
     } catch (err) { setError(err.response?.data?.error || "Código incorrecto") }

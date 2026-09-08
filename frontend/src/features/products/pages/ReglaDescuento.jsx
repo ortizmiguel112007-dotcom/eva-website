@@ -10,7 +10,7 @@ import { formatPrecio }   from "@/features/tienda/utils/utils"
 
 import "@/infrastructure/css/products-emprend/reglas/ReglaDescuento.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 const hdrs = token => ({ Authorization: `Bearer ${token}` })
 
 export default function ReglaDescuento() {

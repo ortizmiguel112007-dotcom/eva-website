@@ -18,6 +18,8 @@ const FORM_INICIAL = {
   telefono:  "",
 }
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+
 const validarCampos = (form, fotoDoc, mayorDeEdad, declaracion) => {
   const e = {}
   const n = form.nombre.trim()
@@ -78,7 +80,7 @@ export default function RegistroEmprendedora() {
       fd.append("telefono",      form.telefono)
       fd.append("rol",           "emprendedora")
       fd.append("foto_documento", fotoDoc)
-      await axios.post("http://localhost:3000/registro", fd, {
+      await axios.post(`${API_URL}/registro`, fd, {
         headers: { "Content-Type": "multipart/form-data" }
       })
       setPaso(2)
@@ -91,7 +93,7 @@ export default function RegistroEmprendedora() {
     e.preventDefault()
     setCargando(true)
     try {
-      await axios.post("http://localhost:3000/verificar", { email: form.email, codigo })
+      await axios.post(`${API_URL}/verificar`, { email: form.email, codigo })
       setPaso(3)
     } catch (err) {
       setError(err.response?.data?.error || "Código incorrecto")

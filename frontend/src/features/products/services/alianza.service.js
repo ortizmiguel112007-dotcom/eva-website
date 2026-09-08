@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/api/alianzas";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";  
+const BASE_URL = `${API_URL}/api/alianzas`;
 
 const getHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,

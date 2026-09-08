@@ -12,7 +12,7 @@ import "@/infrastructure/css/admin/resenas/AdminResenas.css"
 import "@/infrastructure/css/auth/CrudAdmin.css"
 import "@/infrastructure/css/products-emprend/comentarios/Comentarios.css"
 
-const BASE      = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 const PAGE_SIZE = 10
 
 export function ResenasModeracion({ titulo, subtitulo, endpointComentarios, endpointReporte, headers }) {

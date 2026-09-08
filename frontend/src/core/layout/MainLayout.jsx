@@ -6,11 +6,9 @@ import { createPortal } from "react-dom";
 import { useCarrito } from "@/core/context/CarritoContext";
 import CarritoDrawer from "@/core/context/CarritoDrawer";
 import {
-  FiShoppingCart,
   FiPackage,
   FiStar,
   FiFileText,
-  FiSettings,
   FiCreditCard,
   FiDollarSign,
   FiTag,
@@ -38,6 +36,7 @@ import { FiMessageSquare, FiUsers } from "react-icons/fi";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { RiCoupon3Line } from "react-icons/ri";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 /* ─────────────────────────────────────────────
    HOOK – detecta si es móvil (≤768px)
 ───────────────────────────────────────────── */
@@ -180,7 +179,7 @@ function MainLayout() {
   useEffect(() => {
     if (!token || (!isUsuario && !isEmprendedora && !isAdmin)) return;
     axios
-      .get("http://localhost:3000/api/notificaciones", {
+      .get(`${API_URL}/api/notificaciones`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

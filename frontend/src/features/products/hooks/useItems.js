@@ -3,6 +3,8 @@ import { useAuth } from "@/core/context/AuthConten"
 import { itemService } from "@/features/products/services/item.service"
 import axios from "axios"
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+
 export function useItems() {
   const { idSeccion, token } = useAuth()
   const [items, setItems]     = useState([])
@@ -11,7 +13,7 @@ export function useItems() {
 
   useEffect(() => {
     if (!idSeccion) return
-    axios.get("http://localhost:3000/api/items/mis-items", {
+    axios.get(`${API_URL}/api/items/mis-items`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setItems(res.data.map(item => ({
@@ -22,7 +24,7 @@ export function useItems() {
         descuento:      item.descuento || null,          
         precioFinal:    item.descuento,                   
         image:         item.imagen
-          ? item.imagen.startsWith("http") ? item.imagen : `http://localhost:3000${item.imagen}`
+          ? item.imagen.startsWith("http") ? item.imagen : `${API_URL}${item.imagen}`
           : null,
         type:          item.tipo || "producto",
         category:      item.categoria,

@@ -1,8 +1,9 @@
 // shared/services/catalogo.service.js
 import axios from "axios";
 
-const BASE = "http://localhost:3000/api/publico";
-const ITEMS = "http://localhost:3000/api/items";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const BASE = `${API_URL}/api/publico`;
+const ITEMS = `${API_URL}/api/items`;
 
 export const catalogoService = {
   async getCatalogo(params = {}) {
@@ -27,7 +28,7 @@ export const catalogoService = {
   },
   async getComentariosProducto(id) {
     const res = await axios.get(
-      `http://localhost:3000/api/comentarios/producto/${id}`
+      `${API_URL}/api/comentarios/producto/${id}`
     );
     return res.data;
   },

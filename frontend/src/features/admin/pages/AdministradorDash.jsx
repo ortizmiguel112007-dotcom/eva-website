@@ -30,8 +30,8 @@ export default function AdministradorDash() {
   useEffect(() => {
     Promise.all([
       adminService.listarUsuarios(),
-      axios.get("http://localhost:3000/api/admin/pedidos", { headers: getHeaders() }).then(r => r.data).catch(() => []),
-      axios.get("http://localhost:3000/api/items/admin/todos", { headers: getHeaders() }).then(r => r.data).catch(() => []),
+      axios.get(`${API_URL}/api/admin/pedidos`, { headers: getHeaders() }).then(r => r.data).catch(() => []),
+      axios.get(`${API_URL}/api/items/admin/todos`, { headers: getHeaders() }).then(r => r.data).catch(() => []),
     ])
       .then(([u, ped, prod]) => {
         setUsuarios(u)

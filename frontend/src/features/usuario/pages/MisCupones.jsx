@@ -7,6 +7,7 @@ import { ValidadorCupon } from "../components/cupones/ValidadorCupon"
 import { CuponCard } from "../components/cupones/CuponCard"
 
 import "@/infrastructure/css/usuario/cupones/MisCupones.css"
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function MisCupones() {
   const { token } = useAuth()
@@ -19,7 +20,7 @@ export default function MisCupones() {
   const [copiado, setCopiado]     = useState(null)
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/cupones/publicos", {
+    axios.get(`${API_URL}/api/cupones/publicos`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setCupones(Array.isArray(res.data) ? res.data.filter(c => c.activo) : []))
@@ -32,7 +33,7 @@ export default function MisCupones() {
   setError(""); setResultado(null); setValidando(true)
   try {
     const res = await axios.post(
-      "http://localhost:3000/api/cupones/validar",
+      `${API_URL}/api/cupones/validar`,
       { codigo },
       { headers: { Authorization: `Bearer ${token}` } }
     )

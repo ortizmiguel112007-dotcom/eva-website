@@ -3,6 +3,8 @@ import axios from "axios"
 import { FiCheck, FiImage, FiUpload } from "react-icons/fi"
 import "@/infrastructure/css/tienda/carrito/SubirComprobante.css"
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export function SubirComprobante({ pedidos, token, metodoPago, onEnviado }) {
   const [archivo, setArchivo]   = useState(null)
   const [preview, setPreview]   = useState(null)
@@ -29,7 +31,7 @@ export function SubirComprobante({ pedidos, token, metodoPago, onEnviado }) {
       formData.append("metodo", metodoPago || "nequi")
 
       const res = await axios.post(
-        "http://localhost:3000/api/pagos",
+        `${API_URL}/api/pagos`,
         formData,
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
       )

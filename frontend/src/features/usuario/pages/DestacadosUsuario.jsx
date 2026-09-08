@@ -12,7 +12,7 @@ import { DestacadosFiltros } from "../components/destacados/DestacadosFiltros"
 
 import "@/infrastructure/css/usuario/destacados/DestacadosUsuario.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 // RF-077: valores deben coincidir con categoria_destacado del backend
 const CATEGORIAS = [

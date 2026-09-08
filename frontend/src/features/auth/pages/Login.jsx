@@ -10,6 +10,8 @@ import { jwtDecode } from "jwt-decode"
 import "@/infrastructure/css/Login.css"
 import background from "@/infrastructure/imgs/Fondo2.png"
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+
 const LoginPage = () => {
   const [email, setEmail]       = useState("")
   const [password, setPassword] = useState("")
@@ -27,7 +29,7 @@ const LoginPage = () => {
     e.preventDefault()
     setCargando(true)
     try {
-      const res     = await axios.post("http://localhost:3000/login", { email, password })
+      const res     = await axios.post(`${API_URL}/login`, { email, password })
       login(res.data.token)
       await cargarCarrito()  // recarga carrito del servidor
 

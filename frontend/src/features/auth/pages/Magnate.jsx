@@ -8,7 +8,7 @@ import { ModalConfirmarToggle } from "../components/users/ModalConfirmarToggle"
 
 import "@/infrastructure/css/auth/CrudAdmin.css"
 
-const BASE_URL = "http://localhost:3000/admin"
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 const getToken = () => localStorage.getItem("token")
 const EMPTY_FORM = { nombre: "", email: "", telefono: "", password: "" }
 const PAGE_SIZE = 10

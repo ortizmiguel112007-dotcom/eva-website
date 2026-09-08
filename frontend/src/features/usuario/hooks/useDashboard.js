@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { tiendaService } from "@/features/tienda/services/tienda.service";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export function useDashboard(token) {
   const [destacados, setDestacados] = useState([]);
   const [pedidos, setPedidos] = useState([]);
@@ -16,10 +18,10 @@ export function useDashboard(token) {
 
         if (token) {
           const [resPedidos, resFavs] = await Promise.allSettled([
-            axios.get("http://localhost:3000/api/cliente/pedidos", {
+            axios.get(`${API_URL}/api/cliente/pedidos`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            axios.get("http://localhost:3000/api/favoritos", {
+            axios.get(`${API_URL}/api/favoritos`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);

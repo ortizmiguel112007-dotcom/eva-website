@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { FiX, FiUsers } from "react-icons/fi"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export function ModalNuevaAlianza({ abierto, onCerrar, onCreada, token }) {
   const [emprendedoras, setEmprendedoras] = useState([])

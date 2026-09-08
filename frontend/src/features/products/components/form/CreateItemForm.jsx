@@ -10,8 +10,9 @@ import { CampoImagen } from "./CampoImagen"
 import { CamposProducto } from "./CamposProducto"
 import { CamposServicio } from "./CamposServicio"
 
-
 import "@/infrastructure/css/products-emprend/form/CreateItemForm.css"
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 function CreateItemForm({ type = "product", isEdit = false, initialData }) {
   const navigate  = useNavigate()
@@ -94,11 +95,11 @@ function CreateItemForm({ type = "product", isEdit = false, initialData }) {
     setCargando(true); setError(null)
     try {
       if (isEdit && initialData?.id_producto) {
-        await axios.put(`http://localhost:3000/api/items/${initialData.id_producto}`, formData, {
+        await axios.put(`${API_URL}/api/items/${initialData.id_producto}`, formData, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
         })
       } else {
-        await axios.post("http://localhost:3000/api/items/crearitem", formData, {
+        await axios.post(`${API_URL}/api/items/crearitem`, formData, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
         })
       }

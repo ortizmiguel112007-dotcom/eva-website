@@ -8,6 +8,7 @@ import { ResenaCard } from "../components/resenas/ResenaCard"
 import { StatsResenas } from "../components/resenas/StatsResenas"
 
 import "@/infrastructure/css/usuario/resenas/MisResenas.css"
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function MisResenas() {
   const { token } = useAuth()
@@ -18,7 +19,7 @@ export default function MisResenas() {
   const [filtro, setFiltro]     = useState(0)
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/cliente/pedidos", {
+    axios.get(`${API_URL}/api/cliente/pedidos`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {

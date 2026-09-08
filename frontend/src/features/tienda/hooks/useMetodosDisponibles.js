@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 // RN-052: métodos de pago habilitados a nivel plataforma (configurados por el admin),
 // ya no se consulta por emprendedora porque el pago ahora es centralizado hacia EVA.

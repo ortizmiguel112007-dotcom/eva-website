@@ -54,7 +54,6 @@ import { useHomeData } from "@/features/tienda/hooks/inicio/useHomeData";
 // ══ Componentes ══════
 import { InicioHero } from "../components/inicio/InicioHero";
 import { InicioDestacados } from "../components/inicio/InicioDestacados";
-import { InicioCatalogo } from "../components/inicio/InicioCatalogo";
 import { InicioTiendas } from "../components/inicio/InicioTiendas";
 import { InicioFooter } from "../components/inicio/InicioFooter"
 

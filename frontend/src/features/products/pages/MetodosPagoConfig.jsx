@@ -4,7 +4,7 @@ import { FiSmartphone, FiCreditCard, FiTruck, FiSave } from "react-icons/fi"
 import { useAuth } from "@/core/context/AuthConten"
 import "@/infrastructure/css/products-emprend/metodopago/MetodosPagoConfig.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function MetodosPagoConfig() {
   const { token } = useAuth()

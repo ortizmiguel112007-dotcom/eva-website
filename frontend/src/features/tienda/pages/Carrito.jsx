@@ -12,6 +12,8 @@ import { ResumenPedido } from "../components/carrito/ResumenPedido";
 import { useMetodosDisponibles } from "@/features/tienda/hooks/useMetodosDisponibles";
 import "@/infrastructure/css/tienda/carrito/Carrito.css";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export default function Carrito() {
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -72,7 +74,7 @@ export default function Carrito() {
     setCupon(null);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/cupones/validar",
+        `${API_URL}/api/cupones/validar`,
         { codigo: codigoCupon },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -108,7 +110,7 @@ export default function Carrito() {
     setConfirmando(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/cliente/pedidos",
+        `${API_URL}/api/cliente/pedidos`,
         {
           items: items.map((i) => ({
             id_producto: i.id_producto,

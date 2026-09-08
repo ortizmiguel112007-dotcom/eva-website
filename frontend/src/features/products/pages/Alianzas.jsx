@@ -9,7 +9,7 @@ import { MetricasAlianzas } from "../components/alianzas/MetricasAlianzas"
 
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function Alianzas() {
   const { token, user } = useAuth()

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
-const BASE = "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export function useApiData(endpoint, token, deps = []) {
   const [data, setData]       = useState([])
@@ -11,7 +11,7 @@ export function useApiData(endpoint, token, deps = []) {
   useEffect(() => {
     if (!token) { setCargando(false); return }
     setCargando(true)
-    axios.get(`${BASE}${endpoint}`, {
+    axios.get(`${API_URL}${endpoint}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setData(Array.isArray(res.data) ? res.data : res.data))

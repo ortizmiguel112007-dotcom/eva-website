@@ -10,6 +10,8 @@ const transporte = nodemailer.createTransport({
   },
 });
 
+const API_URL = process.env.VITE_API_URL || "http://localhost:5173";
+
 // Correo a la emprendedora cuando su cuenta es aprobada
 export const enviarAprobacion = async (destinatario, nombre) => {
   await transporte.sendMail({
@@ -60,7 +62,7 @@ export const enviarAprobacion = async (destinatario, nombre) => {
               <!-- Botón -->
               <tr>
                 <td style="padding: 0 32px 32px; text-align: center;">
-                  <a href="http://localhost:5173/login"
+                  <a href="${API_URL}/login"
                     style="display: inline-block; background: linear-gradient(100deg, #2563eb, #1d4ed8); color: #fff; padding: 13px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">
                     Iniciar sesión
                   </a>
@@ -161,7 +163,7 @@ export const enviarSolicitudAdmin = async (
               <!-- Botón -->
               <tr>
                 <td style="padding: 0 32px 32px; text-align: center;">
-                  <a href="http://localhost:5173/admin"
+                  <a href="${API_URL}/admin"
                     style="display: inline-block; background: linear-gradient(100deg, #2563eb, #1d4ed8); color: #fff; padding: 13px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">
                     Revisar solicitud
                   </a>
@@ -238,7 +240,7 @@ export const enviarConfirmacionPedido = async (destinatario, nombre, pedido, con
     avisoBg = "#f0fdf4"; avisoBorde = "#bbf7d0"; avisoColorTitulo = "#166534"
   } else if (pedido.metodo_pago !== "contraentrega") {
     avisoTitulo = "Falta un paso"
-    avisoTexto  = `Debes subir tu comprobante de pago para que tu pedido sea procesado. Puedes hacerlo desde <a href="http://localhost:5173/mis-pedidos" style="color:#2563eb; font-weight:600;">Mis pedidos</a>.`
+    avisoTexto  = `Debes subir tu comprobante de pago para que tu pedido sea procesado. Puedes hacerlo desde <a href="${API_URL}/mis-pedidos" style="color:#2563eb; font-weight:600;">Mis pedidos</a>.`
     avisoBg = "#fffbeb"; avisoBorde = "#fde68a"; avisoColorTitulo = "#92400e"
   } else {
     avisoTitulo = "Pago contra entrega"
@@ -329,7 +331,7 @@ export const enviarConfirmacionPedido = async (destinatario, nombre, pedido, con
               <!-- Botón -->
               <tr>
                 <td style="padding: 0 32px 32px; text-align: center;">
-                  <a href="http://localhost:5173/mis-pedidos"
+                  <a href="${API_URL}/mis-pedidos"
                     style="display: inline-block; background: linear-gradient(100deg, #2563eb, #1d4ed8); color: #fff; padding: 13px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px;">
                     Ver mis pedidos
                   </a>

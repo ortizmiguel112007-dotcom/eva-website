@@ -5,7 +5,7 @@ import { FiDollarSign } from "react-icons/fi"
 import { LiquidacionCard } from "@/features/products/components/liquidaciones/LiquidacionCard"
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const BASE = "http://localhost:3000"
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function Liquidaciones() {
   const { token } = useAuth()

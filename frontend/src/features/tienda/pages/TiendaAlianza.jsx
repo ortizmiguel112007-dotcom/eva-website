@@ -12,6 +12,8 @@ import { AlianzaStats } from "../components/tiendas/AlianzaStats";
 import "@/infrastructure/css/tienda/tiendas-perfil/TiendaAlianza.css";
 import "@/infrastructure/css/tienda/tiendas-perfil/PerfilTienda.css";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export default function TiendaAlianza() {
   const { id_alianza } = useParams();
   const navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function TiendaAlianza() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/publico/alianza/${id_alianza}`)
+      .get(`${API_URL}/api/publico/alianza/${id_alianza}`)
       .then((r) => setAlianza(r.data))
       .catch(console.error)
       .finally(() => setCargando(false));

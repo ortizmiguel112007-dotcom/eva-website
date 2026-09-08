@@ -1,16 +1,18 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:3000/api/items";
-const PUBLICO_URL = "http://localhost:3000/api/publico";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const BASE_URL = `${API_URL}/api/items`;
+const PUBLICO_URL = `${API_URL}/api/publico`;
 
 export const tiendaService = {
   async getProducto(id) {
-    const res = await axios.get(`http://localhost:3000/api/items/${id}`);
+    const res = await axios.get(`${BASE_URL}/${id}`);
     return res.data;
   },
 
   async getComentariosProducto(id) {
     const res = await axios.get(
-      `http://localhost:3000/api/comentarios/producto/${id}`,
+      `${API_URL}/api/comentarios/producto/${id}`,
     );
     return res.data;
   },

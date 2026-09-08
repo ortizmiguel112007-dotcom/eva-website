@@ -9,7 +9,7 @@ import { getHeaders } from "@/features/admin/utils/utils";
 import "@/infrastructure/css/admin/productos/AdminProductos.css";
 import "@/infrastructure/css/auth/CrudAdmin.css";
 
-const BASE = "http://localhost:3000";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const PAGE_SIZE = 10;
 
 export default function AdminProductos() {

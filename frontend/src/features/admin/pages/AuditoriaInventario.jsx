@@ -10,8 +10,8 @@ import { PaginacionSimple }  from "@/features/usuario/components/historial/Pagin
 import "@/infrastructure/css/admin/auditoria_inventario/AuditoriaInventario.css"
 import "@/infrastructure/css/auth/CrudAdmin.css"
 
-const BASE      = "http://localhost:3000"
-const hdrs      = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
+const hdrs = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
 const PAGE_SIZE = 15
 
 function getEstado(item) {
