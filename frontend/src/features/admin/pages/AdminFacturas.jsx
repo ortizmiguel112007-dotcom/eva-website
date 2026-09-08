@@ -6,10 +6,12 @@ import { FacturaCard } from "@/features/products/components/facturas/FacturaCard
 import { ModalMotivoRegeneracion } from "../components/facturas/ModalMotivoRegeneracion"
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const API_URL = import.meta.env.VITE_API_URL
-const PORT = import.meta.env.PORT
+// const API_URL = import.meta.env.VITE_API_URL
+// const PORT = import.meta.env.PORT
 
-const BASE = `${API_URL}:${PORT}`
+// const BASE = `${API_URL}:${PORT}`
+
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function AdminFacturas() {
   const { token } = useAuth()
@@ -53,7 +55,7 @@ export default function AdminFacturas() {
     <div className="pagos-page">
       <div className="pagos-header">
         <h1>Auditoría de facturas</h1>
-        <p>Supervisa y, si es necesario, regenera comprobantes de venta (RF-062)</p>
+        <p>Supervisa y, si es necesario, regenera comprobantes de venta</p>
       </div>
 
       {facturas.length === 0 ? (

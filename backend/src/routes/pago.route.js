@@ -1,17 +1,16 @@
-import { Router } from 'express'
+import express from 'express'
 import multer from 'multer'
 import {
-  subirComprobante,
-  obtenerPago,
-  verificarPago,
+  crearPago,
+  listarPagosCliente,
   listarPagosEmprendedora,
+  verificarPago,
+  reenviarComprobante,
   listarPagosAdmin,
-  historialPago,
 } from '../controllers/Pago.controller.js'
 import { verificarToken } from '../middleware/auth.middleware.js'
-import { verificarRol } from '../middleware/verificarRol.middleware.js'
 
-const router = Router()
+const router = express.Router()
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -22,14 +21,11 @@ const upload = multer({
   }
 })
 
-// ── Rutas con segmento FIJO primero (para que Express no las confunda con :id_pago) ──
-router.get('/api/pagos/emprendedora',             verificarToken, listarPagosEmprendedora)
-router.get('/api/admin/pagos',                    verificarToken, verificarRol("admin"), listarPagosAdmin)
-router.get('/api/admin/pagos/:id_pago/historial', verificarToken, verificarRol("admin"), historialPago)
-
-// ── Rutas con parámetro dinámico después ──
-router.put('/api/pagos/:id_pago/comprobante', verificarToken, upload.single('comprobante'), subirComprobante)
-router.get('/api/pagos/:id_pago',             verificarToken, obtenerPago)
-router.put('/api/pagos/:id_pago/verificar',   verificarToken, verificarRol("admin"), verificarPago)
+router.post('/api/pagos',                    verificarToken, upload.single('comprobante'), crearPago)
+router.get('/api/pagos/mis-pagos',           verificarToken, listarPagosCliente)
+router.get('/api/pagos/emprendedora',        verificarToken, listarPagosEmprendedora)
+router.put('/api/pagos/:id_pago/verificar',  verificarToken, verificarPago)
+router.put('/api/pagos/:id_pago/reenviar',   verificarToken, upload.single('comprobante'), reenviarComprobante)
+router.get('/api/admin/pagos',               verificarToken, listarPagosAdmin)
 
 export default router

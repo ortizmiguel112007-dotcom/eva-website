@@ -1,17 +1,15 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import axios from "axios"
-import { FiCheck, FiImage, FiUpload, FiAlertTriangle } from "react-icons/fi"
+import { FiCheck, FiImage, FiUpload } from "react-icons/fi"
 import "@/infrastructure/css/tienda/carrito/SubirComprobante.css"
 
-export function SubirComprobante({ pago, token, onEnviado }) {
+export function SubirComprobante({ pedidos, token, metodoPago, onEnviado }) {
   const [archivo, setArchivo]   = useState(null)
   const [preview, setPreview]   = useState(null)
   const [subiendo, setSubiendo] = useState(false)
   const [enviado, setEnviado]   = useState(false)
   const [error, setError]       = useState("")
   const inputRef = useRef(null)
-
-  const esReenvio = pago?.estado === "rechazado"
 
   const handleArchivo = (e) => {
     const file = e.target.files[0]
@@ -27,47 +25,31 @@ export function SubirComprobante({ pago, token, onEnviado }) {
     try {
       const formData = new FormData()
       formData.append("comprobante", archivo)
-      const { data } = await axios.put(
-        `http://localhost:3000/api/pagos/${pago.id_pago}/comprobante`,
+      formData.append("id_pedidos", JSON.stringify(pedidos.map(p => p.id_pedido)))
+      formData.append("metodo", metodoPago || "nequi")
+
+      const res = await axios.post(
+        "http://localhost:3000/api/pagos",
         formData,
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
       )
+      onEnviado?.(res.data.pago)
       setEnviado(true)
-      onEnviado?.(data.pago)
     } catch (err) {
+      console.error(err)
       setError(err.response?.data?.error || "Error al subir comprobante")
-    } finally {
-      setSubiendo(false)
-    }
+    } finally { setSubiendo(false) }
   }
 
-  if (pago?.estado === "aprobado") {
-    return (
-      <div className="comprobante-enviado">
-        <FiCheck size={16} /> Pago confirmado
-      </div>
-    )
-  }
-
-  if (enviado || (pago?.comprobante && pago?.estado === "pendiente")) {
-    return (
-      <div className="comprobante-enviado">
-        <FiCheck size={16} /> Comprobante enviado — se verificará pronto
-      </div>
-    )
-  }
+  if (enviado) return (
+    <div className="comprobante-enviado">
+      <FiCheck size={16} /> Comprobante enviado — el admin lo verificará pronto
+    </div>
+  )
 
   return (
     <div className="comprobante-wrap">
-      <p className="comprobante-titulo">
-        {esReenvio ? "Vuelve a subir tu comprobante" : "Sube tu comprobante de pago"}
-      </p>
-
-      {esReenvio && pago.nota_rechazo && (
-        <p className="comprobante-rechazo">
-          <FiAlertTriangle size={14} /> {pago.nota_rechazo}
-        </p>
-      )}
+      <p className="comprobante-titulo">Sube tu comprobante de pago</p>
 
       <div
         className={`comprobante-dropzone ${preview ? "has-preview" : ""}`}
@@ -94,7 +76,7 @@ export function SubirComprobante({ pago, token, onEnviado }) {
         disabled={subiendo || !archivo}
       >
         <FiUpload size={14} />
-        {subiendo ? "Subiendo..." : esReenvio ? "Reenviar comprobante" : "Enviar comprobante"}
+        {subiendo ? "Subiendo..." : "Enviar comprobante"}
       </button>
     </div>
   )

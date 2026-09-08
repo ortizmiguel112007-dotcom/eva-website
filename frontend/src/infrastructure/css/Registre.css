@@ -112,9 +112,10 @@
 }
 
 /* ─── Inputs ────────────────────────────────────────────── */
-.container-form input {
+/* ─── Inputs ────────────────────────────────────────────── */
+/* Los estilos generales NO se aplican a los checkbox */
+.container-form input:not([type="checkbox"]) {
     flex: 1;
-    /* ocupa el espacio restante */
     font-weight: 500;
     font-size: 0.875rem;
     padding: 0.45rem 0.6rem;
@@ -123,10 +124,9 @@
     outline: none;
     transition: border-color 0.2s ease;
     min-width: 0;
-    /* evita overflow en flex */
 }
 
-.container-form input:focus {
+.container-form input:not([type="checkbox"]):focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-glow);
 }
@@ -551,3 +551,260 @@
         display: none;
     }
 }
+
+
+/* =========================================================
+   CHECKBOXES - REGISTRO
+   ========================================================= */
+
+.container-checkboxes {
+    width: 100%;
+    margin-top: 0.25rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+
+/* ─── Elemento individual ──────────────────────────────── */
+
+.check-item {
+    display: flex;
+    align-items: flex-start;
+
+    width: 100%;
+
+    gap: 0.65rem;
+
+    cursor: pointer;
+    user-select: none;
+
+    color: #273142;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+
+/* ─── Checkbox personalizado ───────────────────────────── */
+
+.check-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+
+    flex: 0 0 17px;
+
+    width: 17px;
+    height: 17px;
+
+    min-width: 17px;
+    min-height: 17px;
+
+    margin: 2px 0 0 0;
+    padding: 0;
+
+    border: 1.5px solid #aeb7c4;
+    border-radius: 4px;
+
+    background-color: #ffffff;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+
+    box-sizing: border-box;
+}
+
+
+/* ─── Hover ─────────────────────────────────────────────── */
+
+.check-item:hover input[type="checkbox"] {
+    border-color: var(--accent);
+}
+
+
+/* ─── Checkbox seleccionado ─────────────────────────────── */
+
+.check-item input[type="checkbox"]:checked {
+    background-color: var(--accent);
+    border-color: var(--accent);
+
+    box-shadow: 0 2px 6px rgba(41, 177, 255, 0.25);
+}
+
+
+/* ─── Check ✓ ───────────────────────────────────────────── */
+
+.check-item input[type="checkbox"]:checked::after {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+    height: 8px;
+
+    left: 5px;
+    top: 2px;
+
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+
+/* ─── Efecto al hacer clic ──────────────────────────────── */
+
+.check-item input[type="checkbox"]:active {
+    transform: scale(0.92);
+}
+
+
+/* ─── Texto ─────────────────────────────────────────────── */
+
+.check-item span {
+    flex: 1;
+
+    color: var(--gray-mid);
+}
+
+
+/* ─── Enlaces ───────────────────────────────────────────── */
+
+.check-item a {
+    color: #168fd1;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.check-item a:hover {
+    color: #0b6fa8;
+    text-decoration: underline;
+}
+
+
+/* ─── Error ─────────────────────────────────────────────── */
+
+.check-error {
+    margin: -0.4rem 0 0 1.65rem;
+
+    color: #d93025;
+
+    font-size: 0.72rem;
+    line-height: 1.3;
+}
+
+
+/* ─── Focus / teclado ──────────────────────────────────── */
+
+.check-item input[type="checkbox"]:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px rgba(41, 177, 255, 0.16);
+}
+
+
+/* =========================================================
+   CHECKBOXES - RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .container-checkboxes {
+        margin-top: 0.15rem;
+        gap: 0.7rem;
+    }
+
+    .check-item {
+        font-size: 0.75rem;
+        line-height: 1.45;
+        gap: 0.55rem;
+    }
+
+    .check-item input[type="checkbox"] {
+        flex: 0 0 16px;
+
+        width: 16px;
+        height: 16px;
+
+        min-width: 16px;
+        min-height: 16px;
+    }
+
+    .check-item input[type="checkbox"]:checked::after {
+        width: 4px;
+        height: 8px;
+
+        left: 4px;
+        top: 1px;
+    }
+
+    .check-error {
+        margin-left: 1.5rem;
+        font-size: 0.68rem;
+    }
+}
+/* ─── Documento PDF ─────────────────────────────────────── */
+
+.re-doc-pdf {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0.65rem 0.8rem;
+
+    border-radius: 0.35rem;
+
+    background: rgba(41, 177, 255, 0.06);
+
+    border: 1px solid rgba(41, 177, 255, 0.2);
+
+    color: #64748b;
+
+    font-size: 0.78rem;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.re-declaraciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.re-check-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #374151;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.re-check-label input[type="checkbox"] {
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.re-check-label.error { color: #ef4444; }

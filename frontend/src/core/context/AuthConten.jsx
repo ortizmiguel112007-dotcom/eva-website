@@ -3,8 +3,7 @@ import { jwtDecode } from "jwt-decode"
 import axios from "axios"
 
 const AuthContext = createContext()
-const API_URL = import.meta.env.VITE_API_URL
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem("token"))
 

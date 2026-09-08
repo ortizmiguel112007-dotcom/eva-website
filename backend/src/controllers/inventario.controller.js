@@ -112,6 +112,12 @@ export const actualizarStock = async (req, res) => {
       where: { id_producto },
       select: {
         id_creador: true,
+        seccion: {
+          select: {
+            id_alianza: true,
+            id_emprendedora: true,
+          },
+        },
       },
     });
 
@@ -121,11 +127,34 @@ export const actualizarStock = async (req, res) => {
       });
     }
 
-    if (
-      req.user.rol !== "admin" &&
-      req.user.rol !== "administrador" &&
-      producto.id_creador !== req.user.id
-    ) {
+    // if (
+    //   req.user.rol !== "admin" &&
+    //   req.user.rol !== "administrador" &&
+    //   producto.id_creador !== req.user.id
+    // ) {
+    //   return res.status(403).json({
+    //     error: "No tienes permiso para modificar el stock de este producto.",
+    //   });
+    // }
+    const esAdmin = req.user.rol === "admin" || req.user.rol === "administrador";
+    const esCreadorOriginal = producto.id_creador === req.user.id;
+
+    // Si el producto pertenece a una sección de alianza, permite editar
+    // a cualquier participante autorizado de esa alianza, no solo a quien lo creó.
+    let esParticipanteAlianza = false;
+    if (producto.seccion?.id_alianza) {
+      const participante = await prisma.alianzaParticipante.findUnique({
+        where: {
+          id_alianza_id_usuario: {
+            id_alianza: producto.seccion.id_alianza,
+            id_usuario: req.user.id,
+          },
+        },
+      });
+      esParticipanteAlianza = !!participante?.autorizado;
+    }
+
+    if (!esAdmin && !esCreadorOriginal && !esParticipanteAlianza) {
       return res.status(403).json({
         error: "No tienes permiso para modificar el stock de este producto.",
       });

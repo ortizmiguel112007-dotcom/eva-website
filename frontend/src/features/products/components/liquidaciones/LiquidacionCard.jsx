@@ -2,7 +2,7 @@ import { FiUser, FiSmartphone, FiCreditCard, FiCheck, FiClock } from "react-icon
 import { formatPrecio } from "@/features/tienda/utils/utils"
 import "@/infrastructure/css/products-emprend/liquidaciones/LiquidacionCard.css"
 
-export function LiquidacionCard({ liquidacion, onMarcarPagado }) {
+export function LiquidacionCard({ liquidacion, onMarcarPagado, ocultarDatosPago = false }) {
   const { emprendedora, pedido, monto, estado, fecha_generada, fecha_pagado, nota } = liquidacion
 
   return (
@@ -21,25 +21,27 @@ export function LiquidacionCard({ liquidacion, onMarcarPagado }) {
           {new Date(fecha_generada).toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" })}
         </div>
 
-        <div className="liq-card-datos-pago">
-          {emprendedora?.nequi_numero && (
-            <div className="liq-dato">
-              <FiSmartphone size={12} /> Nequi: <strong>{emprendedora.nequi_numero}</strong>
-            </div>
-          )}
-          {emprendedora?.bancolombia_numero && (
-            <div className="liq-dato">
-              <FiCreditCard size={12} /> Bancolombia ({emprendedora.bancolombia_tipo}):{" "}
-              <strong>{emprendedora.bancolombia_numero}</strong>
-              {emprendedora.titular_cuenta && <span> — {emprendedora.titular_cuenta}</span>}
-            </div>
-          )}
-          {!emprendedora?.nequi_numero && !emprendedora?.bancolombia_numero && (
-            <div className="liq-dato liq-dato-vacio">
-              La emprendedora no ha configurado sus métodos de pago aún
-            </div>
-          )}
-        </div>
+        {!ocultarDatosPago && (
+          <div className="liq-card-datos-pago">
+            {emprendedora?.nequi_numero && (
+              <div className="liq-dato">
+                <FiSmartphone size={12} /> Nequi: <strong>{emprendedora.nequi_numero}</strong>
+              </div>
+            )}
+            {emprendedora?.bancolombia_numero && (
+              <div className="liq-dato">
+                <FiCreditCard size={12} /> Bancolombia ({emprendedora.bancolombia_tipo}):{" "}
+                <strong>{emprendedora.bancolombia_numero}</strong>
+                {emprendedora.titular_cuenta && <span> — {emprendedora.titular_cuenta}</span>}
+              </div>
+            )}
+            {!emprendedora?.nequi_numero && !emprendedora?.bancolombia_numero && (
+              <div className="liq-dato liq-dato-vacio">
+                La emprendedora no ha configurado sus métodos de pago aún
+              </div>
+            )}
+          </div>
+        )}
 
         {estado === "pagado" && (
           <div className="liq-card-pagado-info">

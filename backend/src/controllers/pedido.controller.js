@@ -111,6 +111,7 @@ export const cambiarEstadoPedido = async (req, res) => {
 
 // GET /api/pedidos/:id — detalle de un pedido
 export const obtenerPedido = async (req, res) => {
+  
   try {
     const pedido = await prisma.pedido.findUnique({
       where: { id_pedido: Number(req.params.id) },

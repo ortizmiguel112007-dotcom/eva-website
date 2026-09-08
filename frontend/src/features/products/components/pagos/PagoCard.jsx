@@ -1,31 +1,72 @@
-import { FiPackage, FiUser, FiEye, FiCheck, FiX, FiSmartphone, FiCreditCard, FiTruck } from "react-icons/fi"
-import { formatPrecio, formatFecha } from "@/features/tienda/utils/utils"
-import "@/infrastructure/css/products-emprend/pagos/PagoCard.css"
+import {
+  FiPackage,
+  FiUser,
+  FiEye,
+  FiCheck,
+  FiX,
+  FiSmartphone,
+  FiCreditCard,
+  FiTruck,
+} from "react-icons/fi";
+import { formatPrecio, formatFecha } from "@/features/tienda/utils/utils";
+import "@/infrastructure/css/products-emprend/pagos/PagoCard.css";
 
 const ESTADO_BADGE = {
-  pendiente: { bg: "#fffbeb", color: "#f59e0b", border: "#fde68a", label: "Pendiente" },
-  aprobado:  { bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0", label: "Aprobado"  },
-  rechazado: { bg: "#fef2f2", color: "#ef4444", border: "#fecaca", label: "Rechazado" },
-}
+  pendiente: {
+    bg: "#fffbeb",
+    color: "#f59e0b",
+    border: "#fde68a",
+    label: "Pendiente",
+  },
+  aprobado: {
+    bg: "#f0fdf4",
+    color: "#16a34a",
+    border: "#bbf7d0",
+    label: "Aprobado",
+  },
+  rechazado: {
+    bg: "#fef2f2",
+    color: "#ef4444",
+    border: "#fecaca",
+    label: "Rechazado",
+  },
+};
 
 const METODO_INFO = {
-  nequi:         { icon: <FiSmartphone size={12} color="#7c3aed" />, label: "Nequi"          },
-  bancolombia:   { icon: <FiCreditCard  size={12} color="#2563eb" />, label: "Bancolombia"    },
-  contraentrega: { icon: <FiTruck       size={12} color="#16a34a" />, label: "Contra entrega" },
-}
+  nequi: { icon: <FiSmartphone size={12} color="#7c3aed" />, label: "Nequi" },
+  bancolombia: {
+    icon: <FiCreditCard size={12} color="#2563eb" />,
+    label: "Bancolombia",
+  },
+  contraentrega: {
+    icon: <FiTruck size={12} color="#16a34a" />,
+    label: "Contra entrega",
+  },
+};
 
 export function Badge({ estado }) {
-  const s = ESTADO_BADGE[estado] || ESTADO_BADGE.pendiente
+  const s = ESTADO_BADGE[estado] || ESTADO_BADGE.pendiente;
   return (
-    <span className="pagos-badge" style={{ background: s.bg, color: s.color, borderColor: s.border }}>
+    <span
+      className="pagos-badge"
+      style={{ background: s.bg, color: s.color, borderColor: s.border }}
+    >
       {s.label}
     </span>
-  )
+  );
 }
 
-export function PagoCard({ pago, onVerDetalle, onVerificar, soloLectura = false }) {
-  const metodo = METODO_INFO[pago.metodo] || { icon: null, label: pago.metodo?.toUpperCase() }
-  const pedidos = pago.pedidos || []
+export function PagoCard({
+  pago,
+  onVerDetalle,
+  onVerificar,
+  soloLectura = false,
+}) {
+  const metodo = METODO_INFO[pago.metodo] || {
+    icon: null,
+    label: pago.metodo?.toUpperCase(),
+  };
+  const pedidos = pago.pedidos || [];
 
   return (
     <div className="pago-card">
@@ -33,7 +74,8 @@ export function PagoCard({ pago, onVerDetalle, onVerificar, soloLectura = false 
         <div className="pago-card-row">
           <FiPackage size={14} color="#64748b" />
           <span className="pago-card-pedido">
-            Pago #{pago.id_pago} · {pedidos.length} pedido{pedidos.length !== 1 ? "s" : ""}
+            Pago #{pago.id_pago} · {pedidos.length} pedido
+            {pedidos.length !== 1 ? "s" : ""}
           </span>
           <Badge estado={pago.estado} />
         </div>
@@ -50,9 +92,10 @@ export function PagoCard({ pago, onVerDetalle, onVerificar, soloLectura = false 
           </span>
         </div>
         <div className="pago-card-productos">
-          {pedidos.map(p => (
-            <span key={p.id_pedido} className="pago-card-producto">
-              Pedido #{p.id_pedido} ({formatPrecio(p.total)})
+          {pago.pedidos?.map((p) => (
+            <span key={p.id_pedido} className="pago-card-pedido-ref">
+              #{p.id_pedido} —{" "}
+              {p.detalles?.map((d) => d.producto?.nombre_producto).join(", ")}
             </span>
           ))}
         </div>
@@ -72,11 +115,17 @@ export function PagoCard({ pago, onVerDetalle, onVerificar, soloLectura = false 
 
         {!soloLectura && pago.estado === "pendiente" && (
           <>
-            <button className="pago-btn-verificar" onClick={() => onVerificar(pago.id_pago, "aprobado")}>
+            <button
+              className="pago-btn-verificar"
+              onClick={() => onVerificar(pago.id_pago, "aprobado")}
+            >
               <FiCheck size={13} /> Aprobar
             </button>
             {pago.metodo !== "contraentrega" && (
-              <button className="pago-btn-rechazar" onClick={() => onVerDetalle(pago)}>
+              <button
+                className="pago-btn-rechazar"
+                onClick={() => onVerDetalle(pago)}
+              >
                 <FiX size={13} /> Rechazar
               </button>
             )}
@@ -84,5 +133,5 @@ export function PagoCard({ pago, onVerDetalle, onVerificar, soloLectura = false 
         )}
       </div>
     </div>
-  )
+  );
 }

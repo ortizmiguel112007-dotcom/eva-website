@@ -2,10 +2,11 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { FiClock, FiUser } from "react-icons/fi"
 
-const API_URL = import.meta.env.VITE_API_URL
-const PORT = import.meta.env.PORT
+// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+// const PORT = import.meta.env.PORT
 
-const BASE = `${API_URL}:${PORT}`
+// const BASE = `${API_URL}:${PORT}`
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 const EVENTO_LABEL = {
   creada: "Alianza creada",

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAuth } from "@/core/context/AuthConten"
-import { FiClock, FiCheck, FiX, FiEye, FiDollarSign, FiCalendar, FiPackage, FiSmartphone, FiCreditCard, FiTruck } from "react-icons/fi"
+import { FiEye, FiDollarSign, FiCalendar, FiPackage, FiSmartphone, FiCreditCard, FiTruck } from "react-icons/fi"
 
 import { formatPrecio, formatFecha } from "@/features/tienda/utils/utils"
 import { useApiData } from "@/features/usuario/hooks/useApiData"
@@ -21,18 +21,17 @@ const METODO_INFO = {
 
 export default function HistorialPagos() {
   const { token } = useAuth()
-  const { data: pedidos, cargando } = useApiData("/api/cliente/pedidos", token)
+  const { data: pagos, cargando } = useApiData("/api/pagos/mis-pagos", token)  // ✅
+
   const [filtro, setFiltro]     = useState("todos")
   const [modalImg, setModalImg] = useState(null)
   const [pagina, setPagina]     = useState(1)
 
-  useEffect(() => { setPagina(1) }, [filtro])
-
   const filtrados = filtro === "todos"
-    ? pedidos
+    ? pagos
     : filtro === "sin_comprobante"
-      ? pedidos.filter(p => !p.pago)
-      : pedidos.filter(p => p.pago?.estado === filtro)
+      ? pagos.filter(p => !p.comprobante && p.metodo !== "contraentrega")
+      : pagos.filter(p => p.estado === filtro)
 
   const totalPaginas    = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA))
   const filtradosPagina = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
@@ -53,9 +52,9 @@ export default function HistorialPagos() {
         </div>
       </div>
 
-      <MetricasPagos pedidos={pedidos} />
-
-      <FiltrosPagos pedidos={pedidos} filtro={filtro} setFiltro={setFiltro} />
+      <MetricasPagos pagos={pagos} />       
+      <FiltrosPagos  pagos={pagos}          
+        filtro={filtro} setFiltro={setFiltro} />
 
       {filtrados.length === 0 ? (
         <div className="hp-empty">
@@ -67,14 +66,12 @@ export default function HistorialPagos() {
       ) : (
         <>
           <div className="hp-lista">
-            {filtradosPagina.map(pedido => {
-              const pago   = pedido.pago
-              const est    = pago ? (ESTADO[pago.estado] || ESTADO.pendiente) : ESTADO.sin_comprobante
-              const tienda = pedido.seccion?.emprendedora?.usuario?.nombre || "EVA"
-              const metodo = METODO_INFO[pedido.metodo_pago]
+            {filtradosPagina.map(pago => {
+              const est    = ESTADO[pago.estado] || ESTADO.pendiente
+              const metodo = METODO_INFO[pago.metodo]
 
               return (
-                <div key={pedido.id_pedido} className="hp-item">
+                <div key={pago.id_pago} className="hp-item">
                   <div className="hp-item-indicador" style={{ background: est.color }} />
                   <div className="hp-item-est-icono" style={{ background: est.bg }}>
                     <est.Icon size={16} color={est.color} />
@@ -82,31 +79,41 @@ export default function HistorialPagos() {
 
                   <div className="hp-item-info">
                     <div className="hp-item-titulo">
-                      <span className="hp-item-pedido">Pedido #{pedido.id_pedido}</span>
-                      <span className="hp-item-tienda"><FiPackage size={11} /> {tienda}</span>
+                      <span className="hp-item-pedido">
+                        {pago.pedidos?.length > 1
+                          ? `${pago.pedidos.length} pedidos`
+                          : `Pedido #${pago.pedidos?.[0]?.id_pedido}`
+                        }
+                      </span>
+                      <span className="hp-item-tienda">
+                        <FiPackage size={11} />
+                        {pago.pedidos?.map(p =>
+                          p.seccion?.emprendedora?.usuario?.nombre
+                        ).filter(Boolean).join(", ")}
+                      </span>
                     </div>
                     <div className="hp-item-meta">
                       <span>
                         {metodo?.icon || <FiSmartphone size={11} />}
-                        {metodo?.label || pedido.metodo_pago || "—"}
+                        {metodo?.label || pago.metodo || "—"}
                       </span>
-                      <span><FiCalendar size={11} /> {formatFecha(pago?.fecha || pedido.fecha)}</span>
-                      {pago?.estado === "rechazado" && pago?.nota_rechazo && (
+                      <span><FiCalendar size={11} /> {formatFecha(pago.fecha)}</span>
+                      {pago.estado === "rechazado" && pago.nota_rechazo && (
                         <span className="hp-item-rechazo">Motivo: {pago.nota_rechazo}</span>
                       )}
                     </div>
                   </div>
 
                   <div className="hp-item-total">
-                    <strong>{formatPrecio(pedido.total)}</strong>
+                    <strong>{formatPrecio(pago.monto_total)}</strong>
                   </div>
 
                   <span className="hp-badge"
                     style={{ background: est.bg, color: est.color, borderColor: est.border }}>
-                    {pago ? est.label : "Sin comprobante"}
+                    {est.label}
                   </span>
 
-                  {pago?.comprobante && (
+                  {pago.comprobante && (
                     <button className="hp-btn-ver" onClick={() => setModalImg(pago.comprobante)}>
                       <FiEye size={13} /> Ver
                     </button>

@@ -9,7 +9,10 @@ import { PasoVerificacion } from "../components/registro/PasoVerificacion"
 
 import "@/infrastructure/css/Registre.css"
 
-const FORM_INICIAL = { nombre: "", email: "", password: "", confirmar: "", telefono: "" }
+const FORM_INICIAL = {
+  nombre: "", email: "", password: "", confirmar: "", telefono: "",
+  esMayorEdad: false,
+}
 
 const validarCampos = (form) => {
   const e = {}
@@ -22,6 +25,7 @@ const validarCampos = (form) => {
   if (!form.telefono.trim()) e.telefono = "El teléfono es obligatorio"
   if (form.password.length < 8)               e.password = "Mínimo 8 caracteres"
   if (form.password !== form.confirmar)        e.confirmar = "Las contraseñas no coinciden"
+  if (!form.esMayorEdad)     e.esMayorEdad    = "Debes confirmar que eres mayor de edad"
   return e
 }
 
@@ -42,6 +46,10 @@ export default function RegistroCliente() {
     setError("")
   }
 
+  const onChangeCheckbox = (campo) => (e) => {
+    onChange(campo, e.target.checked)
+  }
+
   const handleRegistro = async (e) => {
     e.preventDefault()
     const e_ = validarCampos(form)
@@ -51,6 +59,7 @@ export default function RegistroCliente() {
       await axios.post("http://localhost:3000/registro", {
         nombre: form.nombre.trim(), email: form.email,
         password: form.password, telefono: form.telefono, rol: "usuario",
+        es_mayor_edad: form.esMayorEdad,
       })
       setPaso(2)
     } catch (err) { setError(err.response?.data?.error || "Error al registrarse") }
@@ -78,6 +87,18 @@ export default function RegistroCliente() {
             <form onSubmit={handleRegistro} className="container-form">
               <div className="container-paddin">
                 <CamposBase form={form} errores={errores} onChange={onChange} />
+
+                <div className="container-checkboxes">
+                  <label className="check-item">
+                    <input
+                      type="checkbox"
+                      checked={form.esMayorEdad}
+                      onChange={onChangeCheckbox("esMayorEdad")}
+                    />
+                    <span>Confirmo que soy mayor de 18 años.</span>
+                  </label>
+                  {errores.esMayorEdad && <p className="check-error">{errores.esMayorEdad}</p>}
+                </div>
               </div>
               {error && <p className="mensaje">{error}</p>}
               <div className="container-button">

@@ -5,7 +5,7 @@ import { useCarrito } from "@/core/context/CarritoContext"
 import { FiTag, FiCheck } from "react-icons/fi"
 import { formatPrecio } from "@/features/tienda/utils/utils"
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export function CuponDrawer() {
   const { token } = useAuth()

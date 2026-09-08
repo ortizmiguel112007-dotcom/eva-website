@@ -5,7 +5,7 @@ export function StockBadge({ inventario, tipo }) {
   const stock    = inventario?.cantidad ?? 0
   const stockMin = inventario?.stock_minimo ?? 0
   const estado   = stock === 0 ? "agotado" : stock <= stockMin ? "bajo" : "ok"
-  const label    = stock === 0 ? "Agotado" : stock <= stockMin ? `Stock bajo (${stock})` : `${stock} disponibles`
+  const label    = stock === 0 ? "Agotado" : stock <= stockMin ? "Pocas unidades disponibles" : "Disponible"
 
   return (
     <div className={`dp-stock dp-stock--${estado}`}>

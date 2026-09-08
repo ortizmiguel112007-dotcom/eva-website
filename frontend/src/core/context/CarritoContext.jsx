@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import axios from "axios"
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 const CarritoContext = createContext()
 const BASE = `${API_URL}/api/carrito`
 
@@ -46,8 +46,8 @@ export const CarritoProvider = ({ children }) => {
     }
     setCargando(true)
     try {
-      const res = await axios.get(BASE, { headers: headers() })
-      setItems(res.data.items.map(normalizar))
+     const res = await axios.get(BASE, { headers: headers() })
+    setItems((res.data.items ?? []).map(normalizar))
     } catch (err) {
       console.error("Error al cargar carrito:", err)
     } finally {
@@ -141,7 +141,7 @@ export const CarritoProvider = ({ children }) => {
       cambiarCantidad,
       vaciar, vaciarCarrito,
       limpiarCarrito,
-      cupon, setCupon, // 🆕
+      cupon, setCupon, 
       totalItems, total, totalPrecio,
     }}>
       {children}

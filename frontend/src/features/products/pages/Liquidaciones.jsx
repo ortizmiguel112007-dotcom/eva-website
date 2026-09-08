@@ -61,8 +61,12 @@ export default function Liquidaciones() {
       ) : (
         <div className="pagos-lista">
           {filtradas.map(l => (
-            <LiquidacionCard key={l.id_liquidacion} liquidacion={l} />
-            // sin onMarcarPagado → el botón no aparece, solo lectura (RF-072)
+            <LiquidacionCard
+              key={l.id_liquidacion}
+              liquidacion={l}
+              ocultarDatosPago
+              // sin onMarcarPagado → el botón no aparece, solo lectura (RF-072)
+            />
           ))}
         </div>
       )}

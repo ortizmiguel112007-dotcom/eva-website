@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -153,6 +155,7 @@ model Auditoria {
 model Pedido {
   id_pedido   Int      @id @default(autoincrement())
   id_cliente  Int
+  metodo_pago String?  
   id_seccion  Int
   id_pago     Int?           // ← nuevo
   estado      String   @default("pendiente_pago")

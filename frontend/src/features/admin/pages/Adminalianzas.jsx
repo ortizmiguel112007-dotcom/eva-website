@@ -8,10 +8,10 @@ import { HistorialAlianza } from "../components/alianzas/HistorialAlianza"
 
 import "@/infrastructure/css/products-emprend/pagos/Pagos.css"
 
-const API_URL = import.meta.env.VITE_API_URL
-const PORT = import.meta.env.PORT
+// const API_URL = import.meta.env.VITE_API_URL
+// const PORT = import.meta.env.PORT
 
-const BASE = `${API_URL}:${PORT}`
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function AdminAlianzas() {
   const { token, user } = useAuth()

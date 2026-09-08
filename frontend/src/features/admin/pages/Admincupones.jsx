@@ -8,10 +8,11 @@ import { getHeaders }           from "@/features/admin/utils/utils"
 
 import "@/infrastructure/css/admin/cupones/AdminCupones.css"
 
-const API_URL = import.meta.env.VITE_API_URL
-const PORT = import.meta.env.PORT
+// const API_URL = import.meta.env.VITE_API_URL
+// const PORT = import.meta.env.PORT
 
-const BASE = `${API_URL}:${PORT}`
+// const BASE = `${API_URL}:${PORT}`
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 export default function AdminCupones() {
   const [cupones, setCupones]                   = useState([])
