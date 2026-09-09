@@ -23,6 +23,9 @@ import metodosPagoRouter from "./routes/metodosPago.route.js"
 import liquidacionRoutes from './routes/liquidacion.route.js'
 import facturaRoutes from './routes/factura.route.js'
 import reporteRoutes from './routes/reporte.route.js'
+
+import googleRoutes from './services/google/google.router.js'
+
 import { actualizarCategoriasAutomaticas } from './controllers/destacado.controller.js'
 import { vencerAlianzasExpiradas } from './controllers/alianza.controller.js'
 import prisma from './conexion.js'
@@ -83,6 +86,7 @@ app.use(movimientoRouter)     // /api/movimientos-inventario
 app.use(metodosPagoRouter)    // /api/emprendedora/metodos-pago, /api/tienda/:id_emprendedora/metodos-pago
 app.use(liquidacionRoutes)
 app.use(facturaRoutes)
+app.use(googleRoutes)
 
 setInterval(vencerAlianzasExpiradas, 30 * 60 * 1000)
 vencerAlianzasExpiradas()

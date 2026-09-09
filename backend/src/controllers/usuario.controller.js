@@ -1,4 +1,4 @@
-import { enviarCorreo } from "../services/email.service.js";
+import { enviarCorreo } from "../services/google/google.service.js";
 import prisma from "../conexion.js";
 import jwt from "jsonwebtoken";
 import { enviarSolicitudAdmin } from '../services/notificacion.service.js'
@@ -73,7 +73,7 @@ export const CreaterDate = async (req, res) => {
   }
 
   if (rol === 'emprendedora') {
-    await enviarSolicitudAdmin(nombre, email).catch(err => console.log('Error al notificar admin:', err))
+    enviarSolicitudAdmin(nombre, email).catch(err => console.log('Error al notificar admin:', err))
   }
 
   try {
@@ -92,7 +92,13 @@ export const CreaterDate = async (req, res) => {
       create: { nombre, email, telefono, password, codigo, expiracion, rol: rol || "usuario", foto_documento },
     });
 
-    await enviarCorreo(email, codigo).catch(err => console.log("Error al enviar correo:", err));
+    // enviarCorreo(email, codigo).catch(err => console.log("Error al enviar correo:", err));
+    enviarCorreo(
+      email,
+      'Tu código de verificación — EVA',
+      'verificacion',
+      [codigo]
+    ).catch(err => console.log('Error al enviar correo:', err))
 
     return res.json({ message: "Usuario creado con éxito, por favor revisa tu correo para verificar tu cuenta." });
   } catch (error) {
