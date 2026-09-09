@@ -27,7 +27,7 @@ export default function CrudAdmin() {
   const headers = { Authorization: `Bearer ${getToken()}` }
 
   const cargarUsuarios = () => {
-    axios.get(`${BASE_URL}/usuarios`, { headers })
+    axios.get(`${BASE_URL}/admin/usuarios`, { headers })
       .then(res => setUsuarios(res.data))
       .catch(() => mostrarMensaje("Error al cargar los usuarios", "error"))
   }
