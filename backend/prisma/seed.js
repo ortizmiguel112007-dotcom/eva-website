@@ -1,8 +1,21 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcrypt'
 import 'dotenv/config'
 
-const prisma = new PrismaClient()
+const connectionString = process.env.DATABASE_URL
+
+if (!connectionString) {
+  throw new Error('Falta DATABASE_URL en las variables de entorno')
+}
+
+const adapter = new PrismaPg({
+  connectionString,
+})
+
+const prisma = new PrismaClient({
+  adapter,
+})
 
 async function main() {
   const email = process.env.ADMIN_EMAIL || 'admin@eva.com'
