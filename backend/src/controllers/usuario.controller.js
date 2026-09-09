@@ -2,6 +2,7 @@ import { enviarCorreo } from "../services/google/google.service.js";
 import prisma from "../conexion.js";
 import jwt from "jsonwebtoken";
 import { enviarSolicitudAdmin } from '../services/notificacion.service.js'
+import bcrypt from 'bcrypt'
 
 const emailRegex = /^[^\s@]+@(gmail\.com|sena\.edu)$/;
 
@@ -33,7 +34,8 @@ export const Login = async (req, res) => {
     const usuario = await prisma.user.findUnique({ where: { email } });
 
     if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
-    if (usuario.password !== password) return res.status(401).json({ error: "Contraseña incorrecta" });
+    const isMatch = await bcrypt.compare(password, usuario.password);
+    if (!isMatch) return res.status(401).json({ error: "Contraseña incorrecta" });
     if (!usuario.verificado) return res.status(403).json({ error: "Usuario no verificado. Vuelva a intentar registarte" });
     if (!usuario.activo && usuario.rol !== "emprendedora") return res.status(403).json({ error: "Tu cuenta está desactivada" });
 
@@ -85,14 +87,16 @@ export const CreaterDate = async (req, res) => {
 
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
     const expiracion = new Date(Date.now() + 10 * 60 * 1000);
+    
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     await prisma.verificacionPendiente.upsert({
       where: { email },
-      update: { nombre, telefono, password, codigo, expiracion, rol: rol || "usuario", foto_documento },
-      create: { nombre, email, telefono, password, codigo, expiracion, rol: rol || "usuario", foto_documento },
+      update: { nombre, telefono, password: hashedPassword, codigo, expiracion, rol: rol || "usuario", foto_documento },
+      create: { nombre, email, telefono, password: hashedPassword, codigo, expiracion, rol: rol || "usuario", foto_documento },
     });
 
-    // enviarCorreo(email, codigo).catch(err => console.log("Error al enviar correo:", err));
     enviarCorreo(
       email,
       'Tu código de verificación — EVA',
@@ -133,7 +137,7 @@ export const actualizarPerfil = async (req, res) => {
     const data = {};
     if (nombre)   data.nombre   = nombre;
     if (telefono) data.telefono = telefono;
-    if (password) data.password = password;
+    if (password) data.password = await bcrypt.hash(password, 10);
 
     const actualizado = await prisma.user.update({
       where: { id: req.user.id },
