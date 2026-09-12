@@ -2,7 +2,7 @@ import { FaEdit } from "@/infrastructure/icons/index.js"
 
 const PAGE_SIZE = 10
 
-export function TablaUsuariosAdmin({ usuarios, paginaActual, busqueda, onEditar, onToggle }) {
+export function TablaUsuariosAdmin({ usuarios, paginaActual, busqueda, onEditar, onToggle }) {  
   return (
     <div className="crud-table-wrapper">
       <table className="crud-table">

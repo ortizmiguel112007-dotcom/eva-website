@@ -8,7 +8,7 @@ import { ModalConfirmarToggle } from "../components/users/ModalConfirmarToggle"
 
 import "@/infrastructure/css/auth/CrudAdmin.css"
 
-const BASE_URL = import.meta.env.VITE_API_URL + "/admin" || "http://localhost:3000/admin"
+const BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/admin`
 const getToken = () => localStorage.getItem("token")
 const EMPTY_FORM = { nombre: "", email: "", telefono: "", password: "" }
 const PAGE_SIZE = 10
@@ -41,9 +41,10 @@ export default function CrudAdmin() {
   }
 
   const usuariosFiltrados = useMemo(() => {
+    const listaSegura = Array.isArray(usuarios) ? usuarios : [];
     const t = busqueda.trim().toLowerCase()
-    if (!t) return usuarios
-    return usuarios.filter(u =>
+    if (!t) return listaSegura
+    return listaSegura.filter(u =>
       u.nombre?.toLowerCase().includes(t) || u.email?.toLowerCase().includes(t)
     )
   }, [usuarios, busqueda])
@@ -75,7 +76,7 @@ export default function CrudAdmin() {
   const handleCrear = async e => {
     e.preventDefault(); setCargando(true)
     try {
-      await axios.post(`${BASE_URL}/usuarios`, form, { headers })
+      await axios.post(`${BASE_URL}/usuarios/create`, form, { headers })
       mostrarMensaje("Usuario creado correctamente"); cerrarModal(); cargarUsuarios()
     } catch (err) {
       mostrarMensaje(err.response?.data?.error || "Error al crear el usuario", "error")

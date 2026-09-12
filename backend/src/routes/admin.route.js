@@ -14,7 +14,7 @@ const soloAdmin = (req, res, next) => {
 }
 
 router.get('/admin/usuarios',              verificarToken, soloAdmin, GetUsuarios)
-router.post('/admin/usuarios',             verificarToken, soloAdmin, CreateUsuarioAdmin)
+router.post('/admin/usuarios/create',      verificarToken, soloAdmin, CreateUsuarioAdmin)
 router.put('/admin/usuarios/:id',          verificarToken, soloAdmin, UpdateUsuario)
 router.patch('/admin/usuarios/:id/estado', verificarToken, soloAdmin, ToggleEstadoUsuario)
 router.put('/admin/usuarios/:id/aprobar',  verificarToken, soloAdmin, aprobarEmprendedora)

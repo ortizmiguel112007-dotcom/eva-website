@@ -97,9 +97,6 @@ const LoginPage = () => {
           </form>
         </div>
 
-        <div className="container-cat-login">
-          <img src={background} alt="Decoración" />
-        </div>
       </div>
     </section>
   )

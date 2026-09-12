@@ -6,7 +6,6 @@ import { TablaEmprendedoras }    from "../components/users/TablaEmprendedoras"
 import { ModalConfirmarAccion }  from "../components/users/ModalConfirmarAccion"
 import { ModalFotoDocumento }    from "../components/users/ModalFotoDocumento"
 
-
 import "@/infrastructure/css/auth/CrudAdmin.css"
 
 const esPendiente = u => u.rol === "emprendedora" && !u.activo

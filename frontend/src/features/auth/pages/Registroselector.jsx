@@ -53,10 +53,6 @@ export default function RegistroSelector() {
             </p>
           </div>
         </div>
-
-        <div className="container-cat">
-          <img src={background} alt="Decoración" />
-        </div>
       </div>
     </section>
   )
