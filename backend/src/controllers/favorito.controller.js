@@ -1,4 +1,5 @@
 import prisma from '../conexion.js'
+import { soloEmprendedoraActiva } from '../utils/filtroEmprendedoraActiva.js'
 
 // POST /api/favoritos/:id_producto — agregar/quitar favorito (toggle)
 export const toggleFavorito = async (req, res) => {
@@ -29,7 +30,7 @@ export const toggleFavorito = async (req, res) => {
 export const listarFavoritos = async (req, res) => {
   try {
     const favoritos = await prisma.favorito.findMany({
-      where: { id_usuario: req.user.id },
+      where: { id_usuario: req.user.id, producto: soloEmprendedoraActiva },
       include: {
         producto: {
           include: {

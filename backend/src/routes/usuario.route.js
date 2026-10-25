@@ -6,7 +6,18 @@ import { verificarToken } from '../middleware/auth.middleware.js'
 import { uploadDocumento } from '../middleware/upload.middleware.js'
 
 const router = Router()
-router.post('/registro', uploadDocumento.single('foto_documento'), CreaterDate)
+
+router.post(
+  "/registro",
+  uploadDocumento.single("foto_documento"),
+  (req, res, next) => {
+    console.log("Archivo recibido por Multer:", req.file);
+    console.log("Datos recibidos:", req.body);
+    next();
+  },
+  CreaterDate
+);
+
 router.post('/verificar', verificarCodigo)
 router.post('/login', Login)
 router.get('/api/perfil', verificarToken, obtenerPerfil)

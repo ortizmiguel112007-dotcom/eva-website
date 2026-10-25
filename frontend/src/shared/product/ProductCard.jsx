@@ -112,6 +112,9 @@ import { formatPrecio } from "@/features/tienda/utils/utils";
 // ══ Shared ════════════
 import { UiButton } from "@/shared/ui/UiButton"
 
+// ══ Agenda (reserva de servicios) ════════════
+import { useReservar } from "@/features/agenda/hooks/useReservar"
+
 /**
  * Componente ProductCard
  */
@@ -130,7 +133,7 @@ export function ProductCard({
   ...props
 }) {
   const p = producto || product || {}
-
+  const { irAReservar } = useReservar()
   const agotado    = p.tipo !== "servicio" && p.inventario?.cantidad === 0
   const d          = p.descuento
   const precioFinal = d ? d.precio_con_descuento : Number(p.precio)
@@ -222,7 +225,17 @@ export function ProductCard({
             <button
               className={`pc-btn-agregar ${yaAgregado ? "agregado" : ""} ${agotado ? "agotado" : ""}`}
               disabled={agotado}
-              onClick={e => { e.stopPropagation(); onAgregar(e, p) }}
+               onClick={e => {
+                e.stopPropagation()
+
+                // Los servicios no van al carrito: se reservan como cita.
+                if (p.tipo === "servicio") {
+                  irAReservar(p.id_producto)
+                  return
+                }
+
+                onAgregar(e, p)
+              }}
             >
               {yaAgregado
                 ? <><FiCheck size={13} /> Listo</>

@@ -32,6 +32,35 @@ export const crearRegla = async (req, res) => {
     if (!id_producto || !nombre || !tipo || !valor || !condicion)
       return res.status(400).json({ error: "Faltan campos obligatorios" });
 
+    // RN-018: la oferta solo se puede crear sobre un producto propio, activo y con stock
+    const producto = await prisma.producto.findUnique({
+      where: { id_producto: Number(id_producto) },
+      include: {
+        inventario: true,
+        seccion: { include: { emprendedora: true } },
+      },
+    });
+    if (!producto)
+      return res.status(404).json({ error: "Producto no encontrado" });
+
+    const esDueno =
+      producto.id_creador === req.user.id ||
+      producto.seccion?.emprendedora?.id_usuario === req.user.id;
+    if (!esDueno)
+      return res
+        .status(403)
+        .json({ error: "No tienes permiso para crear ofertas en este producto" });
+
+    if (producto.estado_producto !== "activo")
+      return res.status(400).json({
+        error: "No se pueden crear ofertas en un producto deshabilitado",
+      });
+
+    if ((producto.inventario?.cantidad ?? 0) <= 0)
+      return res.status(400).json({
+        error: "No se puede crear una oferta en un producto sin stock disponible",
+      });
+
     if (!["porcentaje", "valor_fijo"].includes(tipo))
       return res.status(400).json({ error: "Tipo inválido" });
 
@@ -42,6 +71,30 @@ export const crearRegla = async (req, res) => {
       return res
         .status(400)
         .json({ error: "El porcentaje debe estar entre 1 y 100" });
+
+    // RI-028: la fecha de vencimiento debe tener formato válido y no ser anterior a hoy
+    let fechaFinOferta = null;
+    if (fecha_fin) {
+      const fechaTxt = String(fecha_fin).slice(0, 10);
+      const fechaValida =
+        /^\d{4}-\d{2}-\d{2}$/.test(fechaTxt) &&
+        !Number.isNaN(new Date(`${fechaTxt}T23:59:59`).getTime());
+      if (!fechaValida)
+        return res
+          .status(400)
+          .json({ error: "La fecha de vencimiento no es válida" });
+
+      const ahora = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const hoyTxt = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}`;
+      if (fechaTxt < hoyTxt)
+        return res.status(400).json({
+          error: "La fecha de vencimiento no puede ser anterior a hoy",
+        });
+
+      // La oferta vale hasta el final del día elegido
+      fechaFinOferta = new Date(`${fechaTxt}T23:59:59`);
+    }
 
     // RN-028.3 — verificar que no haya otra regla activa en el mismo producto
     const reglaActiva = await prisma.reglaDescuento.findFirst({
@@ -64,7 +117,7 @@ export const crearRegla = async (req, res) => {
         condicion,
         stock_limite: stock_limite ? Number(stock_limite) : null,
         prioridad: prioridad ? Number(prioridad) : 1,
-        fecha_fin: fecha_fin ? new Date(fecha_fin) : null,
+        fecha_fin: fechaFinOferta,
       },
     });
 
@@ -129,6 +182,9 @@ export const eliminarRegla = async (req, res) => {
 // Función helper — aplica descuento según reglas activas (RN-028.1 y RN-028.2)
 export const aplicarDescuento = async (id_producto, precio, stock_actual) => {
   try {
+    // RN-018: sin stock disponible no se aplica ningún descuento
+    if (!(Number(stock_actual) > 0)) return null;
+
     const ahora = new Date();
 
     // Obtener reglas activas ordenadas por prioridad

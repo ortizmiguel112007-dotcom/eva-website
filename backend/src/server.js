@@ -30,6 +30,7 @@ import { actualizarCategoriasAutomaticas } from './controllers/destacado.control
 import { vencerAlianzasExpiradas } from './controllers/alianza.controller.js'
 import prisma from './conexion.js'
 import { actualizarEstadoCupones } from './controllers/cupon.controller.js'
+import agendaRoutes from "./routes/agenda.routes.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = dirname(__filename)
@@ -87,6 +88,7 @@ app.use(metodosPagoRouter)    // /api/emprendedora/metodos-pago, /api/tienda/:id
 app.use(liquidacionRoutes)
 app.use(facturaRoutes)
 app.use(googleRoutes)
+app.use("/api/agenda", agendaRoutes);
 
 setInterval(vencerAlianzasExpiradas, 30 * 60 * 1000)
 vencerAlianzasExpiradas()

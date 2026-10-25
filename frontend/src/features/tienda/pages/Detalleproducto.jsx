@@ -22,7 +22,7 @@ import { StockBadge } from "../components/detalle/StockBadge";
 import { RatingEstrellas } from "../components/shared/RatingEstrellas";
 import { BtnAgregar } from "../components/shared/BtnAgregar";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 import "@/infrastructure/css/tienda/detalle/DetalleProducto.css";
 
@@ -83,12 +83,9 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
 
         if (token) {
           try {
-            const res = await axios.get(
-              `${API_URL}/api/cliente/pedidos`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            );
+            const res = await axios.get(`${API_URL}/api/cliente/pedidos`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
             const encontrado = res.data.find(
               (p) =>
                 p.estado === "entregado" &&
@@ -118,7 +115,7 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
       {
         id_producto: producto.id_producto,
         nombre_producto: producto.nombre_producto,
-        precio:          precioFinal,
+        precio: precioFinal,
         imagen: producto.imagen,
         categoria: producto.categoria,
       },
@@ -281,12 +278,33 @@ export default function DetalleProducto({ token, rutaCatalogo = "/catalogo" }) {
                 </button>
               </div>
             )}
-            <BtnAgregar
-              agregado={agregado}
-              agotado={agotado}
-              tipo={producto.tipo}
-              onClick={handleAgregar}
-            />
+
+            {producto.tipo === "servicio" ? (
+              <button
+                type="button"
+                className="dp-btn-reservar"
+                onClick={() => {
+                  if (!token) {
+                    mostrarToast(
+                      "Inicia sesión para solicitar una cita",
+                      "error",
+                    );
+                    return;
+                  }
+
+                  navigate(`/reservar/${producto.id_producto}`);
+                }}
+              >
+                Reservar
+              </button>
+            ) : (
+              <BtnAgregar
+                agregado={agregado}
+                agotado={agotado}
+                tipo={producto.tipo}
+                onClick={handleAgregar}
+              />
+            )}
           </div>
 
           <TiendaCard producto={producto} onNavigate={navigate} />

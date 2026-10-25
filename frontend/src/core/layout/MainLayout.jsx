@@ -12,6 +12,7 @@ import {
   FiCreditCard,
   FiDollarSign,
   FiTag,
+  FiClock,
 } from "react-icons/fi";
 import axios from "axios";
 import { MdOutlineReceiptLong } from "react-icons/md";
@@ -36,7 +37,7 @@ import { FiMessageSquare, FiUsers } from "react-icons/fi";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { RiCoupon3Line } from "react-icons/ri";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 /* ─────────────────────────────────────────────
    HOOK – detecta si es móvil (≤768px)
 ───────────────────────────────────────────── */
@@ -556,6 +557,22 @@ function MainLayout() {
                     sidebarClosed={!effectiveOpen}
                   />
 
+                  {/* AGENDA */}
+                  <SectionLabel label="AGENDA" sidebarOpen={effectiveOpen} />
+
+                  <ItemSimple
+                    to="/gestion-citas"
+                    icon={FiMessageSquare}
+                    label="Gestión de citas"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  <ItemSimple
+                    to="/disponibilidad"
+                    icon={FiClock}
+                    label="Mi disponibilidad"
+                    sidebarClosed={!effectiveOpen}
+                  />
+
                   {/* MI CUENTA */}
 
                   <SectionLabel label="MI CUENTA" sidebarOpen={effectiveOpen} />
@@ -610,6 +627,15 @@ function MainLayout() {
                     to="/seguimiento"
                     icon={FiPackage}
                     label="Seguimiento de pedidos"
+                    sidebarClosed={!effectiveOpen}
+                  />
+                  {/* AGENDA */}
+                  <SectionLabel label="AGENDA" sidebarOpen={effectiveOpen} />
+
+                  <ItemSimple
+                    to="/mis-citas"
+                    icon={FiMessageSquare}
+                    label="Mis citas"
                     sidebarClosed={!effectiveOpen}
                   />
 

@@ -126,7 +126,7 @@ export default function RegistroEmprendedora() {
                     <FiUpload size={13} />
                     {fotoPreview ? "✓ Documento cargado — click para cambiar" : "Subir foto del documento"}
                   </label>
-                  <input id="foto_doc" type="file" accept="image/*,.pdf"
+                  <input id="foto_doc" name="foto_documento" type="file" accept="image/*,.pdf"
                     onChange={handleFoto} style={{ display: "none" }} />
                   {fotoPreview && (
                     <img src={fotoPreview} alt="Documento" className="re-doc-preview" />

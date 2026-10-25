@@ -4,6 +4,8 @@ npx prisma migrate dev --name agregar-password
 npx prisma generate
 kdxpgixbuifmpsrg
 
+npx prisma db seed
+
 La arquitectura del backend está diseñada bajo un enfoque modular por funcionalidades (feature-based) combinado con separación por capas.
 
 Este diseño permite:
@@ -19,23 +21,23 @@ Crecimiento empresarial
 Facilidad para agregar nuevas funcionalidades
 
 2. Estructura General del Proyecto
-backend/
-│
-├── src/
-│   ├── core/
-│   ├── modules/
-│   ├── shared/
-│   ├── app.js
-│   └── server.js
-│
-├── prisma/
-│   └── schema.prisma
-│
-├── .env
-├── package.json
-└── README.md
+   backend/
+   │
+   ├── src/
+   │ ├── core/
+   │ ├── modules/
+   │ ├── shared/
+   │ ├── app.js
+   │ └── server.js
+   │
+   ├── prisma/
+   │ └── schema.prisma
+   │
+   ├── .env
+   ├── package.json
+   └── README.md
 3. Descripción Detallada de Carpetas
-3.1 src/core/
+   3.1 src/core/
 
 Contiene la infraestructura global del sistema.
 Aquí se colocan configuraciones y elementos que afectan a toda la aplicación.

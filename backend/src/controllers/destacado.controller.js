@@ -1,6 +1,7 @@
 import prisma from '../conexion.js'
 import PDFDocument from "pdfkit"
 import * as XLSX from "xlsx"
+import { soloEmprendedoraActiva } from '../utils/filtroEmprendedoraActiva.js'
 
 const registrarLog = async (id_producto, evento, id_usuario = null, detalle = null) => {
   try {
@@ -160,6 +161,7 @@ export const listarDestacadosPublico = async (req, res) => {
         destacado: true,
         estado_producto: 'activo',
         visible: true,
+        ...soloEmprendedoraActiva,
         inventario: { cantidad: { gt: 0 } },
         ...(categoria ? { categoria_destacado: categoria } : {}),
       },
