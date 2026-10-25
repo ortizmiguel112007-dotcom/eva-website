@@ -1,9 +1,11 @@
 import prisma from "../conexion.js";
 import { crearNotificacion } from "./notificacion.controller.js";
+import { registrarMovimiento } from "./movimientoInventario.controller.js";
 import { enviarConfirmacionPedido } from "../services/notificacion.service.js";
 import { aplicarDescuento } from "./reglasdescuento.controller.js";
 import { registrarLog } from "./Pago.controller.js"
 import { crearFactura } from "./factura.controller.js"
+import { soloEmprendedoraActiva } from "../utils/filtroEmprendedoraActiva.js"
 // GET /api/pedidos — pedidos de la emprendedora logueada
 export const listarPedidos = async (req, res) => {
   try {
@@ -149,7 +151,7 @@ export const crearPedido = async (req, res) => {
 
     const productosIds = items.map((i) => i.id_producto);
     const productos = await prisma.producto.findMany({
-      where: { id_producto: { in: productosIds } },
+      where: { id_producto: { in: productosIds }, ...soloEmprendedoraActiva },
       include: {
         seccion: {
           include: {
@@ -163,7 +165,7 @@ export const crearPedido = async (req, res) => {
     for (const item of items) {
       const prod = productos.find((p) => p.id_producto === item.id_producto);
       if (!prod)
-        return res.status(404).json({ error: `Producto ${item.id_producto} no encontrado` });
+        return res.status(404).json({ error: `El producto ${item.id_producto} ya no está disponible` });
       const stock = prod.inventario?.cantidad ?? 0;
       if (stock < item.cantidad)
         return res.status(400).json({ error: `Stock insuficiente para "${prod.nombre_producto}"` });
@@ -319,6 +321,64 @@ export const crearPedido = async (req, res) => {
           `Tienes un nuevo pedido por $${Number(pedido.total).toLocaleString("es-CO")}.`,
           "/pedidos",
         );
+      }
+    }
+
+    // RF-024 / RF-025 / RF-027: registrar la salida en el historial de inventario y
+    // alertar a la emprendedora cuando el stock llega al mínimo o se agota
+    for (const pedido of pedidosCreados) {
+      try {
+        const emprendedoraDePedido = await prisma.user.findFirst({
+          where: { emprendedora: { secciones: { some: { id_seccion: pedido.id_seccion } } } },
+          select: { id: true },
+        });
+
+        for (const detalle of pedido.detalles ?? []) {
+          const inv = await prisma.inventario.findFirst({
+            where: { id_producto: detalle.id_producto },
+          });
+          if (!inv) continue;
+
+          const cantidadNueva = inv.cantidad;
+          const cantidadAntes = cantidadNueva + detalle.cantidad;
+
+          await registrarMovimiento(
+            detalle.id_producto,
+            "salida",
+            cantidadAntes,
+            cantidadNueva,
+            id_cliente,
+            `Venta - pedido #${pedido.id_pedido}`,
+          );
+
+          if (!emprendedoraDePedido) continue;
+
+          const prod = await prisma.producto.findUnique({
+            where: { id_producto: detalle.id_producto },
+            select: { nombre_producto: true },
+          });
+          const nombre = prod?.nombre_producto ?? "Producto";
+
+          if (cantidadNueva === 0) {
+            await crearNotificacion(
+              emprendedoraDePedido.id,
+              "stock",
+              "Producto agotado",
+              `"${nombre}" se quedó sin stock.`,
+              "/inventario",
+            );
+          } else if (cantidadNueva <= Number(inv.stock_minimo ?? 0)) {
+            await crearNotificacion(
+              emprendedoraDePedido.id,
+              "stock",
+              "Stock bajo",
+              `"${nombre}" tiene stock bajo (${cantidadNueva} unidades).`,
+              "/inventario",
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Error registrando movimiento o alerta de stock:", err);
       }
     }
 

@@ -2,6 +2,8 @@ import prisma from "../conexion.js";
 import { enviarAprobacion } from "../services/notificacion.service.js";
 import { crearNotificacion } from "./notificacion.controller.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { validarUsuario } from "../utils/validarUsuario.js";
 
 // Normalizar rol para el token (mismo helper que en usuario.controller)
 const normalizarRol = (rol) => (rol === "administrador" ? "admin" : rol);
@@ -35,22 +37,21 @@ export const GetUsuarios = async (req, res) => {
 export const CreateUsuarioAdmin = async (req, res) => {
   const { nombre, email, telefono, password } = req.body;
 
-  if (!nombre || !email || !password)
-    return res
-      .status(400)
-      .json({ error: "Nombre, email y contraseña son obligatorios" });
+  const errorValidacion = validarUsuario({ nombre, email, password, telefono });
+  if (errorValidacion)
+    return res.status(400).json({ error: errorValidacion });
 
   try {
-    const existe = await prisma.user.findUnique({ where: { email } });
+    const existe = await prisma.user.findUnique({ where: { email: email.trim() } });
     if (existe)
       return res.status(409).json({ error: "El email ya está registrado" });
 
     const usuario = await prisma.user.create({
       data: {
-        nombre,
-        email,
+        nombre: nombre.trim(),
+        email: email.trim(),
         telefono: telefono || "",
-        password,
+        password: await bcrypt.hash(password, 10),
         verificado: true,
         activo: true,
       },
@@ -71,6 +72,13 @@ export const UpdateUsuario = async (req, res) => {
   const { id } = req.params;
   const { nombre, email, telefono, password } = req.body;
 
+  const errorValidacion = validarUsuario(
+    { nombre, email, password, telefono },
+    { parcial: true },
+  );
+  if (errorValidacion)
+    return res.status(400).json({ error: errorValidacion });
+
   try {
     const existe = await prisma.user.findUnique({ where: { id: Number(id) } });
     if (!existe)
@@ -88,7 +96,7 @@ export const UpdateUsuario = async (req, res) => {
     if (nombre) data.nombre = nombre;
     if (email) data.email = email;
     if (telefono !== undefined) data.telefono = telefono || "";
-    if (password) data.password = password;
+    if (password) data.password = await bcrypt.hash(password, 10);
 
     const actualizado = await prisma.user.update({
       where: { id: Number(id) },

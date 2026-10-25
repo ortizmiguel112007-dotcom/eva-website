@@ -1,6 +1,7 @@
 import prisma from "../conexion.js";
 import { aplicarDescuento } from "./reglasdescuento.controller.js";
 import { crearNotificacion } from "./notificacion.controller.js";
+import { soloEmprendedoraActiva } from "../utils/filtroEmprendedoraActiva.js";
 
 export const crearItem = async (req, res) => {
   console.log("=== CREAR ITEM ===");
@@ -50,7 +51,7 @@ export const crearItem = async (req, res) => {
       duracion,
       tipo,
     } = req.body;
-    const imagen = req.file ? req.file.path : null;
+    const imagen = req.file?.secure_url ?? null;
 
     // RN-014: La cantidad inicial no puede ser negativa
     if ((tipo || "producto") !== "servicio" && Number(cantidad) < 0) {
@@ -59,11 +60,23 @@ export const crearItem = async (req, res) => {
       });
     }
 
+    // RN-006: no se permiten productos duplicados con el mismo nombre y categoría.
+    // Se comparan sin espacios sobrantes ni diferencias de mayúsculas, y dentro de
+    // los productos de la misma emprendedora o de la misma sección (tienda).
+    const nombreLimpio = nombre_producto?.trim();
+    const categoriaLimpia = categoria?.trim();
+
+    if (!nombreLimpio || !categoriaLimpia) {
+      return res.status(400).json({
+        error: "El nombre y la categoría son obligatorios.",
+      });
+    }
+
     const productoExistente = await prisma.producto.findFirst({
       where: {
-        id_creador: id_usuario,
-        nombre_producto,
-        categoria,
+        OR: [{ id_creador: id_usuario }, { id_seccion }],
+        nombre_producto: { equals: nombreLimpio, mode: "insensitive" },
+        categoria: { equals: categoriaLimpia, mode: "insensitive" },
         estado_producto: {
           not: "inactivo",
         },
@@ -76,18 +89,30 @@ export const crearItem = async (req, res) => {
       });
     }
 
+    if (
+      duracion !== undefined &&
+      duracion !== "" &&
+      (!Number.isInteger(Number(duracion)) || Number(duracion) <= 0)
+    ) {
+      return res.status(400).json({
+        error:
+          "La duración debe ser un número entero de minutos mayor que cero.",
+      });
+    }
+
     const resultado = await prisma.$transaction(async (tx) => {
       const producto = await tx.producto.create({
         data: {
           id_seccion,
           id_creador: id_usuario,
-          nombre_producto,
+          nombre_producto: nombreLimpio,
           descripcion,
           precio: Number(precio),
-          categoria,
+          categoria: categoriaLimpia,
           imagen,
           stock_minimo: Number(stock_minimo) || 0,
-          duracion: duracion || null,
+          duracion:
+            duracion === undefined || duracion === "" ? null : Number(duracion),
           tipo: tipo || "producto",
           estado_producto: "pendiente",
           visible: false,
@@ -139,6 +164,7 @@ export const obtenerItems = async (req, res) => {
       where: {
         id_seccion,
         estado_producto: "activo",
+        ...soloEmprendedoraActiva,
         ...(categoria && { categoria }),
       },
       include: { inventario: true },
@@ -152,8 +178,8 @@ export const obtenerItems = async (req, res) => {
 
 export const obtenerItemPorId = async (req, res) => {
   try {
-    const item = await prisma.producto.findUnique({
-      where: { id_producto: Number(req.params.id) },
+    const item = await prisma.producto.findFirst({
+      where: { id_producto: Number(req.params.id), ...soloEmprendedoraActiva },
       include: {
         inventario: true,
         seccion: {
@@ -197,6 +223,7 @@ export const obtenerProductosPublicos = async (req, res) => {
         seccion: { id_emprendedora, id_alianza: null },
         estado_producto: "activo",
         visible: true,
+        ...soloEmprendedoraActiva,
       },
       orderBy: { nombre_producto: "asc" },
     });
@@ -253,7 +280,7 @@ export const actualizarItem = async (req, res) => {
       descripcion,
       categoria,
     } = req.body;
-    const imagen = req.file ? req.file.path : undefined;
+    const imagen = req.file?.secure_url ?? undefined;
 
     const producto = await prisma.producto.findUnique({
       where: { id_producto },
@@ -286,7 +313,10 @@ export const actualizarItem = async (req, res) => {
           ...(descripcion && { descripcion }),
           ...(precio && { precio: Number(precio) }),
           ...(categoria && { categoria }),
-          ...(duracion !== undefined && { duracion: duracion || null }),
+          ...(duracion !== undefined && {
+            duracion:
+              duracion === "" || duracion === null ? null : Number(duracion),
+          }),
           ...(imagen && { imagen }),
           ...(stock_minimo !== undefined && {
             stock_minimo: Number(stock_minimo),

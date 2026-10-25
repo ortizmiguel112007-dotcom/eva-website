@@ -68,7 +68,10 @@ export const Login = async (req, res) => {
 
 export const CreaterDate = async (req, res) => {
   const { nombre, email, telefono, password, rol } = req.body;
-  const foto_documento = req.file ? req.file.path : null;
+  
+  console.log("Archivo recibido:", req.file);
+
+  const foto_documento = req.file?.secure_url ?? null;
 
   if (rol === "emprendedora" && !foto_documento) {
     return res.status(400).json({ error: "Las emprendedoras deben subir foto de su documento" });

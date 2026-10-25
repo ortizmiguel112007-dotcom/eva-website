@@ -1,5 +1,6 @@
 import prisma from "../conexion.js";
 import { aplicarDescuento } from './reglasdescuento.controller.js'
+import { soloEmprendedoraActiva } from '../utils/filtroEmprendedoraActiva.js'
 
 // Obtener o crear carrito del usuario
 const getOCrearCarrito = async (id_usuario) => {
@@ -7,6 +8,7 @@ const getOCrearCarrito = async (id_usuario) => {
     where: { id_usuario },
     include: {
       items: {
+        where: { producto: soloEmprendedoraActiva },
         include: {
           producto: {
             include: {
@@ -94,13 +96,13 @@ export const agregarItem = async (req, res) => {
       return res.status(400).json({ error: "La cantidad debe ser mayor a 0" });
 
     // verificar que el producto existe y tiene stock
-    const producto = await prisma.producto.findUnique({
-      where: { id_producto: Number(id_producto) },
+    const producto = await prisma.producto.findFirst({
+      where: { id_producto: Number(id_producto), ...soloEmprendedoraActiva },
       include: { inventario: true },
     });
 
     if (!producto)
-      return res.status(404).json({ error: "Producto no encontrado" });
+      return res.status(404).json({ error: "Producto no disponible" });
 
     const stock = producto.inventario?.cantidad ?? 0;
     if (stock === 0) return res.status(400).json({ error: "Producto agotado" });

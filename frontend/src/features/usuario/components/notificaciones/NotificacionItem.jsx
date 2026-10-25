@@ -8,13 +8,14 @@ const TIPO_CONFIG = {
   solicitud:  { icon: null, color: "#8b5cf6", bg: "#f5f3ff",  label: "Solicitud" },
   comentario: { icon: null, color: "#f59e0b", bg: "#fffbeb",  label: "Reseña"    },
   stock:      { icon: null, color: "#ef4444", bg: "#fff1f2",  label: "Stock"     },
+  cita:       { icon: null, color: "#0ea5e9", bg: "#f0f9ff",  label: "Cita"      },
 }
 
 export { TIPO_CONFIG }
 
 import {
   FiPackage, FiDollarSign, FiTag,
-  FiUsers, FiStar, FiAlertCircle
+  FiUsers, FiStar, FiAlertCircle,FiCalendar
 } from "react-icons/fi"
 
 const TIPO_ICONS = {
@@ -24,6 +25,7 @@ const TIPO_ICONS = {
   solicitud:  FiUsers,
   comentario: FiStar,
   stock:      FiAlertCircle,
+   cita:       FiCalendar,
 }
 
 function formatFecha(f) {

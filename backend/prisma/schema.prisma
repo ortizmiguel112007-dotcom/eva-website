@@ -28,6 +28,10 @@ model User {
   destacadoLogs DestacadoLog[]
   productosCreados  Producto[] @relation("ProductoCreador")
 
+  citasComoCliente Cita[] @relation("CitaCliente")
+  mensajesCita    CitaMensaje[] @relation("MensajeRemitente")
+  cambiosCitaPropuestos CitaCambio[] @relation("CambioProponente")
+
 
   alianzasCreadas      Alianza[]             @relation("AlianzaCreador")
   alianzasParticipante AlianzaParticipante[]
@@ -66,6 +70,9 @@ model Emprendedora {
   titular_cuenta    String?
   acepta_contraentrega Boolean @default(false)
 
+  disponibilidades Disponibilidad[]
+  citas            Cita[]
+
   usuario   User      @relation(fields: [id_usuario], references: [id])
   secciones Seccion[]
 
@@ -96,7 +103,7 @@ model Producto {
   precio                    Decimal  @db.Decimal(15, 2)
   categoria                 String?
   estado_producto           String   @default("activo")
-  duracion                  String?
+  duracion Int?
   tipo                      String   @default("producto") // "producto" o "servicio"
   imagen                    String?
   tamano_imagen             Int?
@@ -106,6 +113,7 @@ model Producto {
   categoria_destacado String?                     // "nuevos" | "mas_vendidos" | "en_oferta" | null (manual)
   fecha_solicitud     DateTime?                   
   fecha_decision      DateTime? 
+  citas Cita[]
 
   seccion     Seccion         @relation(fields: [id_seccion], references: [id_seccion])
   creador    User?       @relation("ProductoCreador", fields: [id_creador], references: [id])
@@ -492,4 +500,96 @@ model AlianzaEvento {
   alianza Alianza @relation(fields: [id_alianza], references: [id_alianza])
 
   @@map("alianza_eventos")
+}
+
+
+model Disponibilidad {
+  id_disponibilidad Int      @id @default(autoincrement())
+  id_emprendedora   Int
+  dia_semana        Int      // 0 = domingo, 1 = lunes, ..., 6 = sábado
+  hora_inicio       String   // Formato "09:00"
+  hora_fin          String   // Formato "17:00"
+  modalidad        String   @default("presencial")
+  lugar             String?
+  activa            Boolean  @default(true)
+  fecha_creacion    DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora], onDelete: Cascade)
+
+  @@index([id_emprendedora, dia_semana, activa])
+  @@map("disponibilidades")
+}
+
+model Cita {
+  id_cita          Int      @id @default(autoincrement())
+  id_cliente       Int
+  id_emprendedora  Int
+  id_producto      Int
+
+  fecha_inicio     DateTime
+  fecha_fin        DateTime
+
+  modalidad        String   // presencial, domicilio o virtual
+  lugar             String?
+  estado            String   @default("PENDIENTE")
+  observaciones     String?
+  motivo_rechazo    String?
+
+  fecha_creacion    DateTime @default(now())
+  fecha_actualizacion DateTime @updatedAt
+
+  cliente User @relation("CitaCliente", fields: [id_cliente], references: [id])
+  emprendedora Emprendedora @relation(fields: [id_emprendedora], references: [id_emprendedora])
+  servicio Producto @relation(fields: [id_producto], references: [id_producto])
+
+  mensajes CitaMensaje[]
+  cambios  CitaCambio[]
+
+  @@index([id_cliente, estado])
+  @@index([id_emprendedora, fecha_inicio])
+  @@index([id_producto, fecha_inicio])
+  @@map("citas")
+}
+
+model CitaMensaje {
+  id_mensaje   Int      @id @default(autoincrement())
+  id_cita      Int
+  id_remitente Int
+  contenido    String   @db.Text
+  fecha        DateTime @default(now())
+  leido        Boolean  @default(false)
+
+  cita Cita @relation(fields: [id_cita], references: [id_cita], onDelete: Cascade)
+  remitente User @relation("MensajeRemitente", fields: [id_remitente], references: [id])
+
+  @@index([id_cita, fecha])
+  @@map("cita_mensajes")
+}
+
+model CitaCambio {
+  id_cambio       Int      @id @default(autoincrement())
+  id_cita         Int
+  id_proponente   Int
+
+  fecha_inicio_propuesta DateTime
+  fecha_fin_propuesta    DateTime
+  modalidad_propuesta   String
+  lugar_propuesto       String?
+  
+   // Datos de la cita al momento de proponer el cambio (historial, RI-110)
+  fecha_inicio_original DateTime?
+  modalidad_original    String?
+  lugar_original        String?
+
+  estado          String   @default("PENDIENTE")
+  respuesta       String?
+  fecha_creacion  DateTime @default(now())
+  fecha_respuesta DateTime?
+
+  cita Cita @relation(fields: [id_cita], references: [id_cita], onDelete: Cascade)
+  proponente User @relation("CambioProponente", fields: [id_proponente], references: [id])
+
+  @@index([id_cita, estado])
+  @@map("cita_cambios")
 }

@@ -1,11 +1,12 @@
 import prisma from "../conexion.js";
 import { aplicarDescuento } from './reglasdescuento.controller.js'
+import { soloEmprendedoraActiva } from '../utils/filtroEmprendedoraActiva.js'
 
 // GET /api/publico/destacados — productos destacados
 export const getDestacados = async (req, res) => {
   try {
     const productos = await prisma.producto.findMany({
-      where: { destacado: true, estado_producto: "activo",  visible: true },
+      where: { destacado: true, estado_producto: "activo", visible: true, ...soloEmprendedoraActiva },
       include: {
         seccion: {
           include: {
@@ -33,7 +34,8 @@ export const getCatalogo = async (req, res) => {
     const productos = await prisma.producto.findMany({
       where: {
         estado_producto: "activo",
-          visible: true,
+        visible: true,
+        ...soloEmprendedoraActiva,
         ...(categoria && { categoria }),
         ...(tipo && { tipo }),
         ...(busqueda && {

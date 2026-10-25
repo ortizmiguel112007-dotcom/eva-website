@@ -6,6 +6,7 @@ const FILTROS_CLIENTE = [
   { key: "pedido",    label: "Pedidos"     },
   { key: "cupon",     label: "Cupones"     },
   { key: "solicitud", label: "Solicitudes" },
+  { key: "cita",      label: "Citas"       },
 ]
 
 const FILTROS_EMP = [
@@ -16,6 +17,7 @@ const FILTROS_EMP = [
   { key: "comentario", label: "Reseñas"  },
   { key: "stock",      label: "Stock"    },
   { key: "solicitud",  label: "Alianzas" },
+  { key: "cita",       label: "Citas"    },
 ]
 
 export function FiltrosNotificaciones({ isEmprendedora, filtro, setFiltro, noLeidas }) {

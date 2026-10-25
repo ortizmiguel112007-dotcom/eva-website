@@ -52,7 +52,7 @@
     border-radius: 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-    z-index: 1000;
+    z-index: 10000; /* por encima de cualquier .modal-overlay (CreateItemForm.css usa 9999) */
     box-shadow: 0 4px 16px var(--shadow);
     animation: slideIn 0.25s ease;
 }

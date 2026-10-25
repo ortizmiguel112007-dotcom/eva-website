@@ -18,6 +18,9 @@ const FORM_INICIAL = {
 }
 
 export function FormNuevaRegla({ prioridad, onCrear, onCancelar, guardando }) {
+  // Fecha de hoy en hora local (formato AAAA-MM-DD) para no permitir vencimientos pasados
+  const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 10)
   const [form, setForm]     = useState(FORM_INICIAL)
   const [errors, setErrors] = useState({})
 
@@ -35,6 +38,8 @@ export function FormNuevaRegla({ prioridad, onCrear, onCancelar, guardando }) {
       e.valor = "El porcentaje no puede ser mayor a 100"
     if (form.condicion === "stock_menor_a" && !form.stock_limite)
       e.stock_limite = "Indica el límite de stock"
+    if (form.fecha_fin && form.fecha_fin < hoy)
+      e.fecha_fin = "La fecha de vencimiento no puede ser anterior a hoy"
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -103,8 +108,10 @@ export function FormNuevaRegla({ prioridad, onCrear, onCancelar, guardando }) {
 
         <div className="rd-form-group">
           <label>Fecha de vencimiento (opcional)</label>
-          <input type="date" value={form.fecha_fin}
-            onChange={e => set("fecha_fin", e.target.value)} />
+          <input type="date" min={hoy} value={form.fecha_fin}
+            onChange={e => set("fecha_fin", e.target.value)}
+            className={errors.fecha_fin ? "error" : ""} />
+          {errors.fecha_fin && <p className="rd-form-error">{errors.fecha_fin}</p>}
         </div>
 
       </div>
