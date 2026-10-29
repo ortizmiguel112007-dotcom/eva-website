@@ -13,6 +13,7 @@ import {
   FiDollarSign,
   FiTag,
   FiClock,
+  FiBarChart2,
 } from "react-icons/fi";
 import axios from "axios";
 import { MdOutlineReceiptLong } from "react-icons/md";
@@ -277,12 +278,21 @@ function MainLayout() {
                 <>
                   {/* DASHBOARD */}
 
-                  <SectionLabel label="DASHBOARD" sidebarOpen={effectiveOpen} />
+                                    {/* INICIO */}
+
+                  <SectionLabel label="INICIO" sidebarOpen={effectiveOpen} />
+
+                  <ItemSimple
+                    to="/"
+                    icon={FaHome}
+                    label="Inicio"
+                    sidebarClosed={!effectiveOpen}
+                  />
 
                   <ItemSimple
                     to="/admin"
-                    icon={FaHome}
-                    label="Resumen general"
+                    icon={FiBarChart2}
+                    label="Panel de control"
                     sidebarClosed={!effectiveOpen}
                   />
 
@@ -441,7 +451,14 @@ function MainLayout() {
                 <>
                   {/* DASHBOARD */}
 
-                  <SectionLabel label="DASHBOARD" sidebarOpen={effectiveOpen} />
+                  <SectionLabel label="INICIO" sidebarOpen={effectiveOpen} />
+
+                  <ItemSimple
+                    to="/"
+                    icon={FaHome}
+                    label="Inicio"
+                    sidebarClosed={!effectiveOpen}
+                  />
 
                   <ItemSimple
                     to="/dashboard"
@@ -592,7 +609,7 @@ function MainLayout() {
                   <SectionLabel label="INICIO" sidebarOpen={effectiveOpen} />
 
                   <ItemSimple
-                    to="/inicio"
+                    to="/"
                     icon={FaHome}
                     label="Inicio"
                     sidebarClosed={!effectiveOpen}

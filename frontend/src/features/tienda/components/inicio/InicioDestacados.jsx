@@ -26,9 +26,6 @@
  * ──────────────────────────────────────────────────────────────
  */
 
-// Hooks de React para estado y ciclo de vida
-import { useState, useEffect } from "react";
-
 // Íconos reutilizables de la app (centralizados en infrastructure/icons)
 import {
     FiStar,
@@ -42,18 +39,16 @@ import "@/infrastructure/css/shared/ui/UiButton.css";
 import { UiButton } from "@/shared/ui/UiButton"
 import { ProductCard } from "@/shared/product/ProductCard"
 
-/**
- * ⚙️ Parámetros (props):
- * 
- * @param {Object} props - Propiedades del componente.
- * @param {Function} props.navigate - Instancia de navegación para redirecciones.
- * @param {Array} [props.destacados=[]] - Colección de objetos de producto. 
- * Cada objeto debe contener al menos: id_producto, nombre, precio e imagen.
- */
 export function InicioDestacados({
     navigate,
-    tienda
+    tienda,
+    rol = null,
 }) {
+    // El cliente con sesión usa sus rutas privadas; el resto, el catálogo público.
+    const esCliente = rol === "usuario"
+    const rutaCatalogo = esCliente ? "/productos" : "/catalogo"
+    const rutaDetalle = (id) => esCliente ? `/producto/${id}` : `/catalogo/${id}`
+
     return (
         <section className="ip-container">
             <div className="ip-seccion">
@@ -67,22 +62,23 @@ export function InicioDestacados({
                     </div>
 
                     <UiButton
-                        onClick={() => navigate("/catalogo")}
+                        onClick={() => navigate(rutaCatalogo)}
                         className="ip-btn tertiary"
                         iconPosition="r"
                         icon={FiArrowRight}
                     >Ver todos</UiButton>
                 </div>
 
-                {<div className="ip-grid-4">
-                    {tienda.destacados.map((product) => (
+                <div className="ip-grid-4">
+                    {tienda.destacados.map((product, idx) => (
                         <ProductCard
                             product={product}
                             key={product.id_producto}
-                            onClick={() => navigate(`/producto-detalle/${product.id_producto}`)}
+                            idx={idx}
+                            onNavigate={(id) => navigate(rutaDetalle(id))}
                         />
                     ))}
-                </div>}
+                </div>
             </div>
         </section>
     )

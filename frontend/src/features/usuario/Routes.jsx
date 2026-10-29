@@ -1,10 +1,9 @@
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
 import MainLayout from "@/core/layout/MainLayout";
 import PrivateRoute from "@/routes/PrivateRoute";
-import { useAuth } from "@/core/context/AuthConten"; // ← faltaba esto
+import { useAuth } from "@/core/context/AuthConten";
 import DetalleProducto from "@/features/tienda/pages/Detalleproducto";
 
-import UsuarioDashboard from "./pages/UsuarioDashboard";
 import MisPedidos from "./pages/MisPedidos";
 import PerfilUsuario from "./pages/PerfilUsuario";
 import SeguimientoPedidos from "./pages/Seguimientopedidos";
@@ -24,11 +23,12 @@ function DetalleUsuario() {
   const { token } = useAuth();
   return <DetalleProducto token={token} rutaCatalogo="/productos" />;
 }
-//  s
+
 export const UsuarioRoutes = (
   <Route element={<MainLayout />}>
     <Route element={<PrivateRoute rolRequerido="usuario" />}>
-      <Route path="/inicio" element={<UsuarioDashboard />} />
+      {/* El inicio ahora es único (/). Se conserva /inicio por enlaces antiguos. */}
+      <Route path="/inicio" element={<Navigate to="/" replace />} />
       <Route path="/productos" element={<CatalogoUsuario />} />
       <Route path="/producto/:id" element={<DetalleUsuario />} />
       <Route path="/mis-pedidos" element={<MisPedidos />} />
