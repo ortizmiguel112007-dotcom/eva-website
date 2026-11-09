@@ -7,7 +7,7 @@ import { SubirComprobante } from "./SubirComprobante";
 import { formatPrecio } from "@/features/tienda/utils/utils";
 import "@/infrastructure/css/tienda/carrito/PedidoExito.css";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 // Datos de la cuenta de EVA (única, no por emprendedora)
 function useMetodosPagoEva(token) {
   const [metodos, setMetodos] = useState(null);
@@ -221,6 +221,7 @@ export function PedidoExito({ pedidos: pedidosIniciales, pago, token }) {
           {necesitaComprobante && (
             <SubirComprobante
               pedidos={pedidos}
+              idPago={pagoActual?.id_pago}
               metodoPago={pagoActual?.metodo}
               token={token}
               onEnviado={handleEnviado}

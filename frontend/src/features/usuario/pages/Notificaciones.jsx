@@ -43,9 +43,21 @@ export default function Notificaciones() {
   }
 
   const handleClick = (n) => {
-    if (!n.leida) marcarLeida(n.id_notificacion)
-    if (n.url) navigate(n.url)
+  if (!n.leida) marcarLeida(n.id_notificacion);
+
+  const textoNotificacion = `${n.titulo} ${n.mensaje}`.toLowerCase();
+
+  // Redirigir las solicitudes de destacados al módulo correcto
+  if (
+    !isEmprendedora &&
+    textoNotificacion.includes("destacado")
+  ) {
+    navigate("/admin/destacados");
+    return;
   }
+
+  if (n.url) navigate(n.url);
+};
 
   const noLeidas = notifs.filter(n => !n.leida).length
 

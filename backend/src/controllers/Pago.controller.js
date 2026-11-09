@@ -54,7 +54,50 @@ export const crearPago = async (req, res) => {
     if (pedidos.length !== id_pedidos.length)
       return res.status(403).json({ error: "Pedidos inválidos" });
 
-    const monto_total = pedidos.reduce((acc, p) => acc + Number(p.total), 0);
+    
+    // Calcular el monto real utilizando los pedidos de la base de datos
+    const monto_total = pedidos.reduce(
+      (acc, pedido) => acc + Number(pedido.total),
+      0
+    );
+
+    // Validar que el monto calculado sea válido
+    if (!Number.isFinite(monto_total) || monto_total <= 0) {
+      await registrarLog(
+        null,
+        "error_monto_invalido",
+        `Intento de pago rechazado. Monto calculado inválido: ${monto_total}`,
+        id_cliente
+      );
+
+      return res.status(400).json({
+        error: "El monto del pago es inválido"
+      });
+    }
+
+    // Si el cliente envía un monto, comprobar que coincida
+    // con el valor calculado desde la base de datos
+    if (req.body.monto_total !== undefined) {
+      const montoEnviado = Number(req.body.monto_total);
+
+      if (
+        !Number.isFinite(montoEnviado) ||
+        montoEnviado <= 0 ||
+        Math.abs(montoEnviado - monto_total) > 0.001
+      ) {
+        await registrarLog(
+          null,
+          "error_monto_invalido",
+          `Intento de pago rechazado. Monto enviado: ${req.body.monto_total}. Monto real: ${monto_total}`,
+          id_cliente
+        );
+
+        return res.status(400).json({
+          error: "El monto enviado no es válido o no coincide con el total de los pedidos"
+        });
+      }
+    }
+
 
     // Subir comprobante si existe
     let urlComprobante = null;
@@ -336,7 +379,104 @@ export const reenviarComprobante = async (req, res) => {
     res.status(500).json({ error: "Error al reenviar comprobante" });
   }
 };
+// PUT /api/pagos/:id_pago/comprobante — cliente sube el comprobante por primera vez
+export const subirComprobante = async (req, res) => {
+  try {
+    const id_pago = Number(req.params.id_pago);
 
+    if (!Number.isInteger(id_pago) || id_pago <= 0) {
+      return res.status(400).json({ error: "ID de pago inválido" });
+    }
+
+    const pago = await prisma.pago.findUnique({
+      where: { id_pago },
+      include: { pedidos: true },
+    });
+
+    if (!pago) {
+      return res.status(404).json({ error: "Pago no encontrado" });
+    }
+
+    if (pago.id_cliente !== req.user.id) {
+      return res.status(403).json({ error: "No autorizado" });
+    }
+
+    if (pago.estado !== "pendiente") {
+      return res.status(400).json({
+        error: "Este pago no está pendiente de comprobante",
+      });
+    }
+
+    if (pago.comprobante) {
+      return res.status(400).json({
+        error: "Este pago ya tiene un comprobante. Si fue rechazado, utiliza la opción de reenviar.",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: "Debes subir un comprobante",
+      });
+    }
+
+    if (!["nequi", "bancolombia"].includes(pago.metodo)) {
+      return res.status(400).json({
+        error: "Este método de pago no requiere comprobante",
+      });
+    }
+
+    const urlComprobante = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "eva-comprobantes",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result.secure_url);
+        },
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+
+    const pagoActualizado = await prisma.$transaction(async (tx) => {
+      const actualizado = await tx.pago.update({
+        where: { id_pago },
+        data: {
+          comprobante: urlComprobante,
+        },
+      });
+
+      await tx.pedido.updateMany({
+        where: { id_pago },
+        data: { estado: "pago_enviado" },
+      });
+
+      return actualizado;
+    });
+
+    await registrarLog(id_pago, "comprobante_subido", null, req.user.id);
+
+    return res.json({
+      message: "Comprobante enviado correctamente",
+      pago: pagoActualizado,
+    });
+  } catch (error) {
+    console.error("Error al subir comprobante:", error);
+
+    await registrarLog(
+      Number(req.params.id_pago),
+      "error_subida",
+      error.message,
+      req.user?.id,
+    );
+
+    return res.status(500).json({
+      error: "Error al subir comprobante",
+    });
+  }
+};
 // GET /api/admin/pagos — admin ve todos los pagos
 export const listarPagosAdmin = async (req, res) => {
   try {
@@ -366,5 +506,102 @@ export const listarPagosAdmin = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener pagos" });
+  }
+};
+
+
+// GET /api/admin/pagos/:id_pago/historial
+// Consultar los eventos de auditoría de un pago
+export const listarHistorialPago = async (req, res) => {
+  try {
+    const id_pago = Number(req.params.id_pago);
+
+    if (!Number.isInteger(id_pago) || id_pago <= 0) {
+      return res.status(400).json({
+        error: "Identificador de pago inválido",
+      });
+    }
+
+    const pago = await prisma.pago.findUnique({
+      where: { id_pago },
+      select: { id_pago: true },
+    });
+
+    if (!pago) {
+      return res.status(404).json({
+        error: "Pago no encontrado",
+      });
+    }
+
+    const logs = await prisma.pagoLog.findMany({
+      where: { id_pago },
+      include: {
+        usuario: {
+          select: {
+            nombre: true,
+            rol: true,
+          },
+        },
+      },
+      orderBy: { fecha: "asc" },
+    });
+
+    return res.json(logs);
+  } catch (error) {
+    console.error("Error al consultar historial del pago:", error);
+
+    return res.status(500).json({
+      error: "Error al obtener el historial del pago",
+    });
+  }
+};
+
+
+// GET /api/admin/pagos/errores
+// Consultar errores e intentos de pago fallidos
+export const listarErroresPagosAdmin = async (req, res) => {
+  try {
+    const errores = await prisma.pagoLog.findMany({
+      where: {
+        OR: [
+          {
+            evento: {
+              startsWith: "error_",
+            },
+          },
+          {
+            evento: "rechazado",
+          },
+        ],
+      },
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            email: true,
+          },
+        },
+        pago: {
+          select: {
+            id_pago: true,
+            monto_total: true,
+            metodo: true,
+            estado: true,
+          },
+        },
+      },
+      orderBy: {
+        fecha: "desc",
+      },
+    });
+
+    return res.json(errores);
+  } catch (error) {
+    console.error("Error al consultar errores de pagos:", error);
+
+    return res.status(500).json({
+      error: "Error al obtener los registros de auditoría de pagos",
+    });
   }
 };

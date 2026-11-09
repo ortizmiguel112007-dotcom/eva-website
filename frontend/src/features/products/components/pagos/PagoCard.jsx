@@ -92,12 +92,25 @@ export function PagoCard({
           </span>
         </div>
         <div className="pago-card-productos">
-          {pago.pedidos?.map((p) => (
-            <span key={p.id_pedido} className="pago-card-pedido-ref">
-              #{p.id_pedido} —{" "}
-              {p.detalles?.map((d) => d.producto?.nombre_producto).join(", ")}
-            </span>
-          ))}
+          {pedidos.map((p) => {
+            const emprendedora =
+              p.seccion?.emprendedora?.usuario?.nombre || "No disponible";
+
+            return (
+              <div key={p.id_pedido} className="pago-card-pedido-ref">
+                <strong>Pedido #{p.id_pedido}</strong>
+
+                <span>Emprendedora: {emprendedora}</span>
+
+                <span>
+                  Productos:{" "}
+                  {p.detalles
+                    ?.map((d) => d.producto?.nombre_producto)
+                    .join(", ")}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
