@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useCarrito } from "@/core/context/CarritoContext";
 import CarritoDrawer from "@/core/context/CarritoDrawer";
+import TutorialGuiado from "@/core/onboarding/TutorialGuiado";
 import {
   FiPackage,
   FiStar,
@@ -72,6 +73,25 @@ const TooltipPortal = ({ anchorRef, children, visible }) => {
     document.body,
   );
 };
+const tourTargets = {
+  "/productos": "menu-explorar",
+  "/carrito": "menu-carrito",
+  "/mis-pedidos": "menu-pedidos",
+
+  "/dashboard": "menu-dashboard-emp",
+  "/pedidos": "menu-pedidos-emp",
+  "/inventario": "menu-inventario-emp",
+  "/alianzas": "menu-alianzas-emp",
+
+  "/admin": "menu-admin-dashboard",
+  "/Admincrud": "menu-admin-usuarios",
+  "/admin/users": "menu-admin-solicitudes",
+  "/admin/productos": "menu-admin-productos",
+  "/admin/inventario": "menu-admin-inventario",
+  "/admin/pedidos": "menu-admin-pedidos",
+  "/admin/pagos": "menu-admin-pagos",
+  "/admin/logs": "menu-admin-logs",
+};
 
 /* ─────────────────────────────────────────────
    ITEM SIMPLE
@@ -79,6 +99,7 @@ const TooltipPortal = ({ anchorRef, children, visible }) => {
 const ItemSimple = ({ to, icon: Icon, label, sidebarClosed }) => {
   const [hovered, setHovered] = useState(false);
   const ref = useRef(null);
+
   return (
     <li
       className="aside-li"
@@ -88,6 +109,7 @@ const ItemSimple = ({ to, icon: Icon, label, sidebarClosed }) => {
     >
       <NavLink
         to={to}
+        data-tour={tourTargets[to]}
         className={({ isActive }) =>
           `item-component${isActive ? " active" : ""}`
         }
@@ -97,6 +119,7 @@ const ItemSimple = ({ to, icon: Icon, label, sidebarClosed }) => {
           <p className="aside-text">{label}</p>
         </div>
       </NavLink>
+
       {sidebarClosed && (
         <TooltipPortal anchorRef={ref} visible={hovered}>
           <div className="portal-tooltip-simple">
@@ -278,7 +301,7 @@ function MainLayout() {
                 <>
                   {/* DASHBOARD */}
 
-                                    {/* INICIO */}
+                  {/* INICIO */}
 
                   <SectionLabel label="INICIO" sidebarOpen={effectiveOpen} />
 
@@ -850,6 +873,7 @@ function MainLayout() {
       <header
         className={`header-container${sidebarOpen && !isMobile ? "" : isMobile ? " header-mobile" : " header-collapsed"}`}
       >
+        {user && <TutorialGuiado user={user} />}
         {isMobile && (
           <button
             className="hamburger-btn"

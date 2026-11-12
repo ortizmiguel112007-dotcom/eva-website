@@ -1,26 +1,52 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import { google } from "googleapis";
+import dotenv from "dotenv";
+
 dotenv.config();
 
-const transporte = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
+const gmail = google.gmail({
+  version: "v1",
+  auth: oauth2Client,
+});
+
+const codificarMensaje = (mensaje) => {
+    return Buffer.from(mensaje, "utf8")
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+};
+
+const enviarMensajeGmail = async (destinatario, asunto, html) => {
+  const asuntoCodificado = Buffer.from(asunto).toString("base64");
+
+  const mensaje = [
+    `From: "EVA" <${process.env.EMAIL_USER}>`,
+    `To: ${destinatario}`,
+    `Subject: =?UTF-8?B?${asuntoCodificado}?=`,
+    "MIME-Version: 1.0",
+    "Content-Type: text/html; charset=UTF-8",
+    "",
+    html,
+  ].join("\r\n");
+
+  await gmail.users.messages.send({
+    userId: "me",
+    requestBody: {
+      raw: codificarMensaje(mensaje),
+    },
+  });
+};
 export const enviarCorreo = async (destinatario, codigo) => {
-    await transporte.sendMail({
-        from: `"EVA" <${process.env.EMAIL_USER}>`,
-        to: destinatario,
-        subject: 'Tu código de verificación — EVA',
-        html: `
+  const html = `
         <div style="margin:0; padding:0; background-color:#0b1120; font-family: 'Segoe UI', Arial, sans-serif;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 16px;">
             <tr>
@@ -93,6 +119,11 @@ export const enviarCorreo = async (destinatario, codigo) => {
             </tr>
           </table>
         </div>
-        `,
-    })
-}
+    `;
+
+  await enviarMensajeGmail(
+    destinatario,
+    "Tu código de verificación — EVA",
+    html,
+  );
+};

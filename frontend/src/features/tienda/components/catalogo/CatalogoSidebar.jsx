@@ -37,7 +37,8 @@ export function CatalogoSidebar({
     };
 
     return (
-        <aside className={`cats-sidebar ${filtros.sidebarOpen ? "" : "closed"}`}>
+        <aside className={`cats-sidebar ${filtros.sidebarOpen ? "" : "closed"}`}
+        data-tour="cliente-filtros">
             <div className="cat-sidebar-header">
                 <div className="cat-sidebar-titulo">
                     <FiSliders /> Filtros
@@ -58,7 +59,7 @@ export function CatalogoSidebar({
             </div>
 
             {/* Precio */}
-            <div className="cat-sidebar-seccion">
+            <div className="cat-sidebar-seccion"data-tour="cliente-precio">
                 <h4 className="cat-sidebar-seccion-titulo">Precio máximo</h4>
                 <input
                     type="range"
@@ -79,7 +80,7 @@ export function CatalogoSidebar({
             </div>
 
             {/* Categorías */}
-            <div className="cat-sidebar-seccion">
+            <div className="cat-sidebar-seccion" data-tour="cliente-categorias">
                 <CategoryFilterList
                     name="Tipo"
                     categories={Tipo}

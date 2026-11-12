@@ -36,7 +36,7 @@ export function CatalogoToolbar({
                 <strong>{filtrados.length}</strong> resultados
             </span>
             
-            <div className="cat-ordenar-wrap">
+            <div className="cat-ordenar-wrap"data-tour="cliente-ordenar">
                 <select
                     className="cat-ordenar"
                     value={filtros.ordenar}

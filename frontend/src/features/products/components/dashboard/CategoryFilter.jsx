@@ -20,7 +20,7 @@ export default function CategoryFilter({
     <div className="filters-container">
 
       {/* Tipo */}
-      <div className="filters">
+      <div className="filters" data-tour="emprendedora-tipo">
         <span className="filters-label">Tipo</span>
         {types.map((t) => (
           <button
@@ -34,7 +34,7 @@ export default function CategoryFilter({
       </div>
 
       {/* Categorías dinámicas */}
-      <div className="filters secondary">
+      <div className="filters secondary" data-tour="emprendedora-categorias">
         <span className="filters-label">Categoría</span>
         {categories.map((c) => (
           <button
@@ -48,7 +48,7 @@ export default function CategoryFilter({
       </div>
 
       {/* Visibilidad */}
-      <div className="filters visibility">
+      <div className="filters visibility" data-tour="emprendedora-visibilidad">
         <span className="filters-label">Visibilidad</span>
         <button
           className={visibilityFilter === "Todos" ? "filter active" : "filter"}

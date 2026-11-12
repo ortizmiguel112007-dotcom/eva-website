@@ -10,6 +10,7 @@ export default function TopBar({ search, setSearch }) {
 
       <div className="topbar-actions">
         <input
+          data-tour="emprendedora-buscar"
           type="text"
           placeholder="Buscar producto o servicio..."
           className="search-input2"
@@ -18,6 +19,7 @@ export default function TopBar({ search, setSearch }) {
         />
 
         <button
+          data-tour="emprendedora-crear"
           className="btn-primary"
           onClick={() => navigate("/crear-item")}
         >

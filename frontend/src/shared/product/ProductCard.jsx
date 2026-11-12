@@ -160,6 +160,7 @@ export function ProductCard({
    return (
     <div
       className="pc-card"
+      data-tour="cliente-producto"
       style={{ animationDelay: `${(idx % 9) * 0.04}s` }}
       onClick={handleClick}
       {...props}
@@ -223,6 +224,7 @@ export function ProductCard({
             </button>
           ) : puedeComprar ? (
             <button
+              data-tour="cliente-agregar"
               className={`pc-btn-agregar ${yaAgregado ? "agregado" : ""} ${agotado ? "agotado" : ""}`}
               disabled={agotado}
                onClick={e => {

@@ -1,11 +1,14 @@
+
 import prisma from "../conexion.js";
 import { crearNotificacion } from "./notificacion.controller.js";
 import { registrarMovimiento } from "./movimientoInventario.controller.js";
 import { enviarConfirmacionPedido } from "../services/notificacion.service.js";
 import { aplicarDescuento } from "./reglasdescuento.controller.js";
-import { registrarLog } from "./Pago.controller.js"
-import { crearFactura } from "./factura.controller.js"
-import { soloEmprendedoraActiva } from "../utils/filtroEmprendedoraActiva.js"
+import { registrarLog } from "./Pago.controller.js";
+import { crearFactura } from "./factura.controller.js";
+import { soloEmprendedoraActiva } from "../utils/filtroEmprendedoraActiva.js";
+import { registrarAuditoria } from "../services/auditoria.service.js";
+
 // GET /api/pedidos — pedidos de la emprendedora logueada
 export const listarPedidos = async (req, res) => {
   try {
@@ -43,41 +46,59 @@ export const listarPedidos = async (req, res) => {
 };
 
 // PUT /api/pedidos/:id/estado — cambiar estado LOGÍSTICO del pedido
-// Ojo: los estados relacionados con pago (pago_enviado, pago_rechazado, en_proceso)
-// ahora los maneja pago.controller.js (subirComprobante / verificarPago),
-// porque dependen del Pago (que puede cubrir varios pedidos a la vez), no de un pedido aislado.
+// Los estados relacionados con el pago los maneja pago.controller.js.
 export const cambiarEstadoPedido = async (req, res) => {
   try {
     const id_pedido = Number(req.params.id);
     const { estado } = req.body;
 
     const estadosValidos = ["enviado", "entregado", "cancelado"];
-    if (!estadosValidos.includes(estado))
-      return res.status(400).json({ error: "Estado inválido" });
 
-    // RN-030: solo el admin puede cancelar pedidos
-    if (estado === "cancelado" && req.user.rol !== "admin") {
-      return res.status(403).json({ error: "Solo un administrador puede cancelar pedidos" });
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({ error: "Estado inválido" });
     }
 
-    const pedido = await prisma.pedido.update({
-      where: { id_pedido },
-      data: { estado },
-    });
-
-    // RN-030: dejar registro en auditoría cuando se cancela
-    if (estado === "cancelado") {
-      await prisma.auditoria.create({
-        data: {
-          id_usuario_accion: req.user.id,
-          id_registro: id_pedido,
-          tabla_afectada: "pedidos",
-          accion: "cancelado",
-          fecha: new Date(),
-          detalles: `Pedido #${id_pedido} cancelado por administrador`,
-        },
+    // RN-030: solo el administrador puede cancelar pedidos
+    if (estado === "cancelado" && req.user.rol !== "admin") {
+      return res.status(403).json({
+        error: "Solo un administrador puede cancelar pedidos",
       });
     }
+
+    const pedidoAnterior = await prisma.pedido.findUnique({
+      where: { id_pedido },
+    });
+
+    if (!pedidoAnterior) {
+      return res.status(404).json({ error: "Pedido no encontrado" });
+    }
+
+    // Evitar registros duplicados si el estado no cambia
+    if (pedidoAnterior.estado === estado) {
+      return res.json({
+        message: "El pedido ya tiene ese estado",
+        pedido: pedidoAnterior,
+      });
+    }
+
+    // Actualizar pedido y registrar auditoría en una transacción
+    const pedido = await prisma.$transaction(async (tx) => {
+      const actualizado = await tx.pedido.update({
+        where: { id_pedido },
+        data: { estado },
+      });
+
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id_pedido,
+        tabla: "pedidos",
+        accion: estado === "cancelado" ? "CANCELAR" : "ACTUALIZAR_ESTADO",
+        detalles: `Pedido #${id_pedido}: estado ${pedidoAnterior.estado} → ${estado}`,
+      });
+
+      return actualizado;
+    });
 
     const mensajes = {
       enviado: {
@@ -113,7 +134,6 @@ export const cambiarEstadoPedido = async (req, res) => {
 
 // GET /api/pedidos/:id — detalle de un pedido
 export const obtenerPedido = async (req, res) => {
-  
   try {
     const pedido = await prisma.pedido.findUnique({
       where: { id_pedido: Number(req.params.id) },
@@ -130,7 +150,10 @@ export const obtenerPedido = async (req, res) => {
       },
     });
 
-    if (!pedido) return res.status(404).json({ error: "Pedido no encontrado" });
+    if (!pedido) {
+      return res.status(404).json({ error: "Pedido no encontrado" });
+    }
+
     res.json(pedido);
   } catch (error) {
     console.error(error);
@@ -138,24 +161,38 @@ export const obtenerPedido = async (req, res) => {
   }
 };
 
-// POST /api/cliente/pedidos — crea UN pago + N pedidos (uno por sección/emprendedora)
+// POST /api/cliente/pedidos — crea UN pago + N pedidos
+// (uno por sección/emprendedora)
 export const crearPedido = async (req, res) => {
   try {
     const id_cliente = req.user.id;
-    const { items, metodo_pago, nota,id_cupon} = req.body;
+    const { items, metodo_pago, nota, id_cupon } = req.body;
 
-    if (!items || items.length === 0)
+    if (!items || items.length === 0) {
       return res.status(400).json({ error: "El carrito está vacío" });
-    if (!metodo_pago)
-      return res.status(400).json({ error: "Debes seleccionar un método de pago" });
+    }
+
+    if (!metodo_pago) {
+      return res.status(400).json({
+        error: "Debes seleccionar un método de pago",
+      });
+    }
 
     const productosIds = items.map((i) => i.id_producto);
+
     const productos = await prisma.producto.findMany({
-      where: { id_producto: { in: productosIds }, ...soloEmprendedoraActiva },
+      where: {
+        id_producto: { in: productosIds },
+        ...soloEmprendedoraActiva,
+      },
       include: {
         seccion: {
           include: {
-            emprendedora: { include: { usuario: { select: { nombre: true } } } },
+            emprendedora: {
+              include: {
+                usuario: { select: { nombre: true } },
+              },
+            },
           },
         },
         inventario: true,
@@ -163,88 +200,165 @@ export const crearPedido = async (req, res) => {
     });
 
     for (const item of items) {
-      const prod = productos.find((p) => p.id_producto === item.id_producto);
-      if (!prod)
-        return res.status(404).json({ error: `El producto ${item.id_producto} ya no está disponible` });
+      const prod = productos.find(
+        (p) => p.id_producto === item.id_producto
+      );
+
+      if (!prod) {
+        return res.status(404).json({
+          error: `El producto ${item.id_producto} ya no está disponible`,
+        });
+      }
+
       const stock = prod.inventario?.cantidad ?? 0;
-      if (stock < item.cantidad)
-        return res.status(400).json({ error: `Stock insuficiente para "${prod.nombre_producto}"` });
+
+      if (stock < item.cantidad) {
+        return res.status(400).json({
+          error: `Stock insuficiente para "${prod.nombre_producto}"`,
+        });
+      }
     }
 
-    // RF-097/RN-085: validar el cupón ANTES de la transacción, con reglas de negocio completas
-    let cuponValidado = null
-    let idsSeccionCupon = []
+    // RF-097/RN-085: validar el cupón antes de la transacción
+    let cuponValidado = null;
+    let idsSeccionCupon = [];
+
     if (id_cupon) {
-      const cupon = await prisma.cupon.findUnique({ where: { id_cupon: Number(id_cupon) } })
-      if (!cupon) return res.status(404).json({ error: "Cupón no encontrado" })
-      if (!cupon.activo) return res.status(400).json({ error: "Cupón inactivo" })
-      if (cupon.fecha_inicio && new Date() < cupon.fecha_inicio)
-        return res.status(400).json({ error: "Este cupón aún no está vigente" })
-      if (cupon.fecha_fin && new Date() > cupon.fecha_fin)
-        return res.status(400).json({ error: "Cupón expirado" })
-      if (cupon.limite_usos && cupon.usos >= cupon.limite_usos)
-        return res.status(400).json({ error: "Cupón agotado" })
+      const cupon = await prisma.cupon.findUnique({
+        where: { id_cupon: Number(id_cupon) },
+      });
+
+      if (!cupon) {
+        return res.status(404).json({ error: "Cupón no encontrado" });
+      }
+
+      if (!cupon.activo) {
+        return res.status(400).json({ error: "Cupón inactivo" });
+      }
+
+      if (cupon.fecha_inicio && new Date() < cupon.fecha_inicio) {
+        return res.status(400).json({
+          error: "Este cupón aún no está vigente",
+        });
+      }
+
+      if (cupon.fecha_fin && new Date() > cupon.fecha_fin) {
+        return res.status(400).json({ error: "Cupón expirado" });
+      }
+
+      if (cupon.limite_usos && cupon.usos >= cupon.limite_usos) {
+        return res.status(400).json({ error: "Cupón agotado" });
+      }
 
       const emprendedoraCupon = await prisma.emprendedora.findUnique({
         where: { id_usuario: cupon.id_usuario },
-        include: { secciones: { select: { id_seccion: true } } },
-      })
-      idsSeccionCupon = emprendedoraCupon?.secciones.map((s) => s.id_seccion) || []
-      cuponValidado = cupon
+        include: {
+          secciones: {
+            select: { id_seccion: true },
+          },
+        },
+      });
+
+      idsSeccionCupon =
+        emprendedoraCupon?.secciones.map((s) => s.id_seccion) || [];
+
+      cuponValidado = cupon;
     }
 
     const grupos = {};
+
     for (const item of items) {
-      const prod = productos.find((p) => p.id_producto === item.id_producto);
+      const prod = productos.find(
+        (p) => p.id_producto === item.id_producto
+      );
+
       const id_seccion = prod.id_seccion;
+
       if (!grupos[id_seccion]) {
         grupos[id_seccion] = {
           id_seccion,
-          emprendedora: prod.seccion.emprendedora?.usuario?.nombre || "EVA",
+          emprendedora:
+            prod.seccion.emprendedora?.usuario?.nombre || "EVA",
           items: [],
         };
       }
-      grupos[id_seccion].items.push({ ...item, producto: prod });
+
+      grupos[id_seccion].items.push({
+        ...item,
+        producto: prod,
+      });
     }
 
-     // RN-085 (aclaración de scope): si el cliente aplicó un cupón pero ningún
-    // producto del carrito pertenece a la tienda que lo emitió, se rechaza —
-    // evita que el cliente "aproveche" un cupón que no le corresponde a esa compra.
-    if (cuponValidado && !Object.keys(grupos).some((idSeccion) => idsSeccionCupon.includes(Number(idSeccion)))) {
-      return res.status(400).json({ error: "Este cupón no aplica a los productos de tu carrito" })
+    // RN-085: validar que el cupón corresponda a una tienda del carrito
+    if (
+      cuponValidado &&
+      !Object.keys(grupos).some((idSeccion) =>
+        idsSeccionCupon.includes(Number(idSeccion))
+      )
+    ) {
+      return res.status(400).json({
+        error: "Este cupón no aplica a los productos de tu carrito",
+      });
     }
 
-   const resultado = await prisma.$transaction(async (tx) => {
+    const resultado = await prisma.$transaction(async (tx) => {
       let montoTotal = 0;
       let descuentoCuponTotal = 0;
-      let idPedidoConCupon = null; // se asigna al grupo que recibe el descuento
+      let idPedidoConCupon = null;
+
       const datosGrupos = [];
 
       for (const grupo of Object.values(grupos)) {
         const itemsConPrecioFinal = await Promise.all(
           grupo.items.map(async (i) => {
-            const descuento = await aplicarDescuento(i.id_producto, i.producto.precio, i.producto.inventario?.cantidad ?? 0);
-            return { ...i, precioFinal: descuento ? descuento.precio_con_descuento : Number(i.producto.precio) };
-          }),
-        );
-        let total = itemsConPrecioFinal.reduce((acc, i) => acc + i.precioFinal * i.cantidad, 0);
+            const descuento = await aplicarDescuento(
+              i.id_producto,
+              i.producto.precio,
+              i.producto.inventario?.cantidad ?? 0
+            );
 
-         // Aplica el cupón SOLO al grupo (tienda) que corresponde
-        let descuentoCupon = 0
-        if (cuponValidado && idsSeccionCupon.includes(grupo.id_seccion)) {
-          descuentoCupon = cuponValidado.tipo === "porcentaje"
-            ? total * (Number(cuponValidado.valor) / 100)
-            : Math.min(Number(cuponValidado.valor), total) // no puede descontar más que el total del grupo
-          total = Math.max(0, total - descuentoCupon)
-          descuentoCuponTotal += descuentoCupon
+            return {
+              ...i,
+              precioFinal: descuento
+                ? descuento.precio_con_descuento
+                : Number(i.producto.precio),
+            };
+          })
+        );
+
+        let total = itemsConPrecioFinal.reduce(
+          (acc, i) => acc + i.precioFinal * i.cantidad,
+          0
+        );
+
+        // Aplicar cupón únicamente al grupo que corresponde
+        let descuentoCupon = 0;
+
+        if (
+          cuponValidado &&
+          idsSeccionCupon.includes(grupo.id_seccion)
+        ) {
+          descuentoCupon =
+            cuponValidado.tipo === "porcentaje"
+              ? total * (Number(cuponValidado.valor) / 100)
+              : Math.min(Number(cuponValidado.valor), total);
+
+          total = Math.max(0, total - descuentoCupon);
+          descuentoCuponTotal += descuentoCupon;
         }
 
         montoTotal += total;
-        datosGrupos.push({ ...grupo, itemsConPrecioFinal, total, descuentoCupon });
+
+        datosGrupos.push({
+          ...grupo,
+          itemsConPrecioFinal,
+          total,
+          descuentoCupon,
+        });
       }
 
-      // 2. RN-026 / RN-053: un solo Pago para toda la compra.
-      // Contraentrega se confirma de inmediato (no requiere comprobante previo).
+      // Un solo pago para toda la compra
+      // Contraentrega se confirma inmediatamente
       const esContraentrega = metodo_pago === "contraentrega";
 
       const pago = await tx.pago.create({
@@ -257,79 +371,159 @@ export const crearPedido = async (req, res) => {
         },
       });
 
-      // 3. Creamos los pedidos (uno por emprendedora), todos vinculados al mismo pago
+      // Crear los pedidos (uno por emprendedora)
       const pedidosCreados = [];
+
       for (const grupo of datosGrupos) {
         const nuevoPedido = await tx.pedido.create({
           data: {
-            id_cliente, id_seccion: grupo.id_seccion, id_pago: pago.id_pago,
-            nota: nota || null, total: grupo.total,
+            id_cliente,
+            id_seccion: grupo.id_seccion,
+            id_pago: pago.id_pago,
+            nota: nota || null,
+            total: grupo.total,
             estado: esContraentrega ? "en_proceso" : "pendiente_pago",
-            id_cupon: grupo.descuentoCupon > 0 ? cuponValidado.id_cupon : null,
-            descuento_cupon: grupo.descuentoCupon > 0 ? grupo.descuentoCupon : null,
+            id_cupon:
+              grupo.descuentoCupon > 0
+                ? cuponValidado.id_cupon
+                : null,
+            descuento_cupon:
+              grupo.descuentoCupon > 0
+                ? grupo.descuentoCupon
+                : null,
             detalles: {
               create: grupo.itemsConPrecioFinal.map((i) => ({
-                id_producto: i.id_producto, cantidad: i.cantidad, precio_unit: i.precioFinal,
+                id_producto: i.id_producto,
+                cantidad: i.cantidad,
+                precio_unit: i.precioFinal,
               })),
             },
           },
           include: {
-            detalles: { include: { producto: { select: { nombre_producto: true, imagen: true, precio: true } } } },
-            seccion: { include: { emprendedora: { include: { usuario: { select: { nombre: true } } } } } },
+            detalles: {
+              include: {
+                producto: {
+                  select: {
+                    nombre_producto: true,
+                    imagen: true,
+                    precio: true,
+                  },
+                },
+              },
+            },
+            seccion: {
+              include: {
+                emprendedora: {
+                  include: {
+                    usuario: {
+                      select: { nombre: true },
+                    },
+                  },
+                },
+              },
+            },
           },
         });
 
-        if (grupo.descuentoCupon > 0) idPedidoConCupon = nuevoPedido.id_pedido
+        if (grupo.descuentoCupon > 0) {
+          idPedidoConCupon = nuevoPedido.id_pedido;
+        }
 
+        // Auditoría: registrar cada pedido creado
+        await registrarAuditoria({
+          db: tx,
+          usuarioId: id_cliente,
+          registroId: nuevoPedido.id_pedido,
+          tabla: "pedidos",
+          accion: "CREAR",
+          detalles: `Pedido #${nuevoPedido.id_pedido} creado. Total: $${Number(
+            grupo.total
+          ).toLocaleString("es-CO")}`,
+        });
+
+        // Descontar inventario
         for (const item of grupo.items) {
           await tx.inventario.updateMany({
             where: { id_producto: item.id_producto },
-            data: { cantidad: { decrement: item.cantidad } },
+            data: {
+              cantidad: { decrement: item.cantidad },
+            },
           });
         }
 
         pedidosCreados.push(nuevoPedido);
       }
-      // RF-097/RN-085: registrar el uso real del cupón, solo si efectivamente se aplicó
-      if (cuponValidado && idPedidoConCupon && descuentoCuponTotal > 0) {
-        await tx.cupon.update({ where: { id_cupon: cuponValidado.id_cupon }, data: { usos: { increment: 1 } } })
+
+      // Registrar uso real del cupón si se aplicó
+      if (
+        cuponValidado &&
+        idPedidoConCupon &&
+        descuentoCuponTotal > 0
+      ) {
+        await tx.cupon.update({
+          where: { id_cupon: cuponValidado.id_cupon },
+          data: { usos: { increment: 1 } },
+        });
+
         await tx.cuponUso.create({
           data: {
-            id_cupon: cuponValidado.id_cupon, id_cliente,
-            id_pedido: idPedidoConCupon, monto_descuento: descuentoCuponTotal,
+            id_cupon: cuponValidado.id_cupon,
+            id_cliente,
+            id_pedido: idPedidoConCupon,
+            monto_descuento: descuentoCuponTotal,
           },
-        })
+        });
       }
 
       return { pago, pedidosCreados };
     });
 
     const { pago, pedidosCreados } = resultado;
-    await registrarLog(pago.id_pago, "creado", `Monto: ${pago.monto_total}, método: ${pago.metodo}`, id_cliente)
 
-    // Notificar a emprendedoras que llegó un pedido nuevo (independiente del estado del pago)
+    await registrarLog(
+      pago.id_pago,
+      "creado",
+      `Monto: ${pago.monto_total}, método: ${pago.metodo}`,
+      id_cliente
+    );
+
+    // Notificar a las emprendedoras que llegó un pedido nuevo
     for (const pedido of pedidosCreados) {
       const emprendedoraDePedido = await prisma.user.findFirst({
-        where: { emprendedora: { secciones: { some: { id_seccion: pedido.id_seccion } } } },
+        where: {
+          emprendedora: {
+            secciones: {
+              some: { id_seccion: pedido.id_seccion },
+            },
+          },
+        },
         select: { id: true },
       });
+
       if (emprendedoraDePedido) {
         await crearNotificacion(
           emprendedoraDePedido.id,
           "pedido",
           "Nuevo pedido recibido",
-          `Tienes un nuevo pedido por $${Number(pedido.total).toLocaleString("es-CO")}.`,
-          "/pedidos",
+          `Tienes un nuevo pedido por $${Number(
+            pedido.total
+          ).toLocaleString("es-CO")}.`,
+          "/pedidos"
         );
       }
     }
 
-    // RF-024 / RF-025 / RF-027: registrar la salida en el historial de inventario y
-    // alertar a la emprendedora cuando el stock llega al mínimo o se agota
+    // Registrar salida en historial de inventario y alertar sobre el stock
     for (const pedido of pedidosCreados) {
       try {
         const emprendedoraDePedido = await prisma.user.findFirst({
-          where: { emprendedora: { secciones: { some: { id_seccion: pedido.id_seccion } } } },
+          where: {
+            emprendedora: {
+              secciones: {
+                some: { id_seccion: pedido.id_seccion },
+              },
+            },
+          },
           select: { id: true },
         });
 
@@ -337,6 +531,7 @@ export const crearPedido = async (req, res) => {
           const inv = await prisma.inventario.findFirst({
             where: { id_producto: detalle.id_producto },
           });
+
           if (!inv) continue;
 
           const cantidadNueva = inv.cantidad;
@@ -348,7 +543,7 @@ export const crearPedido = async (req, res) => {
             cantidadAntes,
             cantidadNueva,
             id_cliente,
-            `Venta - pedido #${pedido.id_pedido}`,
+            `Venta - pedido #${pedido.id_pedido}`
           );
 
           if (!emprendedoraDePedido) continue;
@@ -357,6 +552,7 @@ export const crearPedido = async (req, res) => {
             where: { id_producto: detalle.id_producto },
             select: { nombre_producto: true },
           });
+
           const nombre = prod?.nombre_producto ?? "Producto";
 
           if (cantidadNueva === 0) {
@@ -365,56 +561,78 @@ export const crearPedido = async (req, res) => {
               "stock",
               "Producto agotado",
               `"${nombre}" se quedó sin stock.`,
-              "/inventario",
+              "/inventario"
             );
-          } else if (cantidadNueva <= Number(inv.stock_minimo ?? 0)) {
+          } else if (
+            cantidadNueva <= Number(inv.stock_minimo ?? 0)
+          ) {
             await crearNotificacion(
               emprendedoraDePedido.id,
               "stock",
               "Stock bajo",
               `"${nombre}" tiene stock bajo (${cantidadNueva} unidades).`,
-              "/inventario",
+              "/inventario"
             );
           }
         }
       } catch (err) {
-        console.error("Error registrando movimiento o alerta de stock:", err);
+        console.error(
+          "Error registrando movimiento o alerta de stock:",
+          err
+        );
       }
     }
 
     // Vaciar carrito
-    const carrito = await prisma.carrito.findUnique({ where: { id_usuario: id_cliente } });
+    const carrito = await prisma.carrito.findUnique({
+      where: { id_usuario: id_cliente },
+    });
+
     if (carrito) {
-      await prisma.carritoItem.deleteMany({ where: { id_carrito: carrito.id_carrito } });
+      await prisma.carritoItem.deleteMany({
+        where: { id_carrito: carrito.id_carrito },
+      });
     }
 
-   
-    // RN-026: correo de confirmación solo si el pago ya nació aprobado (contraentrega)
-    // RN-042: la factura también se genera aquí, porque el pago ya está "aprobado" desde su creación
+    // Correo de confirmación y factura cuando el pago ya está aprobado
     if (pago.estado === "aprobado") {
       try {
         const clienteData = await prisma.user.findUnique({
           where: { id: id_cliente },
           select: { email: true, nombre: true },
-        })
+        });
+
         if (clienteData) {
           for (const pedido of pedidosCreados) {
-            const resultado = await crearFactura({ ...pedido, cliente: clienteData })
-            const adjunto = resultado
-              ? { filename: `${resultado.numero}.pdf`, buffer: resultado.bufferPDF }
-              : null
+            const resultadoFactura = await crearFactura({
+              ...pedido,
+              cliente: clienteData,
+            });
+
+            const adjunto = resultadoFactura
+              ? {
+                  filename: `${resultadoFactura.numero}.pdf`,
+                  buffer: resultadoFactura.bufferPDF,
+                }
+              : null;
 
             await enviarConfirmacionPedido(
               clienteData.email,
               clienteData.nombre?.trim(),
               pedido,
               "compra",
-              adjunto,
-            )
+              adjunto
+            );
+
+            console.log("DATOS DEL PEDIDO PARA EL CORREO:", pedido);
+            console.log("MÉTODO DE PAGO:", pedido.metodo_pago);
           }
         }
       } catch (err) {
-        console.error("Error enviando correo de confirmación:", err)
+        console.error(
+          "Error enviando correo de confirmación:",
+          err
+        );
       }
     }
 
@@ -438,18 +656,34 @@ export const listarPedidosCliente = async (req, res) => {
         detalles: {
           include: {
             producto: {
-              select: { nombre_producto: true, imagen: true, precio: true, id_producto: true },
+              select: {
+                nombre_producto: true,
+                imagen: true,
+                precio: true,
+                id_producto: true,
+              },
             },
           },
         },
         seccion: {
-          include: { emprendedora: { include: { usuario: { select: { nombre: true } } } } },
+          include: {
+            emprendedora: {
+              include: {
+                usuario: { select: { nombre: true } },
+              },
+            },
+          },
         },
-        comentarios: { include: { producto: { select: { nombre_producto: true } } } },
+        comentarios: {
+          include: {
+            producto: { select: { nombre_producto: true } },
+          },
+        },
         pago: true,
       },
       orderBy: { fecha: "desc" },
     });
+
     res.json(pedidos);
   } catch (error) {
     console.error(error);
@@ -465,11 +699,20 @@ export const listarTodosPedidosAdmin = async (req, res) => {
         cliente: { select: { nombre: true, email: true } },
         pago: true,
         detalles: {
-          include: { producto: { select: { nombre_producto: true, imagen: true, precio: true } } },
+          include: {
+            producto: {
+              select: {
+                nombre_producto: true,
+                imagen: true,
+                precio: true,
+              },
+            },
+          },
         },
       },
       orderBy: { fecha: "desc" },
     });
+
     res.json(pedidos);
   } catch (error) {
     console.error(error);

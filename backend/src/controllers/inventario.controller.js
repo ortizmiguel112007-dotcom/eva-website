@@ -1,6 +1,8 @@
+
 import prisma from "../conexion.js";
 import { crearNotificacion } from "./notificacion.controller.js";
 import { registrarMovimiento } from "./movimientoInventario.controller.js";
+import { registrarAuditoria } from "../services/auditoria.service.js";
 
 // GET /api/inventario — inventario de la emprendedora logueada
 export const listarInventario = async (req, res) => {
@@ -16,7 +18,12 @@ export const listarInventario = async (req, res) => {
               where: { estado_producto: "activo" },
               include: {
                 inventario: true,
-                seccion: { select: { id_alianza: true, nombre_seccion: true } },
+                seccion: {
+                  select: {
+                    id_alianza: true,
+                    nombre_seccion: true,
+                  },
+                },
               },
             },
           },
@@ -32,7 +39,7 @@ export const listarInventario = async (req, res) => {
       .filter((s) => !s.id_alianza)
       .flatMap((s) => s.productos);
 
-    // Buscar alianzas donde participa (no solo donde es creadora)
+    // Buscar alianzas donde participa
     const alianzasParticipante = await prisma.alianza.findMany({
       where: {
         estado: "activa",
@@ -47,7 +54,12 @@ export const listarInventario = async (req, res) => {
               where: { estado_producto: "activo" },
               include: {
                 inventario: true,
-                seccion: { select: { id_alianza: true, nombre_seccion: true } },
+                seccion: {
+                  select: {
+                    id_alianza: true,
+                    nombre_seccion: true,
+                  },
+                },
               },
             },
           },
@@ -83,6 +95,7 @@ export const listarInventario = async (req, res) => {
 
     // Eliminar duplicados por id_producto
     const seen = new Set();
+
     const inventarioUnico = inventario.filter((p) => {
       if (seen.has(p.id_producto)) return false;
       seen.add(p.id_producto);
@@ -102,16 +115,18 @@ export const actualizarStock = async (req, res) => {
     const id_producto = Number(req.params.id);
     const { cantidad, stock_minimo, stock_maximo } = req.body;
 
-    if (cantidad < 0)
-      return res
-        .status(400)
-        .json({ error: "La cantidad no puede ser negativa" });
+    if (cantidad !== undefined && Number(cantidad) < 0) {
+      return res.status(400).json({
+        error: "La cantidad no puede ser negativa",
+      });
+    }
 
     // RN-019: Solo la emprendedora propietaria o el administrador pueden modificar el stock
     const producto = await prisma.producto.findUnique({
       where: { id_producto },
       select: {
         id_creador: true,
+        nombre_producto: true,
         seccion: {
           select: {
             id_alianza: true,
@@ -127,21 +142,14 @@ export const actualizarStock = async (req, res) => {
       });
     }
 
-    // if (
-    //   req.user.rol !== "admin" &&
-    //   req.user.rol !== "administrador" &&
-    //   producto.id_creador !== req.user.id
-    // ) {
-    //   return res.status(403).json({
-    //     error: "No tienes permiso para modificar el stock de este producto.",
-    //   });
-    // }
-    const esAdmin = req.user.rol === "admin" || req.user.rol === "administrador";
+    const esAdmin =
+      req.user.rol === "admin" || req.user.rol === "administrador";
+
     const esCreadorOriginal = producto.id_creador === req.user.id;
 
-    // Si el producto pertenece a una sección de alianza, permite editar
-    // a cualquier participante autorizado de esa alianza, no solo a quien lo creó.
+    // Si pertenece a una alianza, permite editar a participantes autorizados
     let esParticipanteAlianza = false;
+
     if (producto.seccion?.id_alianza) {
       const participante = await prisma.alianzaParticipante.findUnique({
         where: {
@@ -151,6 +159,7 @@ export const actualizarStock = async (req, res) => {
           },
         },
       });
+
       esParticipanteAlianza = !!participante?.autorizado;
     }
 
@@ -160,34 +169,88 @@ export const actualizarStock = async (req, res) => {
       });
     }
 
-    // Obtener cantidad actual ANTES de actualizar
+    // Obtener cantidad actual antes de actualizar
     const inventarioActual = await prisma.inventario.findUnique({
       where: { id_producto },
     });
+
     const cantidadAntes = inventarioActual?.cantidad ?? 0;
 
-    const inventario = await prisma.inventario.update({
-      where: { id_producto },
-      data: {
-        ...(cantidad !== undefined && { cantidad: Number(cantidad) }),
-        ...(stock_minimo !== undefined && {
-          stock_minimo: Number(stock_minimo),
-        }),
-        ...(stock_maximo !== undefined && {
-          stock_maximo: Number(stock_maximo),
-        }),
-      },
+    const cantidadNueva =
+      cantidad !== undefined ? Number(cantidad) : cantidadAntes;
+
+    // Determinar tipo de acción para la auditoría
+    let accionAuditoria = "ACTUALIZAR_LIMITES";
+
+    if (cantidad !== undefined) {
+      if (cantidadNueva > cantidadAntes) {
+        accionAuditoria = "ENTRADA";
+      } else if (cantidadNueva < cantidadAntes) {
+        accionAuditoria = "SALIDA";
+      } else {
+        accionAuditoria = "AJUSTE";
+      }
+    }
+
+    // Preparar detalles de la auditoría
+    const detalles = [];
+
+    if (cantidad !== undefined) {
+      detalles.push(
+        `Cantidad anterior: ${cantidadAntes}. Cantidad nueva: ${cantidadNueva}.`,
+      );
+    }
+
+    if (stock_minimo !== undefined) {
+      detalles.push(
+        `Stock mínimo actualizado a ${Number(stock_minimo)}.`,
+      );
+    }
+
+    if (stock_maximo !== undefined) {
+      detalles.push(
+        `Stock máximo actualizado a ${Number(stock_maximo)}.`,
+      );
+    }
+
+    // Actualizar inventario y registrar auditoría en una transacción
+    const inventario = await prisma.$transaction(async (tx) => {
+      const actualizado = await tx.inventario.update({
+        where: { id_producto },
+        data: {
+          ...(cantidad !== undefined && {
+            cantidad: Number(cantidad),
+          }),
+          ...(stock_minimo !== undefined && {
+            stock_minimo: Number(stock_minimo),
+          }),
+          ...(stock_maximo !== undefined && {
+            stock_maximo: Number(stock_maximo),
+          }),
+        },
+      });
+
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id_producto,
+        tabla: "inventario",
+        accion: accionAuditoria,
+        detalles: `${producto.nombre_producto}: ${detalles.join(" ")}`,
+      });
+
+      return actualizado;
     });
 
-    // Registrar movimiento
+    // Registrar movimiento de inventario
     if (cantidad !== undefined) {
-      const cantidadNueva = Number(cantidad);
       const tipo =
         cantidadNueva > cantidadAntes
           ? "entrada"
           : cantidadNueva < cantidadAntes
             ? "salida"
             : "ajuste";
+
       await registrarMovimiento(
         id_producto,
         tipo,
@@ -197,17 +260,23 @@ export const actualizarStock = async (req, res) => {
         "Actualización manual de stock",
       );
 
-      // Notificaciones stock bajo o agotado
+      // Notificaciones de stock bajo o agotado
       const prod = await prisma.producto.findUnique({
         where: { id_producto },
         include: {
           seccion: {
-            include: { emprendedora: { include: { usuario: true } } },
+            include: {
+              emprendedora: {
+                include: { usuario: true },
+              },
+            },
           },
           inventario: true,
         },
       });
+
       const empUser = prod?.seccion?.emprendedora?.usuario;
+
       if (empUser) {
         if (cantidadNueva === 0) {
           await crearNotificacion(
@@ -232,12 +301,16 @@ export const actualizarStock = async (req, res) => {
       }
     }
 
-    res.json({ message: "Stock actualizado", inventario });
+    res.json({
+      message: "Stock actualizado",
+      inventario,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error al actualizar inventario:", error);
     res.status(500).json({ error: "Error al actualizar stock" });
   }
 };
+
 // GET /api/admin/inventario — auditoría completa (solo admin)
 export const auditarInventario = async (req, res) => {
   try {
@@ -248,6 +321,7 @@ export const auditarInventario = async (req, res) => {
           "Acceso denegado. Solo el administrador puede auditar el inventario.",
       });
     }
+
     const inventario = await prisma.inventario.findMany({
       include: {
         producto: {
@@ -255,7 +329,11 @@ export const auditarInventario = async (req, res) => {
             seccion: {
               include: {
                 emprendedora: {
-                  include: { usuario: { select: { nombre: true } } },
+                  include: {
+                    usuario: {
+                      select: { nombre: true },
+                    },
+                  },
                 },
               },
             },
@@ -264,9 +342,11 @@ export const auditarInventario = async (req, res) => {
       },
       orderBy: { id_producto: "asc" },
     });
+
     res.json(inventario);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al auditar inventario" });
   }
 };
+
