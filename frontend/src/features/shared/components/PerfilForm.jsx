@@ -13,9 +13,9 @@ const ROL_LABEL = {
 };
 
 const ROL_REDIRECT = {
-  usuario: "/inicio",
-  emprendedora: "/dashboard",
-  admin: "/admin",
+  usuario: "/",
+  emprendedora: "/",
+  admin: "/",
 };
 
 export default function PerfilForm() {

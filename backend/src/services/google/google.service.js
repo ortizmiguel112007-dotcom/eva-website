@@ -99,6 +99,59 @@ const crearMensaje = ({
 
   return convertirBase64Url(mensaje)
 }
+export const enviarCorreoHtml = async (
+  destinatario,
+  asunto,
+  html,
+  adjunto = null
+) => {
+  const gmail = obtenerClienteGmail();
+
+  const codificarBase64 = (contenido) =>
+    Buffer.from(contenido)
+      .toString("base64")
+      .replace(/.{76}/g, "$&\r\n");
+
+  const boundary = `EVA_${Date.now()}`;
+
+  let mensaje = [
+    `From: EVA Marketplace <${EMAIL_USER}>`,
+    `To: ${destinatario}`,
+    `Subject: ${codificarAsunto(asunto)}`,
+    "MIME-Version: 1.0",
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    'Content-Type: text/html; charset="UTF-8"',
+    "Content-Transfer-Encoding: base64",
+    "",
+    codificarBase64(Buffer.from(html, "utf8")),
+  ];
+
+  if (adjunto) {
+    const nombreArchivo = adjunto.filename.replace(/["\r\n]/g, "_");
+
+    mensaje.push(
+      `--${boundary}`,
+      `Content-Type: application/pdf; name="${nombreArchivo}"`,
+      `Content-Disposition: attachment; filename="${nombreArchivo}"`,
+      "Content-Transfer-Encoding: base64",
+      "",
+      codificarBase64(adjunto.buffer)
+    );
+  }
+
+  mensaje.push(`--${boundary}--`);
+
+  const raw = convertirBase64Url(mensaje.join("\r\n"));
+
+  await gmail.users.messages.send({
+    userId: "me",
+    requestBody: { raw },
+  });
+
+  console.log(`Correo enviado a ${destinatario}`);
+};
 
 export const enviarCorreo = async (
   destinatario,

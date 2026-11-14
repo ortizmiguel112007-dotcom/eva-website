@@ -6,7 +6,10 @@ import {
   listarPagosEmprendedora,
   verificarPago,
   reenviarComprobante,
+  subirComprobante,
   listarPagosAdmin,
+  listarHistorialPago,
+  listarErroresPagosAdmin,
 } from '../controllers/Pago.controller.js'
 import { verificarToken } from '../middleware/auth.middleware.js'
 
@@ -27,5 +30,33 @@ router.get('/api/pagos/emprendedora',        verificarToken, listarPagosEmprende
 router.put('/api/pagos/:id_pago/verificar',  verificarToken, verificarPago)
 router.put('/api/pagos/:id_pago/reenviar',   verificarToken, upload.single('comprobante'), reenviarComprobante)
 router.get('/api/admin/pagos',               verificarToken, listarPagosAdmin)
+router.put(
+  '/api/pagos/:id_pago/comprobante',
+  verificarToken,
+  upload.single('comprobante'),
+  subirComprobante
+)
+// Solo administradores pueden consultar la auditoría de pagos
+const soloAdmin = (req, res, next) => {
+  if (req.user?.rol !== 'admin') {
+    return res.status(403).json({ error: 'No autorizado' })
+  }
+  next()
+}
+
+router.get(
+  '/api/admin/pagos/:id_pago/historial',
+  verificarToken,
+  soloAdmin,
+  listarHistorialPago
+)
+
+router.get(
+  '/api/admin/pagos/errores',
+  verificarToken,
+  soloAdmin,
+  listarErroresPagosAdmin
+);
+
 
 export default router

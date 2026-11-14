@@ -45,9 +45,7 @@ const LoginPage = () => {
         return
       }
 
-      if (decoded.rol === "emprendedora") navigate("/dashboard")
-      else if (decoded.rol === "admin")   navigate("/admin")
-      else                                navigate("/inicio")
+      navigate("/")
 
     } catch (err) {
       setMensaje(err.response?.data?.error || "Error al iniciar sesión")

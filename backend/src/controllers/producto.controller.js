@@ -1,7 +1,9 @@
+
 import prisma from "../conexion.js";
 import { aplicarDescuento } from "./reglasdescuento.controller.js";
 import { crearNotificacion } from "./notificacion.controller.js";
 import { soloEmprendedoraActiva } from "../utils/filtroEmprendedoraActiva.js";
+import { registrarAuditoria } from "../services/auditoria.service.js";
 
 export const crearItem = async (req, res) => {
   console.log("=== CREAR ITEM ===");
@@ -33,9 +35,11 @@ export const crearItem = async (req, res) => {
         where: { id_seccion: Number(req.body.id_seccion_alianza) },
         include: { alianza: { include: { participantes: true } } },
       });
+
       const participa = seccionAlianza?.alianza?.participantes?.some(
         (p) => p.id_usuario === id_usuario && p.autorizado,
       );
+
       if (seccionAlianza && participa) {
         id_seccion = seccionAlianza.id_seccion;
       }
@@ -51,6 +55,7 @@ export const crearItem = async (req, res) => {
       duracion,
       tipo,
     } = req.body;
+
     const imagen = req.file?.secure_url ?? null;
 
     // RN-014: La cantidad inicial no puede ser negativa
@@ -60,9 +65,7 @@ export const crearItem = async (req, res) => {
       });
     }
 
-    // RN-006: no se permiten productos duplicados con el mismo nombre y categoría.
-    // Se comparan sin espacios sobrantes ni diferencias de mayúsculas, y dentro de
-    // los productos de la misma emprendedora o de la misma sección (tienda).
+    // RN-006: No se permiten productos duplicados con el mismo nombre y categoría.
     const nombreLimpio = nombre_producto?.trim();
     const categoriaLimpia = categoria?.trim();
 
@@ -130,6 +133,16 @@ export const crearItem = async (req, res) => {
         },
       });
 
+      // Auditoría: creación del producto
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: id_usuario,
+        registroId: producto.id_producto,
+        tabla: "producto",
+        accion: "CREAR",
+        detalles: `Producto ${producto.tipo} creado: ${producto.nombre_producto}. Estado: pendiente de aprobación.`,
+      });
+
       return { ...producto, inventario };
     });
 
@@ -137,6 +150,7 @@ export const crearItem = async (req, res) => {
       where: { rol: { in: ["admin", "administrador"] } },
       select: { id: true },
     });
+
     await Promise.all(
       admins.map((a) =>
         crearNotificacion(
@@ -160,6 +174,7 @@ export const obtenerItems = async (req, res) => {
   try {
     const id_seccion = Number(req.params.id_seccion);
     const categoria = req.query.categoria;
+
     const items = await prisma.producto.findMany({
       where: {
         id_seccion,
@@ -170,6 +185,7 @@ export const obtenerItems = async (req, res) => {
       include: { inventario: true },
       orderBy: { nombre_producto: "asc" },
     });
+
     res.json(items);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener items" });
@@ -179,7 +195,10 @@ export const obtenerItems = async (req, res) => {
 export const obtenerItemPorId = async (req, res) => {
   try {
     const item = await prisma.producto.findFirst({
-      where: { id_producto: Number(req.params.id), ...soloEmprendedoraActiva },
+      where: {
+        id_producto: Number(req.params.id),
+        ...soloEmprendedoraActiva,
+      },
       include: {
         inventario: true,
         seccion: {
@@ -202,13 +221,16 @@ export const obtenerItemPorId = async (req, res) => {
         },
       },
     });
+
     if (!item) return res.status(404).json({ error: "Item no encontrado" });
+
     const stock = item.inventario?.cantidad ?? 0;
     const descuento = await aplicarDescuento(
       item.id_producto,
       item.precio,
       stock,
     );
+
     res.json({ ...item, descuento });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener item" });
@@ -218,6 +240,7 @@ export const obtenerItemPorId = async (req, res) => {
 export const obtenerProductosPublicos = async (req, res) => {
   try {
     const id_emprendedora = Number(req.params.id_emprendedora);
+
     const productos = await prisma.producto.findMany({
       where: {
         seccion: { id_emprendedora, id_alianza: null },
@@ -227,6 +250,7 @@ export const obtenerProductosPublicos = async (req, res) => {
       },
       orderBy: { nombre_producto: "asc" },
     });
+
     const conDescuento = await Promise.all(
       productos.map(async (p) => {
         try {
@@ -242,6 +266,7 @@ export const obtenerProductosPublicos = async (req, res) => {
         }
       }),
     );
+
     res.json(conDescuento);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener productos" });
@@ -251,18 +276,38 @@ export const obtenerProductosPublicos = async (req, res) => {
 export const toggleVisible = async (req, res) => {
   try {
     const id_producto = Number(req.params.id);
+
     const producto = await prisma.producto.findUnique({
       where: { id_producto },
     });
+
     if (!producto)
       return res.status(404).json({ error: "Producto no encontrado" });
 
-    const actualizado = await prisma.producto.update({
-      where: { id_producto },
-      data: { visible: !producto.visible },
+    const actualizado = await prisma.$transaction(async (tx) => {
+      const resultado = await tx.producto.update({
+        where: { id_producto },
+        data: { visible: !producto.visible },
+      });
+
+      // Auditoría: publicación u ocultamiento
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id_producto,
+        tabla: "producto",
+        accion: resultado.visible ? "PUBLICAR" : "OCULTAR",
+        detalles: `La visibilidad del producto "${producto.nombre_producto}" cambió a ${
+          resultado.visible ? "visible" : "oculta"
+        }.`,
+      });
+
+      return resultado;
     });
+
     res.json({ visible: actualizado.visible });
   } catch (error) {
+    console.error("Error al cambiar visibilidad:", error);
     res.status(500).json({ error: "Error al cambiar visibilidad" });
   }
 };
@@ -270,6 +315,7 @@ export const toggleVisible = async (req, res) => {
 export const actualizarItem = async (req, res) => {
   try {
     const id_producto = Number(req.params.id);
+
     const {
       cantidad,
       stock_minimo,
@@ -280,12 +326,14 @@ export const actualizarItem = async (req, res) => {
       descripcion,
       categoria,
     } = req.body;
+
     const imagen = req.file?.secure_url ?? undefined;
 
     const producto = await prisma.producto.findUnique({
       where: { id_producto },
       select: {
         id_creador: true,
+        nombre_producto: true,
       },
     });
 
@@ -306,7 +354,7 @@ export const actualizarItem = async (req, res) => {
     }
 
     const resultado = await prisma.$transaction(async (tx) => {
-      const producto = await tx.producto.update({
+      const productoActualizado = await tx.producto.update({
         where: { id_producto },
         data: {
           ...(nombre_producto && { nombre_producto }),
@@ -344,7 +392,17 @@ export const actualizarItem = async (req, res) => {
         });
       }
 
-      return producto;
+      // Auditoría: actualización del producto
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id_producto,
+        tabla: "producto",
+        accion: "ACTUALIZAR",
+        detalles: `Producto actualizado: ${productoActualizado.nombre_producto}.`,
+      });
+
+      return productoActualizado;
     });
 
     res.json(resultado);
@@ -354,9 +412,7 @@ export const actualizarItem = async (req, res) => {
   }
 };
 
-// ── Deshabilitar (soft delete) ─────────────────────────────────────────────
-// No borra el registro — pone estado_producto = "inactivo" y visible = false
-// Así no hay conflictos de FK en la base de datos.
+// Deshabilitar (soft delete)
 export const eliminarItem = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -387,10 +443,35 @@ export const eliminarItem = async (req, res) => {
     const eraPendiente = producto.estado_producto === "pendiente";
     const idUsuario = producto.seccion?.emprendedora?.usuario?.id;
 
-    // Soft delete — solo deshabilita, no elimina el registro
-    await prisma.producto.update({
-      where: { id_producto: id },
-      data: { estado_producto: "inactivo", visible: false },
+    // Soft delete y auditoría en una misma transacción
+    await prisma.$transaction(async (tx) => {
+      await tx.producto.update({
+        where: { id_producto: id },
+        data: { estado_producto: "inactivo", visible: false },
+      });
+
+      const esAdmin =
+        req.user.rol === "admin" || req.user.rol === "administrador";
+
+      // Solo se registra como rechazo cuando lo realiza un administrador
+      const accion =
+        eraPendiente && esAdmin ? "RECHAZAR" : "DESHABILITAR";
+
+      const descripcion =
+        accion === "RECHAZAR"
+          ? `Producto rechazado: ${producto.nombre_producto}.`
+          : `Producto deshabilitado: ${producto.nombre_producto}.`;
+
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id,
+        tabla: "producto",
+        accion,
+        detalles: motivo
+          ? `${descripcion} Motivo: ${motivo}`
+          : descripcion,
+      });
     });
 
     // Notificar a la emprendedora con el motivo si se proporcionó
@@ -398,9 +479,11 @@ export const eliminarItem = async (req, res) => {
       const titulo = eraPendiente
         ? "Producto rechazado"
         : "Producto deshabilitado";
+
       const base = eraPendiente
         ? `Tu producto "${producto.nombre_producto}" fue rechazado por el administrador.`
         : `Tu producto "${producto.nombre_producto}" fue deshabilitado por el administrador.`;
+
       const mensaje = motivo ? `${base} Motivo: ${motivo}` : base;
 
       await crearNotificacion(
@@ -437,6 +520,7 @@ export const listarTodosAdmin = async (req, res) => {
       },
       orderBy: { id_producto: "desc" },
     });
+
     res.json(productos);
   } catch (error) {
     console.error(error);
@@ -452,6 +536,7 @@ export const listarMisItems = async (req, res) => {
       where: { id_usuario },
       include: { secciones: true },
     });
+
     if (!emprendedora) return res.status(404).json({ error: "No encontrada" });
 
     const idSecciones = emprendedora.secciones.map((s) => s.id_seccion);
@@ -483,6 +568,7 @@ export const listarMisItems = async (req, res) => {
         return { ...p, descuento };
       }),
     );
+
     res.json(itemsConDescuento);
   } catch (error) {
     console.error(error);
@@ -506,12 +592,25 @@ export const aprobarProducto = async (req, res) => {
     if (!producto)
       return res.status(404).json({ error: "Producto no encontrado" });
 
-    await prisma.producto.update({
-      where: { id_producto },
-      data: { estado_producto: "activo", visible: true },
+    // Aprobación y auditoría en una misma transacción
+    await prisma.$transaction(async (tx) => {
+      await tx.producto.update({
+        where: { id_producto },
+        data: { estado_producto: "activo", visible: true },
+      });
+
+      await registrarAuditoria({
+        db: tx,
+        usuarioId: req.user.id,
+        registroId: id_producto,
+        tabla: "producto",
+        accion: "APROBAR",
+        detalles: `Producto aprobado y publicado: ${producto.nombre_producto}.`,
+      });
     });
 
     const idUsuario = producto.seccion?.emprendedora?.usuario?.id;
+
     if (idUsuario) {
       await crearNotificacion(
         idUsuario,

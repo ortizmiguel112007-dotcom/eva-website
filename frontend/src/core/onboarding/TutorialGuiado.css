@@ -1,0 +1,169 @@
+
+/* =====================================
+   BOTÓN VER TUTORIAL
+===================================== */
+
+.tutorial-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px 17px;
+  border: 1px solid #8b5cf6;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.tutorial-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 18px rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.tutorial-button:focus-visible {
+  outline: 3px solid #c4b5fd;
+  outline-offset: 3px;
+}
+
+/* =====================================
+   FONDO OSCURO
+===================================== */
+
+.introjs-overlay {
+  background: #111827 !important;
+}
+
+/* =====================================
+   VENTANA DEL TUTORIAL
+===================================== */
+
+.introjs-tooltip {
+  min-width: 280px !important;
+  max-width: 350px !important;
+  border: 1px solid #ede9fe !important;
+  border-radius: 17px !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  box-shadow: 0 15px 45px rgba(31, 24, 55, 0.22) !important;
+  overflow: hidden !important;
+  font-family: inherit !important;
+}
+
+/* Encabezado */
+
+.introjs-tooltip-header {
+  padding: 20px 20px 10px !important;
+}
+
+.introjs-tooltip-title {
+  color: #5b21b6 !important;
+  font-size: 17px !important;
+  font-weight: 750 !important;
+}
+
+/* Botón cerrar */
+
+.introjs-skipbutton {
+  color: #8b5cf6 !important;
+  font-size: 23px !important;
+}
+
+/* Descripción */
+
+.introjs-tooltiptext {
+  padding: 10px 20px 18px !important;
+  color: #4b5563 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+/* =====================================
+   INDICADORES DE PASOS
+===================================== */
+
+.introjs-bullets {
+  padding: 5px 15px 12px !important;
+}
+
+.introjs-bullets ul li a {
+  width: 8px !important;
+  height: 8px !important;
+  background: #ddd6fe !important;
+}
+
+.introjs-bullets ul li a.active {
+  width: 20px !important;
+  border-radius: 10px !important;
+  background: #8b5cf6 !important;
+}
+
+/* =====================================
+   BARRA DE PROGRESO
+===================================== */
+
+.introjs-progress {
+  height: 7px !important;
+  margin: 0 20px 12px !important;
+  border-radius: 20px !important;
+  background: #ede9fe !important;
+}
+
+.introjs-progressbar {
+  border-radius: 20px !important;
+  background: linear-gradient(90deg, #a78bfa, #7c3aed) !important;
+}
+
+/* =====================================
+   BOTONES ANTERIOR Y SIGUIENTE
+===================================== */
+
+
+/* Botón Saltar */
+.introjs-skipbutton {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  height: auto !important;
+  padding: 5px 10px !important;
+
+  border: 1px solid #ddd6fe !important;
+  border-radius: 7px !important;
+
+  background: #f5f3ff !important;
+  color: #7c3aed !important;
+
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+
+  text-decoration: none !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.introjs-skipbutton:hover {
+  background: #ede9fe !important;
+  border-color: #c4b5fd !important;
+  color: #6d28d9 !important;
+}
+
+/* Dejar espacio para que el título no choque con Saltar */
+.introjs-tooltip-header {
+  padding: 20px 85px 10px 20px !important;
+}

@@ -45,7 +45,7 @@ export function SpaceHero({
                 </p>
 
                 {/* Search */}
-                <div className="cat-search-wrap">
+                <div className="cat-search-wrap" data-tour="cliente-busqueda">
                     <FiSearch
                         size={16}
                         color="#94a3b8"

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FiSearch, FiX } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 import { TablaProductosAdmin } from "../components/productos/TablaProductosAdmin";
 import { PaginacionSimple } from "@/features/usuario/components/historial/PaginacionSimple";
@@ -19,9 +20,10 @@ export default function AdminProductos() {
   const [filtro, setFiltro] = useState("todos");
   const [toast, setToast] = useState(null);
   const [pagina, setPagina] = useState(1);
-  const [modalAccion, setModalAccion] = useState(null); // 🆕
-  const [motivo, setMotivo] = useState(""); // 🆕
-  const [errorMotivo, setErrorMotivo] = useState(""); // 🆕
+  const [modalAccion, setModalAccion] = useState(null);
+  const [motivo, setMotivo] = useState(""); 
+  const [errorMotivo, setErrorMotivo] = useState(""); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -58,25 +60,37 @@ export default function AdminProductos() {
     }
   };
 
-  const toggleDestacado = async (id, destacado) => {
-    try {
-      await axios.put(
-        `${BASE}/api/destacados/${id}`,
-        {},
-        { headers: getHeaders() },
-      );
-      setProductos((prev) =>
-        prev.map((p) =>
-          p.id_producto === id ? { ...p, destacado: !destacado } : p,
-        ),
-      );
-      mostrarToast(
-        destacado ? "Quitado de destacados" : "Marcado como destacado",
-      );
-    } catch {
-      mostrarToast("Error", "error");
-    }
-  };
+ const toggleDestacado = async (id, destacado) => {
+  // Si todavía no está destacado, ir al módulo de solicitudes
+  if (!destacado) {
+    navigate("/admin/destacados");
+    return;
+  }
+
+  // Si ya está destacado, permitir retirarlo
+  try {
+    await axios.put(
+      `${BASE}/api/admin/destacados/${id}/desactivar`,
+      {},
+      { headers: getHeaders() },
+    );
+
+    setProductos((prev) =>
+      prev.map((p) =>
+        p.id_producto === id
+          ? { ...p, destacado: false, categoria_destacado: null }
+          : p,
+      ),
+    );
+
+    mostrarToast("Producto retirado de destacados");
+  } catch (err) {
+    mostrarToast(
+      err.response?.data?.error || "Error al retirar el destacado",
+      "error",
+    );
+  }
+};
 
   // 🆕 Aprobar
   const aprobarProducto = async (id) => {

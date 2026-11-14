@@ -7,6 +7,7 @@ import {
 
 import { formatPrecio } from "@/features/tienda/utils/utils";
 import { ProductCard } from "@/shared/product/ProductCard";
+import { useAuth } from "@/core/context/AuthConten";
 
 
 export function CatalogoGrid({
@@ -15,6 +16,13 @@ export function CatalogoGrid({
     filtrados,
     catalogo
 }) {
+    const { user } = useAuth();
+
+    // El cliente con sesión usa su detalle privado (conserva el token);
+    // el resto usa el detalle público.
+    const rutaDetalle = (id) =>
+        user?.rol === "usuario" ? `/producto/${id}` : `/catalogo/${id}`;
+
     const POR_PAGINA = 9;
     const visible = filtrados.slice(0, filtros.pagina * POR_PAGINA);
     const hayMas = visible.length < filtrados.length;
@@ -37,7 +45,7 @@ export function CatalogoGrid({
                     <ProductCard
                         producto={product}
                         key={product.id_producto}
-                        onClick={() => navigate(`/producto-detalle/${product.id_producto}`)}
+                        onNavigate={(id) => navigate(rutaDetalle(id))}
                     />
                 ))}
             </div >

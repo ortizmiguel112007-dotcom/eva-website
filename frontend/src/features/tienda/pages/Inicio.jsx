@@ -33,14 +33,24 @@
  * ──────────────────────────────────────────────────────────────
  */
 
-// Hooks de React para estado y ciclo de vida
-import { useState, useEffect } from "react";
+/**
+ * Página: Inicio (único para todos los roles)
+ *
+ * Mismo diseño para todos; cambia según el rol:
+ *  - visitante:    cifras públicas de la plataforma
+ *  - usuario:      sus pedidos, citas y favoritos
+ *  - emprendedora: pedidos y citas por atender, y su catálogo
+ *  - admin:        accesos a la gestión de la plataforma
+ */
 
 // Hooks de navegación (routing)
 import { useNavigate, useLocation } from "react-router-dom";
 
-// ══ Data ═════════════
-import { Categories } from "@/data/categories.js";
+// Icono de la alerta
+import { FiZap } from "react-icons/fi";
+
+// ══ Contexto ══════════
+import { useAuth } from "@/core/context/AuthConten";
 
 // ══ Estilos ══════════
 import "@/infrastructure/css/tienda/inicio/inicio.css";
@@ -48,75 +58,54 @@ import "@/infrastructure/css/tienda/inicio/inicio.css";
 // ══ Shared ════════════
 import { Alert } from "@/shared/ui/Alert";
 
-// ══ Utils ═════════════
+// ══ Hooks ═════════════
 import { useHomeData } from "@/features/tienda/hooks/inicio/useHomeData";
+import { useInicioRol } from "@/features/tienda/hooks/inicio/useInicioRol";
 
 // ══ Componentes ══════
 import { InicioHero } from "../components/inicio/InicioHero";
+import { InicioResumen } from "../components/inicio/InicioResumen";
 import { InicioDestacados } from "../components/inicio/InicioDestacados";
 import { InicioTiendas } from "../components/inicio/InicioTiendas";
-import { InicioFooter } from "../components/inicio/InicioFooter"
-
-// ══ API ══════════════
-import { tiendaService } from "@/features/tienda/services/tienda.service";
+import { InicioFooter } from "../components/inicio/InicioFooter";
 
 export default function Inicio() {
   const navigate = useNavigate();
   const location = useLocation();
   const mensajePendiente = location.state?.mensaje;
 
+  const { user, token } = useAuth();
   const tienda = useHomeData();
-
-  const handleCategoria = async (Eleccion) => {
-    try {
-      const data = await tiendaService.getCatalogo(
-        Eleccion ? { categoria: Eleccion } : {}
-      );
-      setCatalogo(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const { rol, resumen } = useInicioRol(user, token);
 
   return (
-    // INICIO --------------------------------------------------------------------------
     <div>
       <div className="alert-container">
-        {mensajePendiente && <Alert
-          icon={FiZap}
-        >{mensajePendiente}</Alert>}
+        {mensajePendiente && <Alert icon={FiZap}>{mensajePendiente}</Alert>}
       </div>
 
-      {/* ───── HERO ───── */}
+      {/* ───── HERO (cambia según el rol) ───── */}
       <InicioHero
         navigate={navigate}
         tienda={tienda}
+        rol={rol}
+        user={user}
+        resumen={resumen}
       />
+
+      {/* ── ACCESOS RÁPIDOS (solo con sesión) ── */}
+      {rol && <InicioResumen navigate={navigate} rol={rol} resumen={resumen} />}
 
       {/* ── DESTACADOS ── */}
       {tienda.destacados.length > 0 && (
-        <InicioDestacados
-          navigate={navigate}
-          tienda={tienda}
-        />
+        <InicioDestacados navigate={navigate} tienda={tienda} rol={rol} />
       )}
 
-      {/* ── CATÁLOGO ── */}
-      {/* <InicioCatalogo
-        navigate={navigate}
-        tienda={tienda}
-      /> */}
-
       {/* ── TIENDAS ── */}
-      <InicioTiendas
-        navigate={navigate}
-        tienda={tienda}
-      />
+      <InicioTiendas navigate={navigate} tienda={tienda} />
 
       {/* ── FOOTER ── */}
-      <InicioFooter
-        navigate={navigate}
-      />
+      <InicioFooter navigate={navigate} />
     </div>
   );
 }
